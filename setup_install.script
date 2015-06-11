@@ -1,0 +1,116 @@
+#
+# BlitzMax Auto deploy and installer script 
+#
+# Drop this script into an empty folder, change the settings and run.
+#   * Source for binaries and modules will be downloaded.
+#   * Build scripts and source will be generated for binaries.
+#   * Zip and install on target system.
+#   * Run install.script to complete installation. (requires working development)
+#
+# BIN_PATH is the location of a working BlitzMax/bin dir
+# PLATFORM is your target platform, eg. raspberrypi / linux
+# CPU is your target architecture, eg. arm / x64
+#
+
+MAX_PATH=/PATH/TO/WORKING/BLITZMAX_NG
+
+PLATFORM=raspberrypi
+CPU=arm
+
+echo "Creating installation. Please wait."
+
+mkdir bin 2>/dev/null
+mkdir mod 2>/dev/null
+mkdir src 2>/dev/null
+mkdir lib 2>/dev/null
+
+# download bmk / bcc
+cd src
+
+echo "Retrieving bcc source"
+svn export -q https://github.com/bmx-ng/bcc/trunk bcc
+
+echo "Retrieving bmk source"
+svn export -q https://github.com/bmx-ng/bmk/trunk bmk
+
+# download brl / pub modules
+cd ../mod
+
+echo "Retrieving pub.mod source"
+svn export -q https://github.com/bmx-ng/pub.mod/trunk pub.mod
+
+echo "Retrieving brl.mod source"
+svn export -q https://github.com/bmx-ng/brl.mod/trunk brl.mod
+
+cd ..
+
+# copy binaries
+cp $MAX_PATH/bin/bcc bin
+cp $MAX_PATH/bin/bmk bin
+cp $MAX_PATH/bin/core.bmk bin
+cp $MAX_PATH/bin/make.bmk bin
+
+cd bin
+
+# build standalone
+
+echo "Generating standalone sources."
+
+./bmk makeapp -a -r -standalone -l $PLATFORM -g $CPU -o ../src/bcc/bcc ../src/bcc/bcc.bmx
+chmod +x ../src/bcc/bcc.console.release.$PLATFORM.$CPU.build
+
+./bmk makeapp -a -r -h -standalone -l $PLATFORM -g $CPU -o ../src/bmk/bmk ../src/bmk/bmk.bmx
+chmod +x ../src/bmk/bmk.console.release.mt.$PLATFORM.$CPU.build
+
+cd ..
+
+echo "Generating installer."
+
+# generate installer
+cat <<EOF >./installer.$PLATFORM.$CPU.script
+echo "Building and installing $PLATFORM BlitzMax binaries for $CPU."
+echo "Please wait."
+
+export BMX_ROOT=\`pwd\`
+cd src/bcc
+export APP_ROOT=\`pwd\`
+./bcc.console.release.$PLATFORM.$CPU.build
+cd ../..
+
+cd src/bmk
+export APP_ROOT=\`pwd\`
+./bmk.console.release.mt.$PLATFORM.$CPU.build
+cd ../..
+
+echo "Installing bcc and bmk."
+cp src/bcc/bcc bin
+cp src/bmk/bmk bin
+cp src/bmk/core.bmk bin
+cp src/bmk/make.bmk bin
+
+cd bin
+
+echo "Building and installing doc tools."
+./bmk makeapp -a -r -o ./makedocs ../src/makedocs/makedocs.bmx
+./bmk makeapp -a -r -o ./docmods ../src/docmods/docmods.bmx
+
+cd ..
+
+echo ""
+
+bin/bcc -v
+bin/bmk -v
+
+echo "Complete."
+
+EOF
+
+chmod +x ./installer.$PLATFORM.$CPU.script
+
+# tidy up
+rm bin/bcc
+rm bin/bmk
+rm bin/core.bmk
+rm bin/make.bmk
+
+echo "Complete."
