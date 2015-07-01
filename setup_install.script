@@ -1,15 +1,25 @@
 #
 # BlitzMax Auto deploy and installer script 
 #
-# Drop this script into an empty folder, change the settings and run.
+# This script fetches the latest sources, generates compilable sources,
+#  and creates a build script. The build script is essentially just a long list
+#  of all the c->binary compilation and linkage statements.
+# Useful say, if you have a working OS X BlitzMax but would like to compile on Linux
+#  but are not set up for cross compiling. Simply generate the source, zip, deploy, and
+#  run the build script.
+#
+# An initial working BlitzMax NG installation is required to generate the compilable sources.
+#
+# Typical usage :
+#   * Configure settings.
+#   * Run the install script.
 #   * Source for binaries and modules will be downloaded.
 #   * Build scripts and source will be generated for binaries.
-#   * Zip and install on target system.
-#   * Run install.script to complete installation. (requires working development)
+#   * Zip and install onto target system.
 #
-# BIN_PATH is the location of a working BlitzMax/bin dir
-# PLATFORM is your target platform, eg. raspberrypi / linux
-# CPU is your target architecture, eg. arm / x64
+# MAX_PATH is the location of a working BlitzMax/bin dir
+# PLATFORM is your target platform, eg. raspberrypi / linux / macos
+# CPU is your target architecture, eg. arm / x86 / x64
 #
 
 MAX_PATH=/PATH/TO/WORKING/BLITZMAX_NG
