@@ -8,7 +8,7 @@ The general syntax for  BMK is:
 @bmk %Operation %Options %Arguments
 }
 
-Where operation is one of @makeapp, @makemods, @zapmod, @unzampmod.
+Where operation is one of @makeapp, @makemods, @zapmod, @unzapmod.
 
 +@Makeapp
 
@@ -22,12 +22,20 @@ Unless the -a option is used, only source files that have been modified since th
 
 Valid options for makeapp are:
 [ @Option | @Effect
-* @{-d} | Build debug version. This is the default.
-* @{-r} | Build release version. By default, the debug version is built.
-* @{-h} | Build multithreaded version. By default, the single threaded version is built.
 * @{-a} | Recompile all source files regardless of timestamp. By default, only files modified since the last makeapp are recompiled.
+* @{-b <custom appstub module>} | Builds an app using a custom appstub (i.e. not BRL.Appstub). This can be useful when you want more control over low-level application state.
+* @{-d} | Build debug version. This is the default.
+* @{-g <architecture>} | Compiles to the specified architecture. (the default is the native for this binary - x86) Options vary depending on the current OS, architecture and installed toolchain. MacOS: x86, x64. Win32: x86, x64. Linux: x86, x64. iOS: x86, x64 (simulator), armv7, arm64. Android: x86, x64, arm, armeabi, armeabiv7a, arm64v8a. RaspberryPi: arm. Emscripten: js.
+* @{-h} | Build multithreaded version. By default, the single threaded version is built.
+* @{-i} | Creates a Universal build on Mac x86 systems.
+* @{-l <target platform>} | Cross-compiles to the specific target platform. Valid targets are win32, linux, macos, ios, android, raspberrypi and emscripten.
 * @{-o} %OutputFile | Specify output file. By default, the output file is placed into the same directory as the root source file.
-* @{-t} %AppType | Specify application type. Should be either 'console' or 'gui' (without single quote!).
+* @{-q} | quiet build
+* @{-r} | Build release version. By default, the debug version is built.
+* @{-t} %AppType | Specify application type. Should be either 'console' 
+or 'gui' (without single quote!). Default is console.
+* @{-v} | verbose (noisy build)
+* @{-x} | Execute built application
 ]
 
 Some examples of makeapp in action:
@@ -51,10 +59,12 @@ Makemods takes one optional argument: a module filter. This can be a module scop
 
 Valid options for makemods are:
 [ @Option | @Effect
-* @{-d} | Build debug version only. By default, both debug and release versions are built.
-* @{-r} | Build release version only. By default, both debug and release versions are built.
-* @{-h} | Build multithreaded versions. By default, single threaded versions only are built.
 * @{-a} | Build all modules regardless of timestamps. By default, only modules that have been modified are built.
+* @{-d} | Build debug version only. By default, both debug and release versions are built.
+* @{-g <architecture>} | Compiles to the specified architecture. (the default is the native for this binary - x86) Options vary depending on the current OS, architecture and installed toolchain. MacOS: x86, x64. Win32: x86, x64. Linux: x86, x64. iOS: x86, x64 (simulator), armv7, arm64. Android: x86, x64, arm, armeabi, armeabiv7a, arm64v8a. RaspberryPi: arm. Emscripten: js.
+* @{-h} | Build multithreaded versions. By default, the single threaded version only is built.
+* @{-r} | Build release version only. By default, both debug and release versions are built.
+* @{-v} | verbose (noisy build)
 ]
 
 Some examples of makemods in action:
