@@ -1,0 +1,355 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave12.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+<head>
+<title>Page 12</title>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
+<link href="wave.css" type=text/css rel=stylesheet>
+</head>
+<body bgcolor="#FFFFFF">
+<table border="0" width="700" align="center" cellspacing="0">
+<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr><td class="cap" colspan="2">Some TList Functions and Methods</td></tr>
+<tr><td class="idx2" colspan="2">
+<tr><td class="code">
+<span class="cg">1: </span><span class="cy">listaddlast</span><span class="cw"> TankList,NewTank</span></td>
+	<td class="code"><span class="cg">2: </span><span class="cy">listaddfirst</span><span class="cw"> YourList, YourType</span></td></tr>
+<tr><td class="code"><span class="cg"> 1a: </span><span class="cw">tanklist.addlast(newtank)</span></td><td class="code"><span class="cg"> 2a: </span><span class="cw"> YourList.AddFirst(YourYype)</span></td></tr> 
+<tr><td class="idx2" colspan="2">
+1 and 1a do the same thing. 1 is a normal function, 1a is a method and is called from your list instance.<br>
+2 and 2a do the same thing. 2 is a normal function, 2a is a method and is called from your list instance.<br>
+These functions are in BlitzMax's TList-Type.</td></tr>
+<tr><td class="idx2" colspan="2"><br> 
+You can get the first object in a list by doing this:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cw">my_firsttank:tanktype = Tank( TankType.List.First() )</span></td></tr>
+Or you can get the last object by doing this:</td></tr> 
+<span class="cw">my_lasttank:tanktype = Tank( TankType.List.Last() )</span></td></tr>
+<tr><td class="idx2" colspan="2"> 
+The reason for Tank( ... ) is that I have to force the object returned to be a Tank not just any object.</td></tr>
+<tr><td class="idx2" colspan="2"><br>
+The following would be the same:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Local</span><span class="cw"> someobject:</span><span class="cy">Object</span><span class="cw"> = TankType.List.First()</span><br>
+<span class="cy">If</span><span class="cw"> someObject</span><span class="cy"> Then Print</span><span class="cg"> "Object Found in list"</span><span class="cy"> Else Print</span><span class="cg"> "No Object found"</span><br>&nbsp;<br>
+<span class="cy">Local</span><span class="cw"> FirstTank:TankType = TankType(someObject )</span><br>
+<span class="cy">If</span><span class="cw"> FirstTank</span><span class="cy"> Then Print</span><span class="cg"> "Tank Found in the list"</span><span class="cy"> Else Print</span><span class="cg"> "No Tank found"</span></td></tr> 
+<tr><td class="idx2" colspan="2">
+The reason we need to force the object is because First() returns an object and not a tank. If someObject is not a Tank then FirstTank would be = null. Read more about this in "casting" You will find the code for TList in BlitzMax\Mod\Brl.Mod\LinkedList.mod\linkedlist.bmx. All source to BlitzMax comes along for free, open to you! Most of it is written in BlitzMax itself.</td></tr> 
+<tr><td class="cap" colspan="2"><br>Arrays in Types</td></tr>
+<tr><td class="idx2" colspan="2">
+These could be useful to know about. To add a field with an array: field missiles[2]. I'll also show you the benefit of this ­ reduced code. Build Example 1 and then compare it to the Example 2 which does the exact same thing but with reduced and simpler code.</td></tr>
+<tr><td class="cap2" colspan="2"><br>Example 1</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Strict</span><br>
+<span class="cy">global</span><span class="cw"> tanklist:tlist =</span><span class="cy"> CreateList</span><span class="cw">()</span><br> 
+<span class="cy">Local</span><span class="cw"> Tank:WarTank</span><br> 
+<span class="cw">Tank =</span><span class="cy"> New</span><span class="cw"> WarTank</span><br>
+<span class="cw">Tank.Name  =</span><span class="cg"> "Thunder Tank"</span><br>
+<span class="cw">Tank.MissileSlot1 =</span><span class="cg"> "Infero Missile"</span><br>
+<span class="cw">Tank.AmmoSlot1 =</span><span class="cb"> 3</span><span class="clb"> '3 missiles</span><br>
+<span class="cw">TankList.AddLast( Tank )</span><br>&nbsp;<br>
+ 
+<span class="cw">Tank =</span><span class="cy"> New</span><span class="cw"> WarTank</span><br>
+<span class="cw">Tank.Name  =</span><span class="cg"> "Lightning Tank"</span><br>
+<span class="cw">Tank.MissileSlot2 =</span><span class="cg"> "Infero Missile"</span><br>
+<span class="cw">Tank.AmmoSlot2 =</span><span class="cb"> 1</span><br>
+<span class="cw">Tank.MissileSlot3 =</span><span class="cg"> "Normal Missile"</span><br>
+<span class="cw">Tank.AmmoSlot3 =</span><span class="cb"> 1</span><br>
+<span class="cw">TankList.AddLast( Tank )</span><br>&nbsp;<br>
+ 
+<span class="cw">Tank =</span><span class="cy"> New</span><span class="cw"> WarTank</span><br>
+<span class="cw">Tank.Name  =</span><span class="cg"> "Storm Tank"</span><br>
+<span class="cw">Tank.MissileSlot1 =</span><span class="cg"> "Normal Missile"</span><br>
+<span class="cw">Tank.AmmoSlot1 =</span><span class="cb"> 3</span><br>
+<span class="cw">Tank.MissileSlot2 =</span><span class="cg"> "Infero Missile"</span><br>
+<span class="cw">Tank.AmmoSlot2 =</span><span class="cb"> 1</span><br>
+<span class="cw">Tank.MissileSlot3 =</span><span class="cg"> "Normal Missile"</span><br>
+<span class="cw">Tank.AmmoSlot3 =</span><span class="cb"> 2</span><br>
+<span class="cw">TankList.AddLast( Tank )</span><br>&nbsp;<br>
+ 
+<span class="cy">For Local</span><span class="cw"> Tank:WarTank =</span><span class="cy"> EachIn</span><span class="cw"> TankList</span><br>
+<span class="cy">Print</span><span class="cg"> ""</span><br>
+<span class="cy">Repeat</span><br>&nbsp;<br>  
+
+<span class="cy">Select</span><span class="cw"> Tank.MissileSlot1</span><br>
+<span class="cy">Case</span><span class="cg"> "Infero Missile"</span><br>
+<span class="cw">Tank.FireMissile(</span><span class="cb"> 1</span><span class="cw"> )</span><br> 
+<span class="cy">Case</span><span class="cg"> "Normal Missile"</span><br>
+<span class="cw">Tank.FireMissile(</span><span class="cb"> 1</span><span class="cw"> )</span><br> 
+<span class="cy">End Select</span><br>&nbsp;<br>
+
+<span class="cy">Select</span><span class="cw"> Tank.MissileSlot2</span><br>
+<span class="cy">Case</span><span class="cg"> "Infero Missile"</span><br>
+<span class="cw">Tank.FireMissile(</span><span class="cb"> 2</span><span class="cw"> )</span><br> 
+<span class="cy">Case</span><span class="cg"> "Normal Missile"</span><br>
+<span class="cw">Tank.FireMissile(</span><span class="cb"> 2</span><span class="cw"> )</span><br> 
+<span class="cy">End Select</span><br>&nbsp;<br>
+
+<span class="cy">Select</span><span class="cw"> Tank.MissileSlot3</span><br>
+<span class="cy">Case</span><span class="cg"> "Infero Missile"</span><br>
+<span class="cw">Tank.FireMissile(</span><span class="cb"> 3</span><span class="cw"> )</span><br> 
+<span class="cy">Case</span><span class="cg"> "Normal Missile"</span><br>
+<span class="cw">Tank.FireMissile(</span><span class="cb"> 3</span><span class="cw"> )</span><br> 
+<span class="cy">End Select</span><br>&nbsp;<br>
+ 
+<span class="cy">Until</span><span class="cw"> Tank.AmmoSlot1 =</span><span class="cb"> 0</span><span class="cy"> And</span><span class="cw"> tank.ammoslot2 =</span><span class="cb"> 0</span><span class="cy"> And</span><span class="cw"> Tank.AmmoSlot3 =</span><span class="cb"> 0</span><br>
+<span class="cb">Next</span><br>&nbsp;<br>
+ 
+<span class="cy">Type</span><span class="cw"> WarTank</span><br> 
+<span class="cy">Field</span><span class="cw"> Name$ =</span><span class="cg"> "Default Name"</span><br>
+<span class="cy">Field</span><span class="cw"> MissileSlot1$,MissileSlot2$,MissileSlot3$</span><br>
+<span class="cy">Field</span><span class="cw"> AmmoSlot1%,AmmoSlot2%,AmmoSlot3%</span><br>&nbsp;<br> 
+
+<span class="clb">'F I R E - - M I S S I L E</span><br>
+<span class="clb">'__________________________________________________________________</span><br>
+<span class="clb">'</span><br>
+<span class="clb">' parameters: missileslot - the slot number you want to fire from.</span><br>
+<span class="clb">' use: fires a missile if you got availible ammo else it don't</span><br> 
+<span class="clb">'</span><br>
+<span class="clb">'__________________________________________________________________</span><br> 
+<span class="cy">method</span><span class="cw"> firemissile( missleslotnr )</span><br>
+<span class="cy">if</span><span class="cw"> missleslotnr ></span><span class="cb"> 3</span><span class="cy"> Or</span><span class="cw"> MissleSlotNR <</span><span class="cb"> 1</span><span class="cy"> Then return</span><br>
+<span class="cy">Select</span><span class="cw"> MissleSlotNR</span><br>
+<span class="cy">Case</span><span class="cb"> 1</span><br> 
+<span class="cy">If</span><span class="cw"> AmmoSlot1 <=</span><span class="cb"> 0</span><span class="cy">  Print</span><span class="cg"> "Can't fire, No Ammo in Slot 1"</span><br>
+<span class="cy">Return</span><br> 
+<span class="cy">EndIf</span><br>
+<span class="cy">Case</span><span class="cb"> 2</span><br> 
+<span class="cy">If</span><span class="cw"> AmmoSlot2 <=</span><span class="cb"> 0</span><span class="cy">  Print</span><span class="cg"> "Can't fire, No Ammo in Slot 2"</span><br>
+<span class="cy">Return</span><br> 
+<span class="cy">EndIf</span><br>
+<span class="cy">Case</span><span class="cb"> 3</span><br> 
+<span class="cy">If</span><span class="cw"> AmmoSlot3 <=</span><span class="cb"> 0</span><span class="cy">  Print</span><span class="cg"> "Can't fire, No Ammo in Slot 3"</span><br>
+<span class="cy">Return</span><br> 
+<span class="cy">EndIf</span><br>
+<span class="cy">EndSelect</span><br> 
+<span class="cy">Print</span><span class="cg"> "Tank "</span><span class="cw">+Name+</span><span class="cg">" fired a missile from slot "</span><span class="cw">+MissleSlotNR</span><br>
+<span class="cy">Select</span><span class="cw"> MissleSlotNR</span><br> 
+<span class="cy">Case</span><span class="cb"> 1</span><br>
+<span class="cw">AmmoSlot1:-</span><span class="cb">1</span><br>
+<span class="cy">Print</span><span class="cg"> "Last Missile Fired was a "</span><span class="cw">+MissileSlot1</span><br> 
+<span class="cy">Case</span><span class="cb"> 2</span><br>
+<span class="cw">AmmoSlot2:-</span><span class="cb">1</span><br>
+<span class="cy">Print</span><span class="cg"> "Last Missile Fired was a "</span><span class="cw">+MissileSlot2</span><br> 
+<span class="cy">Case</span><span class="cb"> 3</span><br>
+<span class="cw">AmmoSlot3:-</span><span class="cb">1</span><br>
+<span class="cy">Print</span><span class="cg"> "Last Missile Fired was a "</span><span class="cw">+MissileSlot3</span><br> 
+<span class="cy">EndSelect</span><br>
+<span class="cy">EndMethod</span><br> 
+<span class="clb">'____________________________________________________________________</span><br> 
+<span class="cy">End Type</span><br>&nbsp;<br>
+ 
+<span class="cw">WarTank( TankList.First() ).FireMissile(</span><span class="cb"> 1</span><span class="cw"> )</span><span class="clb">' Try to fire with first tank</td></tr>
+<tr><td class="idx2" colspan="2"> 
+The above is NOT the way to do it, never, because if you use Arrays then you can use loops and auto set them:</td></tr> 
+<tr><td class="cap2" colspan="2"><br>Example 2</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Strict</span><br>
+<span class="cy">Global</span><span class="cw"> TankList:</span><span class="cy">TList</span><span class="cw"> =</span><span class="cy"> CreateList</span><span class="cw">()</span><br> 
+<span class="cy">Local</span><span class="cw"> Tank:WarTank</span><br>&nbsp;<br> 
+
+<span class="cw">Tank =</span><span class="cy"> New</span><span class="cw"> WarTank</span><br> 
+<span class="cw">Tank.Name  =</span><span class="cg"> "Thunder Tank"</span><br>
+<span class="cw">Tank.Missile  = [</span><span class="cg">"Infero Missile"</span><span class="cw">]</span><br>
+<span class="cw">Tank.Ammo = [</span><span class="cb"> 3</span><span class="cw"> ]</span><br>
+<span class="cw">TankList.AddLast( Tank )</span><br>&nbsp;<br>
+ 
+<span class="cw">Tank =</span><span class="cy"> New</span><span class="cw"> WarTank</span><br>
+<span class="cw">Tank.Name  =</span><span class="cg"> "Lightning Tank"</span><br>
+<span class="cw">Tank.Missile  = [</span><span class="cg">"Infero Missile"</span><span class="cw">,</span><span class="cg">"Normal Missile"</span><span class="cw">]</span><br>
+<span class="cw">Tank.Ammo = [</span><span class="cb"> 1</span><span class="cw"> ,</span><span class="cb"> 1</span><span class="cw"> ]</span><br> 
+<span class="cw">TankList.AddLast( Tank )</span><br>&nbsp;<br>
+ 
+<span class="cw">Tank =</span><span class="cy"> New</span><span class="cw"> WarTank</span><br>
+<span class="cw">Tank.Name  =</span><span class="cg"> "Storm Tank"</span><br>
+<span class="cw">Tank.Missile  = [</span><span class="cg">"Normal Missile"</span><span class="cw">,</span><span class="cg">"Infero Missile"</span><span class="cw">,</span><span class="cg">"Normal Missile"</span><span class="cw">]</span><br>
+<span class="cw">Tank.Ammo = [</span><span class="cb"> 3</span><span class="cw"> ,</span><span class="cb"> 1</span><span class="cw"> ,</span><span class="cb"> 2</span><span class="cw"> ]</span><br>
+<span class="cw">TankList.AddLast( Tank )</span><br>&nbsp;<br>
+ 
+<span class="clb">'Loop Each Tank</span><br>
+<span class="cy">For Local</span><span class="cw"> Tank:WarTank =</span><span class="cy"> EachIn</span><span class="cw"> TankList</span><br>
+<span class="cy">Print</span><span class="cg"> "---------------------------------"</span><br> 
+<span class="clb">'Loop Each Missile Slot</span><br>
+<span class="cy">For Local</span><span class="cw"> n =</span><span class="cb"> 0</span><span class="cw"> Until</span><span class="cw"> Tank.Ammo.length</span><br> 
+<span class="clb">'Fire missiles until this slot is out-of-ammo</span><br> 
+<span class="cy">Repeat</span><br> 
+<span class="cw">Tank.FireMissile( n )</span><br>
+<span class="cy">Until</span><span class="cw"> Tank.Ammo[n] <=</span><span class="cb"> 0</span><br>
+<span class="cy">Next</span><br> 
+<span class="cy">Next</span><br>&nbsp;<br>
+
+<span class="clb">'Try to fire first slot with first tank</span><br>
+<span class="cy">Print</span><span class="cg"> "------------------------------------"</span><br>
+<span class="cy">Print</span><span class="cg"> "Fire First Missile of the Last Tank"</span><br> 
+<span class="cw">WarTank( TankList.Last() ).FireMissile( 0 )</span><br>&nbsp;<br> 
+
+<span class="cy">type</span><span class="cw"> WarTank</span><br> 
+<span class="cy">field</span><span class="cw"> Name$ =</span><span class="cg"> "Default Name"</span><br>
+<span class="cy">Field</span><span class="cw"> Missile$[]</span><br>
+<span class="cy">Field</span><span class="cw"> Ammo[]</span><br>&nbsp;<br>
+ 
+<span class="clb">'FIRE M I S S I L E</span><br>
+<span class="clb">'__________________________________________________________________</span><br> 
+<span class="clb">'</span><br>
+<span class="clb">' Parameters: MissileSlot - The slot number you want to fire from.</span><br>
+<span class="clb">' Use: Fires a missile if you got availible ammo else it don't</span><br>
+<span class="clb">'___________________________________________________________________</span><br>
+<span class="cy">Method</span><span class="cw"> FireMissile( MissleSlotNR )</span><br>
+<span class="cy">If</span><span class="cw"> MissleSlotNR > Ammo.length</span><span class="cy"> Return</span><br>
+<span class="cy">If</span><span class="cw"> MissleSlotNR > Missile.length</span><span class="cy"> Return</span><br>
+<span class="cy">If</span><span class="cw"> MissleSlotNR < </span><span class="cb"> 0</span><span class="cy"> return</span><br>&nbsp;<br>
+
+<span class="cy">If</span><span class="cw"> ammo[ missleslotnr ] <=</span><span class="cb"> 0
+<span class="cy">Print</span><span class="cg"> "Can't fire, No Ammo in Slot "</span><span class="cw">+MissleSlotNR 
+<span class="cy">Return
+<span class="cy">EndIf
+
+<span class="cy">Print</span><span class="cg"> "Tank "</span><span class="cw">+Name+</span><span class="cg">" fired a "</span><span class="cw">+Missile[ MissleSlotNR ]+</span><span class="cg">" from slot "</span><span class="cw">+MissleSlotNR</span><br>
+<span class="cw">Ammo[ MissleSlotNR ]:-</span><span class="cb">1</span><br>
+<span class="cy">EndMethod</span><br> 
+<span class="clb">'____________________________________________________________________</span><br>
+ 
+<span class="cy">End Type</span></td></tr>
+<tr><td class="idx2" colspan="2"> 
+Always try to never replicate code, use loops and functions as much as possible. Also note how easy it would be to increase the number of weapon slots in the last example compared to the first. Our code is much more flexible now. Any of our tanks can have any number of weapon slots.<p> 
+Now let's take it one step further, think if we could have used a type instead of an array as our "missileslot". Instead of two arrays we can make it one type. This type will have its own methods and functions, like load and fire. Also our missile could be a type. We could load our slot with missiles and our tank with slots. Now it's starting to feel OOP. It will be a little longer but it will give us an even more flexible code.</td></tr>
+<tr><td class="idx2" colspan="2">Here is how that could look:</td></tr>
+<tr><td class="cap2" colspan="2">Example 3</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">strict</span><br>
+<span class="cy">global</span><span class="cw"> tanklist:</span><span class="cy">TList</span><span class="cw"> =</span><span class="cy"> CreateList</span><span class="cw">()</span><br>&nbsp;<br>
+ 
+<span class="cy">Local</span><span class="cw"> Tank:WarTank</span><br>&nbsp;<br>
+
+<span class="cw">Tank = WarTank.Create(</span><span class="cg"> "Thunder Tank"</span><span class="cw">,</span><span class="cb"> 1</span><span class="cw"> )</span><span class="clb"> '---------------------------</span><br>
+<span class="cw">Tank.GetSlot(</span><span class="cb">1</span><span class="cw">).Load(</span><span class="cg"> "Infero Missile"</span><span class="cw">,</span><span class="cb"> 1</span><span class="cw"> )</span><span class="clb">'Add 1 Inferno To Slot 1</span><br>
+<span class="cw">Tank.GetSlot(</span><span class="cb">1</span><span class="cw">).Load(</span><span class="cg"> "Normal Missile"</span><span class="cw">,</span><span class="cb"> 1</span><span class="cw"> )</span><span class="clb">'Also Add Normal To Slot 2</span><br>&nbsp;<br>
+ 
+<span class="cw">Tank = WarTank.Create(</span><span class="cg">"Lightning Tank"</span><span class="cw">,</span><span class="cb"> 2</span><span class="cw"> )</span><br>
+<span class="cw">Tank.GetSlot(</span><span class="cb">1</span><span class="cw">).Load(</span><span class="cg"> "WirlWind Missile"</span><span class="cw">,</span><span class="cb"> 3</span><span class="cw"> )</span><span class="clb"> 'Add 3 WirlWind To Slot 1</span><br>
+<span class="cw">Tank.GetSlot(</span><span class="cb">2</span><span class="cw">).Load(</span><span class="cg"> "Infero Missile"</span><span class="cw"> ,</span><span class="cb"> 1</span><span class="cw"> )</span><span class="clb"> 'Add 1 Missile To Slot 2</span><br>&nbsp;<br> 
+
+<span class="cw">Tank = WarTank.Create(</span><span class="cg"> "Storm Tank"</span><span class="cw">,</span><span class="cb"> 3</span><span class="cw"> )</span><br>
+<span class="cw">Tank.GetSlot(</span><span class="cb">1</span><span class="cw">).Load(</span><span class="cg"> "Normal Missile"</span><span class="cw">,</span><span class="cb"> 3</span><span class="cw"> )</span><span class="clb"> 'Add 3 Missiles to Slot 1</span><br>
+<span class="cw">Tank.GetSlot(</span><span class="cb">2</span><span class="cw">).Load(</span><span class="cg"> "Infero Missile"</span><span class="cw">,</span><span class="cb"> 1</span><span class="cw"> )</span><span class="clb"> 'Add 1 Inferno  to Slot 2</span><br>
+<span class="cw">Tank.GetSlot(</span><span class="cb">3</span><span class="cw">).Load(</span><span class="cg"> "Normal Missile"</span><span class="cw">,</span><span class="cb"> 2</span><span class="cw"> )</span><span class="clb"> 'Add 2 Missiles To Slot 3</span><br>&nbsp;<br>
+ 
+<span class="clb">'Loop Each Tank</span><br>
+<span class="cy">For</span><span class="cw"> Tank:WarTank =</span><span class="cY"> EachIn</span><span class="cw"> TankList</span><br>
+<span class="cy">Print</span><span class="cg"> "---------------------------------"</span><br> 
+<span class="clb">'Loop Each Missile Slot in this Tank</span><br>
+<span class="cy">Local</span><span class="cw"> n</span><br>
+<span class="cy">For Local</span><span class="cw"> ThisSlot:WeaponSlot =</span><span class="cy"> EachIn</span><span class="cw"> Tank.Slot</span><br> 
+<span class="clb">'Fire missiles until this slot is out-of-ammo</span><br> 
+<span class="cw">n:+</span><span class="cb">1</span><br> 
+<span class="cy">Repeat</span><br>
+<span class="cy">Local</span><span class="cw"> Missile:TMissile = ThisSlot.Fire()</span><br>
+<span class="cy">If</span><span class="cw"> Missile</span><br>  
+<span class="cy">Print</span><span class="cw"> Tank.Name+</span><span class="cg">" fired a "</span><span class="cw">+Missile.Name+</span><span class="cg">" from slot "</span><span class="cw">+n</span><br> 
+<span class="cy">EndIf</span><br>
+<span class="cy">Until</span><span class="cw"> ThisSlot.Missile.Count() =</span><span class="cb"> 0</span><br>
+<span class="cy">Next</span><br>
+<span class="cy">Next</span><br>&nbsp;<br> 
+
+<span class="clb">'try to fire first slot with last tank</span><br>
+<span class="cy">print</span><span class="cg"> "------------------------------------"</span><br>
+<span class="cy">print</span><span class="cg"> "fire a missile in the first slot of the last tank"</span><br>
+<span class="cw">wartank( tanklist.last() ).fire(</span><span class="cb"> 1</span><span class="cw"> )</span><br>&nbsp;<br>
+ 
+<span class="clb">' w a r tank</span><br> 
+<span class="clb">'</span><br>
+<span class="clb">' a tank which you can create and then fight with.</span><br>
+<span class="clb">'</span><br>
+<span class="cy">type</span><span class="cw"> wartank</span> <span class="clb">'--------------------------------------</span><br>&nbsp;<br>
+
+<span class="cy">field</span><span class="cw"> name$ =</span><span class="cg"> "Default Name"</span><br>
+<span class="cy">Field</span><span class="cw"> Slot:</span><span class="cy">TList</span><span class="cw"> =</span><span class="cy"> New TList</span><br>&nbsp;<br>
+
+<span class="cy">Method</span><span class="cw"> GetSlot:WeaponSlot( Number )</span><br>
+<span class="cy">Local</span><span class="cw"> n =</span><span class="cb"> 0</span><br>
+<span class="cy">For Local</span><span class="cw"> W:WeaponSlot =</span><span class="cy"> EachIn</span><span class="cw"> Slot</span><br> 
+<span class="cw">n:+</span><span class="cb">1</span><span class="cw"> ;</span><span class="cy"> If</span><span class="cw"> n = Number</span><span class="cy"> Then Return</span><span class="cw"> W</span><br>
+<span class="cy">Next</span><br>
+<span class="cy">EndMethod</span><br>&nbsp;<br>
+ 
+<span class="cy">Method</span><span class="cw"> Fire( WhichSlot )</span><br>
+<span class="cy">If</span><span class="cw"> WhichSlot > Slot.Count() Return</span><br>
+<span class="cy">If</span><span class="cw"> WhichSlot <</span><span class="cb"> 1</span><span class="cy"> return</span><span class="clb"> 'our slots start from 1!</span><br>
+<span class="cy">local</span><span class="cw"> missile:tmissile = GetSlot( WhichSlot ).Fire()</span><br> 
+<span class="cy">EndMethod</span><br>&nbsp;<br>
+ 
+<span class="cy">Function Create:WarTank( Name$, WeaponSlots=</span><span class="cb">1</span><span class="cw"> )</span><br>
+<span class="cy">Local</span><span class="cw"> Tank:WarTank =</span><span class="cy"> New</span><span class="cw"> WarTank</span><br>
+<span class="cw">Tank.Name = Name</span><br>&nbsp;<br>
+ 
+<span class="clb">'Create this tanks WeaponSlots ------</span><br>
+<span class="cy">For Local</span><span class="cw"> n =</span><span class="cb"> 1</span><span class="cy"> To</span><span class="cw"> WeaponSlots</span><br>
+<span class="cw">Tank.Slot.AddLast(</span><span class="cy"> New</span><span class="cw"> WeaponSlot )</span><br>
+<span class="cy">Next</span><br> 
+<span class="clb">'-------------------------------------</span><br>&nbsp;<br>
+ 
+<span class="clb">'Put the tank in the global tanklist</span><br> 
+<span class="cw">TankList.AddLast( Tank )</span><br>
+<span class="cy">Return</span><span class="cw"> Tank</span><br>
+<span class="cy">EndFunction</span><br>
+<span class="cy">End Type'-------------------------------------------</span><br>&nbsp;<br>
+
+<span class="clb">'W E A P O N  S L O T</span><br>
+<span class="clb">'Contains missiles which can be loaded or fired</span><br> 
+<span class="cy">Type</span><span class="cw"> WeaponSlot</span><br>&nbsp;<br> 
+
+<span class="cy">Field</span><span class="cw"> Missile:</span><span class="cy">TList =</span><span class="cy"> New TList</span><span class="clb"> ' Contains All Missiles in this Slot</span><br>
+<span class="cy">Field</span><span class="cw"> Number</span><span class="clb">     ' The Slot Number or ID</span><br>&nbsp;<br>
+ 
+<span class="clb">' F I R E</span><br>
+<span class="clb">'_________________________________________________________________</span><br>
+<span class="clb">'</span><br>
+<span class="clb">' Use: Fires a missile if you got availible ammo else it don't</span><br>
+<span class="clb">'_________________________________________________________________</span><br>
+<span class="cy">Method</span><span class="cw"> Fire:TMissile()</span><br> 
+<span class="cy">If</span><span class="cw"> Missile.Count() <=</span><span class="cb"> 0</span><span class="cy"> Print</span><span class="cg"> "No Ammo in Slot "</span><span class="cw">+Number</span><span class="cy"> Return</span><br> 
+<span class="clb">'The above would be the same as the slot's ammo</span><br> 
+<span class="cy">Local</span><span class="cw"> MissileToFire:TMissile</span><br>
+<span class="cw">MissileToFire = TMissile( Missile.First() )</span><span class="clb"> 'Get first missile</span><br>
+<span class="cw">MissileToFire.Launch()</span><span class="clb"> 'Fire the missile</span><br>
+<span class="cw">Missile.Remove( MissileToFire )</span><br>
+<span class="cy">Return</span><span class="cw"> MissileToFire</span><br> 
+<span class="cy">EndMethod</span><br> 
+<span class="clb">'_________________________________________________________________</span><br> 
+<span class="clb">'</span><br>
+<span class="clb">' L O A D</span><br>
+<span class="clb">'_________________________________________________________________</span><br>
+<span class="clb">'</span><br>
+<span class="clb">' Use: Loads one or more missiles</span><br>
+<span class="clb">'_________________________________________________________________</span><br>
+<span class="cy">Method</span><span class="cw"> Load( MissileName$, Count =</span><span class="cb"> 1</span><span class="cw"> )</span><br>
+<span class="cy">For Local</span><span class="cw"> n = </span><span class="cb">1</span><span class="cy"> To</span><span class="cw"> Count</span><br>
+<span class="cy">Local</span><span class="cw"> NewMissile:TMissile</span><br>
+<span class="cw">NewMissile =</span><span class="cy"> New</span><span class="cw"> TMissile</span><br>
+<span class="cw">NewMissile.Name = MissileName</span><br>
+<span class="cw">Missile.AddLast( NewMissile )</span><br>
+<span class="cy">Next</span><br>
+<span class="cy">EndMethod</span><br> 
+<span class="clb">'_________________________________________________________________</span><br> 
+<span class="cy">EndType</span><br>&nbsp;<br>
+ 
+<span class="clb">' T M I S S I L E</span><br> 
+<span class="cy">Type</span><span class="cw"> TMissile</span><br>
+<span class="cy">Field</span><span class="cw"> Name$ =</span><span class="cg"> "Unknown Missile"</span><br>
+<span class="cy">Method</span><span class="cw"> Launch()</span><span class="cy"> EndMethod</span><br> 
+<span class="cy">EndType</span></td></tr>
+<tr><td class="idx" colspan="2"><br>
+The above example is pretty advanced so if you don't understand everything above do not worry, keep reading and learning, one day you might.
+</td></tr>
+<tr><td colspan="2">&nbsp;</td></tr>
+<tr><td class="idx2"><a href="wave1.html">To Index</a> | <a href="wave13.html">Next Page</a></td>
+	<td align="right" class="cap">page 12</td></tr>
+</table>
+</body>
+
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave12.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+</html>

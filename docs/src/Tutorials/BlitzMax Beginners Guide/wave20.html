@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave20.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+<HEAD>
+<TITLE>Page 20</TITLE>
+<META http-equiv="Content-type" content="text/html; charset=iso-8859-1">
+<link href="wave.css" type=text/css rel=stylesheet>
+</head>
+<body bgcolor="#FFFFFF">
+<table border="0" width="700" align="center" cellspacing="0">
+<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr><td class="cap" colspan="2">Animations</td></tr>
+<tr><td class="idx2" colspan="2">
+Animations are several images loaded side by side. When you draw your Animation Image you choose which frame you want to draw. In this way you can with ease draw animations in your game. This is not tricky at all. When you load an animation you need one image containing all your animation frames. It is also required that all these frames have the same size. Let's say you have an explosion 50x50 with 25 frames.</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">LoadAnimImage</span><span class="cw">(</span><span class="cg">"Path$,width,height,start,count"</span><span class="cw">)</span><br>
+<span class="clb">'Frames "start" at 0 for the first image, while "count" has to be at least 1, (at least 1 frame).</span><br>&nbsp;<br>
+
+<span class="clb">'To load this image as an animation you can do as follows:</span><br>
+<span class="cw">My_Animation =</span><span class="cy"> LoadAnimImage</span><span class="cw">(</span><span class="cg">"/Gfx/Image.bmp"</span><span class="cw">,</span><span class="cb">25</span><span class="cw">,</span><span class="cb">25</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">24</span><span class="cw">)</span><br>
+<span class="cy">DrawImage</span><span class="cw">(My_Animation,X,Y,Frame)</span></td></tr>
+<tr><td class="idx2" colspan="2">
+In DrawImage, "frame" goes from 0 to your frame "count", which is what you set it to in LoadAnimImage.<br>&nbsp;<br>
+If you haven't already, go to any paint program you have, throw together a series of pictures side by side. Create an image 250 width x 50 height. Try to use the grid tool or rulers to draw five 50x50 pictures side by side. Try to make it an animation of some sort, perhaps an explosion? 5 frames isn't much but it gives you a good start to work with. Now setup a .bmx file in the same directory as your newly saved animation. I recommend .png as a good format as it is smaller in file-size than a .bmp but it does not distort your image at compression as a .jpg does.<br>&nbsp;<br>You can use the example code at the bottom of this page to test your animation.<br>&nbsp;<br>
+First let's check out IncBin.</td></tr>
+ 
+<tr><td class="cap" colspan="2"><br>Save images in your executable (exe)</td></tr>
+<tr><td class="idx2" colspan="2">
+BlitzMax has a handy function to pack all your multimedia in your exe when you compile. This allows you to supply your game as an exe only. This means that no additional files will be required to play it. It also protects your art from others (not hack proof). And its function is very easy to use.</td></tr>
+<tr><td class="idx2" colspan="2"><br>
+To include a file put this code somewhere at the start of your file:</td></tr>
+<tr><td class="code" colspan="2">
+<span class="cy">Incbin</span><span class="cg"> "directory/filename.bmp"</span><br>&nbsp;<br>
+
+<span class="clb">'Then when you load your images write:</span><br>
+<span class="cy">LoadImage</span><span class="cw">(</span><span class="cg"> "incbin::directory/filename.bmp"</span><span class="cw">)</span></td></tr>
+<tr><td class="idx2" colspan="2">
+The path can be in sub directories if you like, just refer to the same path when you loaded it with Incbin. I have been able to include .png but I'm unsure with .bmp Note: When you LoadImage using incbin:: make sure you spell incbin with small letters only! It's sensitive! When you incbin an image, "MyImage.png", the complier will tell you if the image is not found.</td></tr> 
+<tr><td class="idx2" colspan="2"><br>
+Animation Example, including incbin. Make sure you always Loadimages after Graphics!</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Strict</span><br>
+<span class="cy">Incbin</span><span class="cg"> "ExplosionTest.png"</span><br>
+<span class="cy">Global</span><span class="cw"> Explode =</span><span class="cy"> False</span><br>
+<span class="cy">Global</span><span class="cw"> X =</span><span class="cb"> 50</span><span class="cw">, Y =</span><span class="cb"> 50</span><br>
+<span class="cy">Local</span><span class="cw"> Frame =</span><span class="cb"> 0</span><span class="cw">, XTimes =</span><span class="cb"> 0</span><br>&nbsp;<br>
+
+<span class="cy">Graphics</span><span class="cb"> 800</span><span class="cw">,</span><span class="cb">600</span><span class="cw">,</span><span class="cb">0</span><br>&nbsp;<br>
+ 
+<span class="cy">SetMaskColor</span><span class="cb"> 255</span><span class="cw">,</span><span class="cb">255</span><span class="cw">,</span><span class="cb">255</span><span class="clb"> ' White</span><br>
+<span class="cy">Global</span><span class="cw"> My_Animation:Timage=</span><span class="cy">LoadAnimImage</span><span class="cw">(</span><span class="cg">"ExplosionTest.png"</span><span class="cw">,</span><span class="cb">50</span><span class="cw">,</span><span class="cb">50</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">5</span><span class="cw">)</span><br>
+<span class="cy">If</span><span class="cw"> My_Animation =</span><span class="cy"> Null Then DebugLog</span><span class="cg"> "Image could Not load - Check pathAnd filename"</span><span class="cw"> ;</span><span class="cy"> End</span><br>&nbsp;<br>
+ 
+<span class="cy">Repeat</span><br> 
+<span class="cy">If</span><span class="cw"> Explode =</span><span class="cy"> True</span><br>
+<span class="cy">DrawImage</span><span class="cw">(My_Animation,X,Y,Frame)</span><br>
+<span class="cw">Frame:+</span><span class="cb">1</span><br>
+<span class="cy">If</span><span class="cw"> Frame =</span><span class="cb"> 5</span><span class="cw"> Frame =</span><span class="cb"> 0</span><span class="cw"> ; XTimes:+</span><span class="cb">1</span><br>
+<span class="cy">If</span><span class="cw"> XTimes ></span><span class="cb"> 25</span><span class="cy"> Then</span><span class="cw"> Explode =</span><span class="cy"> False</span><span class="cw"> ; XTimes =</span><span class="cb"> 0</span><br>
+<span class="cy">EndIf</span><br>&nbsp;<br>
+ 
+<span class="clb">'Explode at Mouse Left Click</span><br> 
+<span class="cy">If KeyHit</span><span class="cw">(</span><span class="cb">1</span><span class="cw">)</span><br>
+<span class="cw">Explode =</span><span class="cy"> True</span><br>
+<span class="cw">X =</span><span class="cy"> MouseX</span><span class="cw">() ; Y =</span><span class="cy"> MouseY</span><span class="cw">()</span><br>
+<span class="cw">Frame =</span><span class="cb"> 0</span><br> 
+<span class="cy">EndIf</span><br>
+<span class="cy">Flip</span><span class="cw"> ;</span><span class="cy"> Cls</span><br>
+<span class="cy">Until KeyDown</span><span class="cw">(Key_Escape)</span>
+
+</td></tr>
+<tr><td colspan="2">&nbsp;</td></tr>
+<tr><td class="idx2"><a href="wave1.html">To Index</a> | <a href="wave21.html">Next Page</a></td>
+	<td align="right" class="cap">page 20</td></tr>
+</table>
+</BODY>
+
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave20.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+</HTML>

@@ -1,0 +1,93 @@
+.idx{
+	font-family:verdana;
+	font-size:11px;
+	line-height:16px;
+	text-indent:8px;
+	}
+	
+.idx2{
+	font-family:verdana;
+	font-size:11px;
+	line-height:16px;
+	}
+
+.cap{
+	font-family:verdana;
+	font-size:14px;
+	font-weight:bold;
+	}
+	
+.cap2{
+	font-family:verdana;
+	font-size:13px;
+	font-weight:bold;
+	}
+	
+.copy{
+	font-family:verdana;
+	font-size:11px;
+	font-style:italic;
+	color:#666666;
+	}
+	
+.code{
+	padding: 10px;
+	font-family:courier;
+	font-size:11px;
+	line-height:16px;
+	background-color:#112a40;
+	}
+	
+.cy{
+	font-family: courier;
+	color:#ffee30;
+	}
+
+.hy{
+	font-family: courier;
+	color:#ffee30;
+	background-color:#112a40;
+	}	
+
+.cb{
+	font-family: courier;
+	color:#0dcef9;
+	}
+
+.clb{
+	font-family: courier;
+	color:#b0f5ff;
+	}
+
+.cg{
+	font-family: courier;
+	color:#09c538;
+	}
+
+.hg{
+	font-family: courier;
+	color:#09c538;
+	background-color:#112a40;
+	}
+		
+.cw{
+	font-family: courier;
+	color:#ffffff;
+	}
+	
+.hw{
+	font-family: courier;
+	color:#ffffff;
+	background-color:#112a40;
+	}
+			
+.blnk{
+	color: #ff0000;
+	text-decoration: blink;
+	}
+	
+.thru	{
+	text-decoration: line-through;
+	}
+	
+	

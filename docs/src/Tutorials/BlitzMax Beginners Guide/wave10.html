@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave10.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:15 GMT -->
+<head>
+<title>Page 10</title>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
+<link href="wave.css" type=text/css rel=stylesheet>
+</head>
+<body bgcolor="#FFFFFF">
+<table border="0" width="700" align="center" cellspacing="0">
+<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr><td class="cap" colspan="2">Methods</td></tr>
+<tr><td class="idx2" colspan="2">
+A type can have more than Global, Const and Fields. It can have methods and functions. A method is usually an action of the Type, it could be FireShot() or Explode() or Turn() or Update(). The difference between a Type-Method and a Type-Function is that Methods use the Type itself and can therefore refer directly to a field which reduce code.</td></tr>
+<tr><td class="idx2" colspan="2">&nbsp;</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">>Type</span><span class="cw"> TWizard</span><br>
+<span class="cy">>Field</span><span class="cw"> X, Y, Mana</span><br>
+<span class="cy">>Method</span><span class="cw"> Teleport( X1, Y1 )</span><br>
+<span class="cw">X = X1; Y = Y1</span><br> 
+<span class="cy">>End Method</span><br>
+<span class="cy">>End Type</span></td></tr>
+<tr><td class="idx2" colspan="2">&nbsp;</td></tr>
+<tr><td class="idx2" colspan="2">
+The previous code is the same as the following:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">>Type</span><span class="cw"> TWizard</span><br>
+<span class="cy">>Field</span><span class="cw"> X, Y, Mana</span><br>
+<span class="cy">>Method</span><span class="cw"> Teleport( X, Y )</span><br>
+<span class="cy">>Self</span><span class="cw">.X = X;</span><span class="cy">> Self.</span><span class="cw">Y = Y</span><br> 
+<span class="cy">>End Method</span><br>
+<span class="cy">>End Type</span></td></tr>
+<tr><td class="idx2" colspan="2">&nbsp;</td></tr>
+<tr><td class="idx2" colspan="2"> 
+We could also have used a function but then it would have looked like this:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">>Type</span><span class="cw"> TWizard</span><br>
+<span class="cy">>Field</span><span class="cw"> X, Y, Mana</span><br>
+<span class="cy">>Function</span><span class="cw"> Teleport( Wizard:TWizard, X, Y )</span><br>
+<span class="cw">Wizard.X = X; Wizard.Y = Y</span><br> 
+<span class="cy">>End Function</span><br>
+<span class="cy">>End Type</span></td></tr>
+<tr><td class="idx2" colspan="2">&nbsp;</td></tr>
+<tr><td class="idx2" colspan="2">
+The obvious gain of methods is that the type and its fields (the type that the method resides in) are available to the method. In functions we need to supply the type and to refer to the field of this type we need to use a handle, like Wizard.X instead of just X. To use a method we need an object. If we don't have any objects we can't reach the method. To call a method you use ObjectName.MethodName( Parameters,.. ), Example: MyWizard.Teleport( 50,50 )</td></tr>
+<tr><td class="idx2" colspan="2"><br> 
+I altered the previous Tank-example and added two methods, Draw() and Move():</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Strict</span><br>
+<span class="cy">Global</span><span class="cw"> Number_of_Tanks =</span><span class="cb"> 20</span><br>&nbsp;<br>
+<span class="cy">Type</span><span class="cw"> TankType</span><span class="clb"> 'Renamed from TTank to TankType</span><br>
+<span class="cy">Field</span><span class="cw"> X#,Y#</span><br>
+<span class="cy">Field</span><span class="cw"> Dir, Armor =</span><span class="cb"> 100</span><br>
+<span class="cy">Field</span><span class="cw"> Speed# =</span><span class="cb"> 0.2</span><span class="cw">, Size =</span><span class="cb"> 25</span><br>
+<span class="cy">Global</span><span class="cw"> ModelName$ =</span><span class="cg"> "Delta 11"</span><br>&nbsp;<br>
+<span class="cy">Method</span><span class="cw"> Draw()</span><span class="cy"> DrawRect</span><span class="cw">( X, Y, Size, Size )</span><span class="cy"> End Method</span><br>
+<span class="cy">Method</span><span class="cw"> Move() X:+Speed*</span><span class="cy">Cos</span><span class="cw">( Dir ); Y:+Speed*</span><span class="cy">Sin</span><span class="cw">( Dir )</span><span class="cy"> End Method</span><br>
+<span class="cy">End Type</span><br>&nbsp;<br>
+<span class="cy">Graphics</span><span class="cb"> 800,600,0</span><span class="clb"> 'Windowmode this time</span><br>&nbsp;<br>
+<span class="cy">Global</span><span class="cw"> TankList:</span><span class="cy">TList</span><span class="cw"> =</span><span class="cy"> CreateList</span><span class="cw">()</span><br>&nbsp;<br>
+<span class="cy">For Local</span><span class="cw"> N =</span><span class="cb"> 1</span><span class="cy"> To</span><span class="cw"> Number_of_Tanks</span><br>
+<span class="cy">Local</span><span class="cw"> NewTank:TankType</span><br>
+<span class="cw">NewTank =</span><span class="cy"> New</span><span class="cw"> TankType</span><br>
+<span class="cw">NewTank.Armor =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 5</span><span class="cw"> )*</span><span class="cb">10</span><span class="cw"> +</span><span class="cb"> 150</span><br>
+<span class="cw">NewTank.X =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 5, 800</span><span class="cw"> ) ; NewTank.Y =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 5, 600</span><span class="cw"> )</span><br>
+<span class="cw">NewTank.Dir =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 0, 360</span><span class="cw"> )</span><br>
+<span class="cw">TankList.AddLast( NewTank )</span><br>
+<span class="cy">Next</span><br>&nbsp;<br>
+<span class="cy">While Not KeyDown</span><span class="cw">(Key_Escape)</span><br>&nbsp;<br>
+<span class="cy">For Local</span><span class="cw"> Tank:TankType =</span><span class="cy"> EachIn</span><span class="cw"> TankList</span><br>
+<span class="cw">Tank.Draw()</span><br>
+<span class="cy">DrawText</span><span class="cg"> "Number of Tanks : "</span><span class="cw">+TankList.Count(),</span><span class="cb"> 20, 20</span><br>
+<span class="cy">DrawText</span><span class="cg"> "Press ESC to exit"</span><span class="cw">,</span><span class="cb"> 20, 40</span><span class="cw"> Tank.Move()</span><br>
+<span class="cy">Next</span><br>&nbsp;<br>
+<span class="cy">Flip;Cls</span><br>
+<span class="cy">Wend</span></td></tr>
+ <tr><td class="idx2" colspan="2"><br>
+There is a special method. The Method New() which is run each time you create an instance of that type.</td></tr>
+<tr><td colspan="2">&nbsp;</td></tr>
+<tr><td class="idx2"><a href="wave1.html">To Index</a> | <a href="wave11.html">Next Page</a></td>
+	<td align="right" class="cap">page 10</td></tr>
+</table>
+</body>
+
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave10.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:15 GMT -->
+</html>
