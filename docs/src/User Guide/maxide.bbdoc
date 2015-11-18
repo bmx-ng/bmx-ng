@@ -82,12 +82,12 @@ and by navigating through the debug pane you can inspect your programs variables
 * Previous File | Switch to previous open source file.
 *
 *
+* Import BB Project | Import and convert a BlitzPlus or Blitz3D project.
 * IDE Options | Open the IDE options panel.
 * Project Manager | Open the project manager panel.
-* Import BB Project | Import and convert a BlitzPlus or Blitz3D project.
 *
 *
-* Print | Print current souorce file.
+* Print | Print current source file.
 *
 *
 * Exit | Close down and exit the IDE.
@@ -115,6 +115,9 @@ and by navigating through the debug pane you can inspect your programs variables
 * Find Next | Find next occurance of text.
 * Replace | Find and replace text.
 * Goto Line | Go to a line in the current source file.
+*
+*
+* Find in Files | Search many files for an occurance of text
 ]
 
 + The Program menu
@@ -127,22 +130,21 @@ and by navigating through the debug pane you can inspect your programs variables
 * Step | In debug mode, step over next program statement.
 * Step In | In debug mode, step into next program statement.
 * Step Out | In debug mode, step out of current block or function.
-* Halt | Stop current build or program run.
+* Terminate | Stop current build or program run.
 * Build Options:Quick Build | Enable or disable quick builds. The quick build feature causes the compiler to only recompile modified files.
 * Build Options:Debug Build | Enable or disable debug builds. Debug builds performing extra error checking at runtime, at the cost of some execution speed.
+* Build Options:Threaded Build | Build app with threading support
 * Build Options:Build GUI App | Instructs BlitzMax to build a 'GUI' application. Disable this if you are building a lightweight, text-only applications.
+* Build Options:Verbose Build | Output more information to console when building/compiling
 *
 *
 * Lock Build File | Lock the current source file for future @build and @{build and run} operations. This can be useful if you have a multifile project and are editing several source files but only ever rebuilding one of them.
 * Unlock Build File | Unlock the currently locked build file.
 *
 *
-* Synchronize Modules | Perform an online update of all Blitzmax modules.
-*
-*
 * Build Modules | Build any recently modified modules.
 * Rebuild All Modules | Rebuild all modules from scratch.
-* Document Modules | Rebuild module documentation.
+* Rebuild Documenation | Rebuild module documentation.
 ]
 
 + The Help menu

@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave13.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+<head>
+<title>Page 13</title>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
+<link href="wave.css" type=text/css rel=stylesheet>
+</head>
+<body bgcolor="#FFFFFF">
+<table border="0" width="700" align="center" cellspacing="0">
+<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr><td class="cap" colspan="2">Extend Types</td></tr>
+<tr><td class="idx2" colspan="2">
+I assume that you are aware that fields, globals, functions and methods inside Types can have the same names as methods, functions in other Types. It is possible to have Car.Create() Tank.Create() and Animal.Create(); three methods which are completely different but have the same name.<p> 
+I have decided I'm going to use a spaceship approach in this example because it feels game related and it is easy to picture and explain the type-structure when it comes to spaceships. First I'm going to setup an example where I don't use inheritance. Then I'll use inheritance to hopefully simplify the example.</td></tr>
+<tr><td class="cap2" colspan="2">Example Without Inheritance:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="clb">'This is a fighter a quick and small ship</span><br>
+<span class="cy">Type</span><span class="cw"> Fighter</span><br>
+<span class="cy">Field</span><span class="cw"> X#,Y#</span><br>
+<span class="cy">Field</span><span class="cw"> Xspeed#,Yspeed#</span><br>
+<span class="cy">Field</span><span class="cw"> ID%</span><br>
+<span class="cy">Field</span><span class="cw"> Armor%</span><br>
+<span class="cy">Field</span><span class="cw"> Fleet$,Name$</span><br>
+<span class="cy">Field</span><span class="cw"> WeaponSelected$</span><br>
+<span class="cy">Global</span><span class="cw"> Gfx_Ship</span><span class="clb"> 'Graphics</span><br>
+<span class="cy">Global</span><span class="cw"> Gfx_Thrusters</span><br>
+<span class="cy">Global</span><span class="cw"> Sfx_Thrust</span><span class="clb"> ' Sound</span><br>
+<span class="cy">Global</span><span class="cw"> Sfx_Explode</span><br>
+<span class="cy">Field</span><span class="cw"> SheildRechargeRate#=</span><span class="cb">0.1</span><br>
+<span class="cy">Field</span><span class="cw"> Energy%=</span><span class="cb">500</span><br>
+<span class="cy">Field</span><span class="cw"> WeaponUpgrade%</span><br>
+<span class="cy">Field</span><span class="cw"> PowerUpgrade%</span><br>
+<span class="cy">Field</span><span class="cw"> Fuel%</span><br>
+<span class="cy">Field</span><span class="cw"> Scanner</span><br>&nbsp;<br>
+
+<span class="cy">Method</span><span class="cw"> DockWithCruiser()</span><br>
+<span class="clb">'...</span><br>
+<span class="cy">End Method</span><br>&nbsp;<br>
+
+<span class="cy">Method</span><span class="cw"> SelfDestruct()</span><br>
+<span class="cw">Armor =</span><span class="cb"> 0</span><br>
+<span class="cy">PlaySound</span><span class="cw"> Sfx_Explode</span><br>
+<span class="cw">Explosion( X, Y)</span><br>
+<span class="cy">End Method</span><br>&nbsp;<br>
+
+<span class="cy">Method</span><span class="cw"> Update()</span><br>
+<span class="cw">X:+Xspeed ; Y:+Yspeed</span><br>
+<span class="cy">End Method</span><br>&nbsp;<br>
+
+<span class="cy">End Type</span><br>&nbsp;<br>
+
+<span class="clb">'Cruisers are big support ships</span><br>
+<span class="cy">Type</span><span class="cw"> Cruiser</span><br>
+<span class="cy">Field</span><span class="cw"> X#,Y#</span><br>
+<span class="cy">Field</span><span class="cw"> Xspeed#,Yspeed#</span><br>
+<span class="cy">Field</span><span class="cw"> ID%</span><br>
+<span class="cy">Field</span><span class="cw"> Armor%</span><br>
+<span class="cy">Field</span><span class="cw"> Fleet$,Name$</span><br>
+<span class="cy">Field</span><span class="cw"> WeaponSelected$</span><br>
+<span class="cy">Global</span><span class="cw"> Gfx_Ship</span><span class="clb"> 'Graphics</span><br>
+<span class="cy">Global</span><span class="cw"> Gfx_Thrusters</span><br>
+<span class="cy">Global</span><span class="cw"> Sfx_Thrust</span><span class="clb"> ' Sound</span><br>
+<span class="cy">Global</span><span class="cw"> Sfx_Explode</span><br>
+<span class="cy">Field</span><span class="cw"> SheildPower</span><br>
+<span class="cy">Field</span><span class="cw"> Reactor$</span><br>
+<span class="cy">Field</span><span class="cw"> CrewNR%</span><br>
+<span class="cy">Field</span><span class="cw"> TractorBeamUpgrade%</span><br>
+<span class="cy">Field</span><span class="cw"> CloakingDeviceON=</span><span class="cy">False</span><br>
+<span class="cy">Field</span><span class="cw"> MissileSlots[</span><span class="cb">4</span><span class="cw">]</span><br>&nbsp;<br>
+ 
+<span class="cy">Method</span><span class="cw"> UseTractor(F:Fighter)</span><br>
+<span class="clb">'...</span><br>
+<span class="cy">End Method</span><br>&nbsp;<br>
+
+<span class="cy">Method</span><span class="cw"> UseTractor(C:Cruiser)</span><br>
+<span class="clb">'...</span><br>
+<span class="cy">End Method</span><br>&nbsp;<br>
+ 
+<span class="cy">Method</span><span class="cw"> SelfDestruct()</span><br>
+<span class="cw">Armor =</span><span class="cb"> 0</span><br>
+<span class="cy">PlaySound</span><span class="cw"> Sfx_Explode</span><br> 
+<span class="cw">Explosion( X, Y)</span><br>
+<span class="cy">End Method</span><br>&nbsp;<br>
+
+<span class="cy">Method</span><span class="cw"> Update()</span><br>
+<span class="cw">X:+Xspeed ; Y:+Yspeed</span><br>
+<span class="cy">End Method</span><br>&nbsp;<br>
+
+<span class="cy">End Type</span></td></tr>
+<tr><td class="idx2" colspan="2"><br> 
+With OO inheritance I would first create a Type Ship. Then I would extend this Ship into a Cruiser and a Fighter. You can also go a step longer and first create a type SpaceObject, The Ship can then extend SpaceObject. Comets and missiles can also extend SpaceObject in that case.<br>&nbsp;</tr></td>
+<tr><td class="cap2" colspan="2">Example Using Inheritance:</td></tr>
+<tr><td class="code" colspan="2">   
+<span class="cy">Type</span><span class="cw"> Ship</span><br>
+<span class="cy">Field</span><span class="cw"> X#,Y#</span><br>
+<span class="cy">Field</span><span class="cw"> Xspeed#,Yspeed#</span><br>
+<span class="cy">Field</span><span class="cw"> ID%</span><br>
+<span class="cy">Field</span><span class="cw"> Armor%</span><br>
+<span class="cy">Field</span><span class="cw"> Fleet$,Name$</span><br>
+<span class="cy">Field</span><span class="cw"> WeaponSelected$</span><br>
+<span class="cy">Global</span><span class="cw"> Gfx_Ship</span><span class="clb"> 'Graphics</span><br>
+<span class="cy">Global</span><span class="cw"> Gfx_Thrusters</span><br>
+<span class="cy">Global</span><span class="cw"> Sfx_Thrust</span><span class="clb"> ' Sound</span><br>
+<span class="cy">Global</span><span class="cw"> Sfx_Explode</span><br>&nbsp;<br>
+
+<span class="cy">Method</span><span class="cw"> SelfDestruct()</span><br>
+<span class="cw">Armor =</span><span class="cb"> 0</span><br>
+<span class="cy">PlaySound</span><span class="cw"> Sfx_Explode</span><br>
+<span class="cw">Explosion( X, Y)</span><br>
+<span class="cy">End Method</span><br>&nbsp;<br>
+ 
+<span class="cy">Method</span><span class="cw"> Update()</span><br>
+<span class="cw">X:+Xspeed ; Y:+Yspeed</span><br>
+<span class="cy">End Method</span><br>&nbsp;<br>
+
+<span class="cy">End Type</span><br>&nbsp;<br>
+
+<span class="cy">Type</span><span class="cw"> Fighter</span><span class="cy"> Extends</span><span class="cw"> Ship</span><br>
+<span class="cy">Field</span><span class="cw"> SheildRechargeRate#=</span><span class="cb">0.1</span><br>
+<span class="cy">Field</span><span class="cw"> Energy%=</span><span class="cb">500</span><br>
+<span class="cy">Field</span><span class="cw"> WeaponUpgrade%</span><br>
+<span class="cy">Field</span><span class="cw"> PowerUpgrade%</span><br>
+<span class="cy">Field</span><span class="cw"> Fuel%</span><br>
+<span class="cy">Field</span><span class="cw"> Scanner</span><br>&nbsp;<br>
+
+<span class="cy">Method</span><span class="cw"> DockWithCruiser()</span><br>
+<span class="clb">'...</span><br>
+<span class="cy">End Method</span><br>&nbsp;<br>
+<span class="cy">End Type</span><br>&nbsp;<br>
+
+<span class="cy">Type</span><span class="cw"> Cruiser</span><span class="cy"> Extends</span><span class="cw"> Ship</span><br>
+<span class="cy">Field</span><span class="cw"> SheildPower</span><br>
+<span class="cy">Field</span><span class="cw"> Reactor$</span><br>
+<span class="cy">Field</span><span class="cw"> CrewNR%</span><br>
+<span class="cy">Field</span><span class="cw"> TractorBeamUpgrade%</span><br>
+<span class="cy">Field</span><span class="cw"> CloakingDeviceON=</span><span class="cy">False</span><br>
+<span class="cy">Field</span><span class="cw"> MissileSlots[</span><span class="cb">4</span><span class="cw">]</span><br> 
+<span class="cy">Method</span><span class="cw"> UseTractor(S:Ship)</span><span class="clb"> 'Accept a cruiser or a Fighter (Any type that extends ship)</span><br>&nbsp;<br>
+<span class="clb">'...</span><br> 
+<span class="cy">End Method</span><br>&nbsp;<br>
+<span class="cy">End Type</span>
+</td></tr>
+<tr><td class="idx2" colspan="2"><br> 
+If we look at fighter it will have all fields, methods and functions that ship has plus the new ones in the extended Fighter-Type. F:Fighter = New Fighter; for the programmer this fighter will look just like the Fighter in the first example. An object oriented code will make it easier to sort out stuff like this. In this sample I used some dummy methods but when you do even medium size games the size of your types and the number of their methods will be extensive. So an OO approach is highly recommended! I would also suggest that you use OO when doing small games. If you add the Ship-type to a list each time a new ship is created, you'll be able to loop thru every Ship but you'll also be able to loop every fighter or every cruiser. This is a fast and easy way to access a lot of objects in real-time.<p>OO also has the plus side that you can easily transport code from one project to another. Let's say you are making another space game. Just move your Ship-Type to that file, implement it using your functions and methods and reuse your code in a fast and quite simple way. You'll soon discover (if you haven't already) that parts of your games/apps will almost be stand-alone and can be used in several other games/apps. Then you can make a module of that part and implement it as a part of BlitzMax. There is already a tutorial on how to create your own module in BlitzMax. I recommend you check it out. 
+</td></tr>
+<tr><td colspan="2">&nbsp;</td></tr>
+<tr><td class="idx2"><a href="wave1.html">To Index</a> | <a href="wave14.html">Next Page</a></td>
+	<td align="right" class="cap">page 13</td></tr>
+</table>
+</body>
+
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave13.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave8.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+<head>
+<title>Page 8</title>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
+<link href="wave.css" type=text/css rel=stylesheet>
+</head>
+<body bgcolor="#FFFFFF">
+<table border="0" width="700" align="center" cellspacing="0">
+<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr><td class="cap" colspan="2">Random</td></tr>
+<tr><td class="idx2" colspan="2">
+A most useful command is Rand(A, B) which creates a Random value between A and B.</td></tr>
+<tr><td class="idx2" colspan="2">Example:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cw">Test =</span><span class="cy"> Rand</span><span="cw">(</span>
+	<span class="cb">1,3</span><span class="cw">)</span></td></tr>
+<tr><td class="idx2" colspan="2">
+This will set test to 1 or 2 or 3. If you call Rand(A) with one parameter only it'll return a value between 1 and A.<br>
+This means Rand(2) should give 1 or 2.<br>&nbsp;</td></tr> 
+<tr><td class="cap" colspan="2">Arrays</td></tr>
+<tr><td class="idx2" colspan="2">
+Arrays are a way to store several variables at one place.</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Local</span><span class="cw"> NameList$[] = [</span>
+	<span class="cg"> "Dawn" , "Trac" , "Fire" ,"Nitro" ,"Nex"</span><span class="cw">]</span><td></tr>
+<tr><td class="idx2" colspan="2"> 
+This creates an array with 5 strings. All strings set.<br>&nbsp;</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cw">Text$ = NameList[</span><span class="cb">2</span><span class="cw">]</span></td></tr>
+<tr><td class="idx2" colspan="2"> 
+NameList[2] refers to element 2 of Array NameList. Arrays start at 0, so this would give us "Fire"<br>&nbsp;</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cw">NameList[</span><span class="cb">0</span><span class="cw">] = </span><span class="cg">"None"</span></td></tr>
+<tr><td class="idx2" colspan="2"> 
+Above would set element 0 to "None" (this element was previously "Dawn")<p> 
+Arrays have a great feature!</td></tr>
+<tr><td class="idx2" colspan="2">They can be used in Eachin-loops, so that you can retrieve each element of the array.</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">For Local</span><span class="cw"> Name$ = </span><span class="cy">EachIn</span><span class="cw"> NameList</span><br> 
+<span class="clb">'The variable "Name" will store each element of this array</span><br>
+<span class="cy">Print</span><span class="cw"> Name</span><span class="clb"> 'Print each string element</span><br>
+<span class="cy">Next</span></td></tr>
+<tr><td class="idx2" colspan="2"><br>
+Here is a sample of how to set arrays on the fly. It's a very handy way to setup arrays.</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Global</span><span class="cw"> Name$[] </span><span class="clb">'Declare an Array!</span><br>
+<span class="cy">Print</span><span class="cg"> "Start Array Test ----------"</span><br>
+<span class="cw">Name = [</span><span class="cg">"Torm","Arth","Yire","Float","Stew","Sword","Dew","Flash","Lost","Temore"</span><span class="cw">]</span><br>
+<span class="cw">PrintArray(Name)</span> 
+<span class="cy">Print</span><span class="cg"> "---Set this Array to this instead----------------"</span><br>
+<span class="cw">Name = [</span><span class="cg">"Storm","Earth","Fire","Water","Moon","Sunshine"</span><span class="cw">]</span><br>
+<span class="cw">PrintArray(Name)</span><br>&nbsp;<br> 
+<span class="cy">Function</span><span class="cw" PrintArray(Arr$[]</span><br>
+<span class="cy">For Local</span><span class="cw">S2$ =</span><span class="cy"> EachIn</span><span class="cw"> Arr</span><br> 
+<span class="cy">If</span><span class="cw"> S2 <></span><span class="cg"> ""</span>
+	<span class="cy"> Print</span><span class="cw"> S2$</span><br> 
+<span class="cy">Next</span><br> 
+<span class="cy">Print</span><span class="cg"> "Array Length was : "</span><span class="cw">+Arr.length</span><br>                                                                                                                                                                                                                                                                                                                                                       
+<span class="cy">EndFunction</span></td></tr>
+<tr><td class="idx2" colspan="2"><a name="p8_1">&nbsp;</td></tr>
+<tr><td class="cap" colspan="2">Arrays with Multiple Dimensions</td></tr>
+<tr><td class="idx2" colspan="2">
+An Array can have more than one dimension. For example Local Grid[3,3] which would create a 2D (Two Dimension) array called Grid with 3x3 integer elements. We can store 9 different variables in this array. A 2D array is like a table or matrix with rows and columns. While a 1D array would only have 1 row but several columns a 2D array has several columns and several rows. See for yourself:</td></tr>
+<tr><td align="center"><img src="images/array1d.png"></td>
+	<td class="idx2">This is a normal 1D array. It's length is 3, which is the number of columns. Declare it: MyArray[3]</td></tr>
+<tr><td align="center"><img src="images/array2d.png"></td>
+	<td class="idx2">This is a 2D array. Declare it: Local MyArray[3,3]. To get the value of the element in the middle go, MyArray[1,1]<p> 
+	An element in an array can (Ex. MyArray[0,0] ) be used just as an int. Ex. MyArray[0,0] :+ 1</td></tr>
+<tr><td class="idx2" colspan="2"> 
+To access one slot in the array, A = Grid[X,Y], where X,Y is the element's position. If we want to loop thru all elements in this array we'll have to use a double For-Next loop. All elements in an Array have to be of the same type!</td></tr> 
+<tr><td class="code" colspan="2">
+<span class="cy">Local</span><span class="cw"> Grid[</span><span class="cb">3,3</span><span class="cw">]</span>
+<span class="clb"> 'Create an empty 3x3 array called Grid</span><br>
+<span class="cy">For</span><span class="cw"> X =</span><span class="cb"> 0</span><span class="cy"> To</span><span class="cb"> 2</span><br>
+<span class="cy">For</span><span class="cw"> Y =</span><span class="cb"> 0</span><span class="cy"> To</span><span class="cb"> 2</span><span class="cw"> Grid[X,Y] =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb">9</span><span class="cw">)</span><span class="clb"> 'Sets each element to a random value from 1 to 9</span><br> 
+<span class="cy">Next</span><br>
+<span class="cy">Next</span><br>
+<span class="cy">Print</span><span class="cg"> "Value at Row1 Column1 = "</span><span class="cw">+Grid[</span><span class="cb">0,0</span><span class="cw">]</span><br>
+<span class="cy">Print</span><span class="cg"> "Value at Row1 Column2 = "</span><span class="cw">+Grid[</span><span class="cb">1,0</span><span class="cw">]</span><br>
+<span class="cy">Print</span><span class="cg"> "Value at Row1 Column3 = "</span><span class="cw">+Grid[</span><span class="cb">2,0</span><span class="cw">]</span><br>
+<span class="cy">Print</span><span class="cg"> "Value at Row2 Column1 = "</span><span class="cw">+Grid[</span><span class="cb">0,1</span><span class="cw">]</span><br>
+<span class="cy">Print</span><span class="cg"> "Value at Row2 Column2 = "</span><span class="cw">+Grid[</span><span class="cb">1,1</span><span class="cw">]</span><br>
+<span class="cy">Print</span><span class="cg"> "Value at Row2 Column3 = "</span><span class="cw">+Grid[</span><span class="cb">2,1</span><span class="cw">]</span><br>
+<span class="cy">Print</span><span class="cg"> "Value at Row3 Column1 = "</span><span class="cw">+Grid[</span><span class="cb">0,2</span><span class="cw">]</span><br>
+<span class="cy">Print</span><span class="cg"> "Value at Row3 Column2 = "</span><span class="cw">+Grid[</span><span class="cb">1,2</span><span class="cw">]</span><br>
+<span class="cy">Print</span><span class="cg"> "Value at Row3 Column3 = "</span><span class="cw">+Grid[</span><span class="cb">2,2</span><span class="cw">]</span></td></tr>
+<tr><td class="idx2" colspan="2"><br> 
+To Print the above in a more optimized form you could instead write:</td></tr>
+<tr><td class="code" colspan="2">
+<span class="cy">For</span><span class="cw"> X =</span><span class="cb"> 0</span><span class="cy"> To</span><span class="cb"> 2</span><br>
+<span class="cy">For</span><span class="cw"> Y =</span><span class="cb"> 0</span><span class="cy"> To</span><span class="cb"> 2</span><br>
+<span class="cy">Print</span><span class="cw"> Grid[X,Y]</span><br>
+<span class="cy">Next</span><br>
+<span class="cy">Next</span></td></tr>
+<tr><td class="idx2" colspan="2"><a name="p8_2">&nbsp;</td></tr>
+<tr><td class="cap" colspan="2">Fake multiple dimesions with arrays in arrays</td></tr>
+<tr><td class="idx2" colspan="2">
+You cannot create multidimensional arrays with set variables, but you can use another side of arrays which mimics the same behavior. It's about creating several 1D arrays and putting them into another array; an array of arrays.</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Local</span><span class="cw"> Grid[][] = [ [</span><span class="cb">1,1,1,2</span><span class="cw">],[</span><span class="cb">7,7</span><span class="cw">],[</span><span class="cb">5,5,5</span><span class="cw">] ]</span></td></tr>
+<tr><td class="idx2" colspan="2">
+This creates three 1D arrays, the first has length 4 the second length 2 and the third length 3.These arrays are used as columns in a bigger array. To get a element we go Grid[ WhichArray ][ PlaceInThisArray ] Example: To get the first 7 in the second array; Grid[ 1 ][ 0 ]. Remember that arrays start from 0, so 1 is the second array and 0 is the first element.Example: To get the last element in the first array; Grid[ 0 ][ 3 ]. Because Grid in the last example is an array of arrays you can access one of the arraya in Grid with just the first []. So if we want the first array: Grid[ 0 ].</td></tr>
+<tr><td class="idx2" colspan="2">Example: Loop and print the first array of our Grid you could write:</td></tr> 
+<tr><td class="code" colspan="2">
+<span class="cy">For</span><span class="cw"> n = <span class="cy">EachIn</span><span class="cw"> Grid[</span><span class="cb">0</span><span class="cw">] <span class="clb">'Try changing the 0 to 1 and 2</span><br>
+<span class="cy">Print</span><span class="cw"> n
+<span class="cy">Next</span></td></tr>
+<tr><td class="idx2" colspan="2"><a name="p8_3">&nbsp;</td></tr>
+<tr><td class="cap" colspan="2">Check length and sort</td></tr>
+<tr><td class="idx2" colspan="2">
+I'll say it again, Arrays are objects. Therefore they may have methods. The two most useful is length and sort. In the first example about arrays add a line: NameList.Sort The array of strings will be sorted alphabetical, int/float arrays by largest value.
+If you provide the argument Sort( false ) you will sort in reversed order.</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Local</span><span class="cw"> Test[] = [</span><span class="cb">7,39,1,24,5,6,3,8,19,5,3,3,2,5,18,8,2,221,3,4,5,63,87,12,92</span><span class="cw">]</span><br>
+<span class="cw">Test.Sort</span><br>
+<span class="cy">For</span><span class="cw"> n =</span><span class="cy"> EachIn </span><span class="cw">Test</span><br> 
+<span class="cy">Print</span><span class="cw"> n</span><br>
+<span class="cy">Next</span><br>
+<span class="cy">Print</span><span class="cg"> "Length "</span><span class="cw">+Test.length</span></td></tr>
+<tr><td class="idx2" colspan="2"><a name="p8_4">&nbsp;</td></tr>
+<tr><td class="cap" colspan="2">From Array to Slice</td></tr>
+<tr><td class="idx2" colspan="2">
+There will be a time where you want a part of an array. Like the first 3 elements or the last 4. BlitzMax has a very easy and elegant solution for this called slices. A slice is a copy of a part of an array.<br>See the code below to figure out how it works, also check the reference.</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Local</span><span class="cw"> Test[] = [</span><span class="cb">0,1,2,3,4,5,6,7,8,9,10,11,12,13</span><span class="cw">]</span><br> 
+<span class="cy">Local</span><span class="cw"> First4[] = Test[..</span><span class="cb">4</span><span class="cw">]</span><span class="clb"> 'Get the four first elements</span><br> 
+<span class="cy">For</span><span class="cw"> n =</span><span class="cy"> EachIn</span><span class="cw"> First4</span><br> 
+<span class="cy">Print</span><span class="cw"> n</span><br>
+<span class="cy">Next</span><br>
+<span class="cy">Print</span><span class="cg"> "Length "</span><span class="cw">+First4.length</span></td></tr>
+ <tr><td class="idx2" colspan="2"><br>
+This can also be used directly in the EachIn-loop:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">For</span><span class="cw"> n =</span><span class="cy"> EachIn</span><span class="cw"> Test[</span><span class="cb">9</span><span class="cw">..]</span><span class="clb"> 'Get all elements from 9 to end of array</span><br>
+<span class="cy">Print</span><span class="cw"> n</span><br>
+<span class="cy">Next</span><br>
+<span class="cy">Print</span><span class="cg"> "Length "</span><span class="cw">+Test[</span><span class="cb">9</span><span class="cw">..].length</span></td></tr>
+<tr><td class="idx2" colspan="2"><br>
+To get all elements (full copy) you could go:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">For</span><span class="cw"> n =</span> <span class="cy">EachIn</span><span class="cw"> Test[</span><span class="cb">0</span><span class="cw">..Test.length]</span><span class="clb"> 'Get all elements</span><br> 
+<span class="cy">Print</span><span class="cw"> n</span><br>
+<span class="cy">Next</span><br>
+<span class="cy">Print</span><span class="cg"> "Length "</span><span class="cw">+Test[</span><span class="cb">0</span><span class="cw">..Test.length].length</span><br>
+<span class="cy">Print</span><span class="cg"> "Length "</span><span class="cw">+Test.length</span></td></tr>
+<tr><td class="idx2" colspan="2"><br> 
+Or you could go Test[..] which means all elements from first to last. To get the last 2 elements you could do:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Local</span><span class="cw"> Last2[] = Test[Test.Length-</span><span class="cb">2</span><span class="cw">..]</span><span class="clb"> 'Get the last two elements</span><br> 
+<span class="cy">For</span><span class="cw"> n =</span><span class="cy"> EachIn</span><span class="cw"> Last2</span><br> 
+<span class="cy">Print</span><span class="cw"> n</span><br>
+<span class="cy">Next</span><br>
+<span class="cy">Print</span><span class="cg"> "Length "</span><span class="cw">+Last2.length</span></td></tr>
+<tr><td class="idx2" colspan="2"><br> 
+The above examples show how powerful and easy arrays are in BMax. I don't use arrays for everything. This is because BMax has another way to store data. A way which is even more flexible and allows for better code and object oriented programming. You can always have arrays in your types...</td></tr>
+<tr><td colspan="2">&nbsp;</td></tr>
+<tr><td class="idx2"><a href="wave1.html">To Index</a> | <a href="wave9.html">Next Page</a></td>
+	<td align="right" class="cap">page 8</td></tr>
+</table>
+</body>
+
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave8.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+</html>

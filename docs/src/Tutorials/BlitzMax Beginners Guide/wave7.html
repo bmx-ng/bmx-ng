@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave7.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+<head>
+<title>Page 7</title>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
+<link href="wave.css" type=text/css rel=stylesheet>
+</head>
+<body bgcolor="#FFFFFF">
+<table border="0" width="700" align="center" cellspacing="0">
+<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr><td class="cap" colspan="2">Input</td></tr>
+<tr><td class="idx2" colspan="2"> 
+Input is an easy and simple part of BlitzMax. If you understood the Loop Example this should be a piece of cake.<br>
+(We're talking about keyboard and mouse input, not the command called input)</td></tr>
+<tr><td class="code" colspan="2">
+<span class="cy">Graphics</span><span class="cb"> 800,600</span><br>
+<span class="cy">Local</span><span class="cw"> X=</span><span class="cb">500</span>
+	<span class="cw">,Y=</span><span class="cb">500</span>
+	<span class="clb">'<- - - - - - - start location</span><br>
+	<span class="clb">'- - - - - - - - - - Loop Start - - - - - - - - - -</span><br>
+<span class="cy">While Not KeyDown</span><span class="cw">(Key_Escape)</span>
+<span class="clb">' This loop is equal to repeat except the condition is at the top.</span><br> 
+<span class="clb">'DRAW___________________________________</span><br>
+<span class="cy">DrawOval</span><span class="cw"> X,Y,</span><span class="cb">8,8</span>
+	<span class="clb"> 'Draw an Oval at X,Y with a width and height of 8</span><br>
+<span class="cy">DrawText</span><span class="cg"> "Press Arrow Keys to go around, Space to Center"</span><span class="cb">,20,20</span><br> 
+<span class="clb">'INPUT___________________________________</span><br>
+<span class="cy">If KeyDown</span><span class="cw">(Key_Left) X:-</span><span class="cb">1</span>
+	<span class="clb">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Decrease X <-- go left</span><br>
+<span class="cy">If KeyDown</span><span class="cw">(Key_Right) X:+</span><span class="cb">1</span>
+	<span class="clb">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'increase x go right --></span><br>
+<span class="cy">If KeyDown</span><span class="cw">(Key_Down) Y:+</span><span class="cb">1</span>
+	<span class="clb">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Increase Y Go Down \/</span><br>
+<span class="cy">If KeyDown</span><span class="cw">(Key_Up) Y:-</span><span class="cb">1</span>
+	<span class="clb">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Decrease Y Go Up /\</span><br>
+<span class="cy">If KeyHit</span><span class="cw">(Key_Space) X=</span><span class="cb">400</span>
+	<span class="cw">; Y=</span><span class="cb">300</span><span class="clb"> 'Set position</span><br>
+<span class="cy">Flip ; Cls</span><br>
+<span class="cy">Wend</span><br> 
+<span class="clb">'- - - - - - - - - - Loop End - - - - - - - - - -</span></td></tr>
+<tr><td class="idx2" colspan="2">
+To optimize the above code add a new variable called speed after Graphics but before the loop. Now replace all 1's with this new variable speed. Go to the place where you have your variable speed (at the top) and set it = 5. If you done it right. You'll notice a speed increase when you drive around. Also note that all keys have names which start with Key_ The a-key is Key_A and so on for all letters and numbers. See the scan code section of the manual for a complete listing of key-codes.</td></tr> 
+<tr><td colspan="2">&nbsp;</td></tr>
+<tr><td class="cap" colspan="2">Functions</td></tr>
+<tr><td class="idx2" colspan="2">
+A function is a way of reusing code. It can also be a way to split up your code into easier to manage parts. They are just the same as in previous Blitz.<br>&nbsp;</td></tr>
+<tr><td class="idx2" colspan="2">A function looks like this:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Function</span><span class="cw"> Collectdata$( Name$, Id, Age )</span><span class="clb"> ' $ means String, nothing means Int</span><br>
+<span class="cy">Local</span><span class="cw"> TotalData$ =</span><span class="cg"> "Name: "</span>
+	<span class="cw"+name+</span><span class="cg"> ", ID: "</span><span class="cw">+id+</span><span class="cg">", Age: "</span>
+	<span class="cw">+Age</span><br>
+<span class="cy">Return</span><span class="cw"> TotalData</span><br> 
+<span class="cy">End Function</span></td></tr>
+<tr><td class="idx2" colspan="2"> 
+To use this function I must pass a name, an id and an age to it.<br>&nbsp;</td></tr>
+<tr><td class="idx2" colspan="2">Take your Input example and add this line below graphics but before the loop:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Local</span><span class="cw"> TestData$ = Collectdata(</span><span class="cg">"Blast"</span>
+	<span class="cb">, 8, 30</span><span class="cw">)</span></td></tr>
+<tr><td class="idx2" colspan="2"><br> 
+Now add the Collectdata Function to the bottom or start of the code.<br>&nbsp;</td></tr>
+<tr><td class="idx2" colspan="2">Add the following inside the loop:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">DrawText</span><span class="cw"> TestData,</span><span class="cb">20,40</span></td></tr>
+<tr><td class="idx2" colspan="2"><br> 
+The name, id and age are the function Collectdata's input parameters. The function returns a String. A function can return any type of data including objects. What type it returns is specified after the function name , the "$" for String.<br>
+If you change this to an int "%" or :Int. Function CollectData:Int(..&larr;Now you will receive a common error:
+"Unable to convert from 'String' to 'Int' ". The function does actually return a string but you specified you wanted it to return an int so BlitzMax will warn you that something is wrong. But this does not mean you can't convert strings to ints, see below.<br>&nbsp;</td></tr> 
+<tr><td class="idx2" colspan="2">To convert strings to integers simply do this:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cy">Local</span><span class="cw"> A% =</span><span class="cy"> Int</span>
+	<span class="cw">(</span><span class="cg"> "123E234 -This is string"</span><span class="cw"> )</span></td></tr>
+<tr><td class="idx2" colspan="2">
+This will result in A = 123, same goes with floats B# = Float(A), This will result in B = 123.0<br>&nbsp;</td></tr> 
+<tr><td class="idx2" colspan="2">Here is another example of a simple function:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="clb">'--------------------- A D D ----------------------<br>
+' Parameters: A,B,C ; numbers to add<br>
+' Returns: The sum of these numbers<br>
+' Note: Only accepts integers<br>
+'_______________________________</span><br> 
+<span class="cy">Function</span><span class="cw"> Add( A% , B% , C% =</span><span class="cb"> 0</span><span class="cw"> )</span><br> 
+<span class="cy">Return</span><span class="cw"> A + B + C</span><br> 
+<span class="cy">End Function</span><br> 
+<span class="clb">'-------------------------------------------------</span></td></tr>
+<tr><td class="idx2" colspan="2"><br>
+Number = Add(2,2,3) 'Will set Number to 7<br>
+Number = Add(2,2) 'Will set Number to 4<br>
+Note that in the function that C=0, which means use C=0 as default if none specified. If the function would have had a C% only, without the =0 part, you would encounter a compiler error doing Add(2,2) but it would work fine to Add(9,9,9). Note that it is important to comment your functions. Write what the parameters are and what it returns and what it does. Always try to keep your functions less than a page in size. If they become larger try to divide them up into several functions. Functions can be used inside other functions. In the long run good comments and frequent use of functions will save a lot of your time! If you don't specify any return parameter as in this latest example, BMax assumes you want to return an int.<br>Nothing = Default = Int.</td></tr>
+
+<tr><td colspan="2">&nbsp;</td></tr>
+<tr><td class="idx2"><a href="wave1.html">To Index</a> | <a href="wave8.html">Next Page</a></td>
+	<td align="right" class="cap">page 7</td></tr>
+</table>
+</body>
+
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave7.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+</html>

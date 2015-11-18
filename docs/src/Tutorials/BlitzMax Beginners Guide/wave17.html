@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave17.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+<HEAD>
+<TITLE>Page 17</TITLE>
+<META http-equiv="Content-type" content="text/html; charset=iso-8859-1">
+<link href="wave.css" type=text/css rel=stylesheet>
+</head>
+<body bgcolor="#FFFFFF">
+<table border="0" width="700" align="center" cellspacing="0">
+<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr><td class="cap" colspan="2">Strings </td></tr>
+<tr><td class="idx2" colspan="2">
+I assume you know the basics of strings. BlitzMax has a quite easy way to deal with strings. It's very similar to arrays. Remember that a string is an object.</td></tr>
+<tr><td class="idx2" colspan="2"><br> 
+Strings use slices just as arrays. To get the first three letters of a string:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cw">Test$ =</span><span class="cg"> "TestString"</span><br>
+<span class="cy">Print</span><span class="cw"> Test[..</span><span class="cb">3</span><span class="cw">]</span><br>
+<span class="cy">Print</span><span class="cw"> Test.length</span><span class="clb"> 'Like arrays</span></td></tr>
+<tr><td class="idx2" colspan="2"><br>
+If you compare two strings you compare the characters of the string. For example "Car" and "car" is not the same because C and c is not equal. Sometimes you want to ignore case-sesitivity.<br>&nbsp;<br>
+One way to do that is to use ToUpper or ToLower.</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cw">Car$ = "Ferrari"</span><br>
+<span class="cy">If</span><span class="cw"> Car.ToLower() =</span><span class="cg"> "FerRaRi"</span><span class="cw">.ToLower()</span><span class="cy"> Then DebugLog</span><span class="cw">(</span><span class="cg">"Got match!"</span><span class="cw">)</span></td></tr>
+ 
+<tr><td class="cap2" colspan="2"><br>How Strings actually work</td></tr> 
+<tr><td class="idx2" colspan="2">
+A string is a piece of text. A string is built up of characters. A character is a letter, number or a symbol and is represented with a character code. The most common standard to use to encode text to numbers is called ASCII. For example in ASCII "a" has the value 97 while "A" has the value 65, "B" has the value 66. Each symbol on your keyboard has a code which is used by the computer. There is more letters and signs than those 127 covered in the ASCII standard. These 127 codes are not enough to cover all possible symbols and letters from different languages. BlitzMax uses 2 bytes for each character and can therefore contain almost all common key-symbols in the world ; ) These 2byte numbers is called shorts and range from 0-65535.<br>&nbsp;<br> 
+A string is an array with characters. In other words a string is an array of shorts. Remember that to get an element of an array you would do: MyArray[ ElementNrToGet ] the same goes for a string. To get a character-code of a character in a string you go MyString[ CharacterToGet ].</td></tr>
+<tr><td class="idx2" colspan="2">Example:</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cw">Test$ =</span><span class="cg"> "TestString"</span><br>
+<span class="cy">Print</span><span class="cw"> Test[</span><span class="cb"> 0</span><span class="cw"> ]</span><span class="clb"> 'Print the code of the first letter in the String</span><br>
+<span class="cy">Print</span><span class="cg"> "T"</span><span class="cw">[</span><span class="cb">0</span><span class="cw">]</span><span class="clb"> 'Print the code of the Letter T</span></td></tr>
+<tr><td class="idx2" colspan="2"><br>
+It could also be good to note that the size and length of a string in BlitzMax isn't the same.</td></tr>
+<tr><td class="code" colspan="2"> 
+<span class="cw">Test$ =</span><span class="cg"> "ASCII"</span><br>
+<span class="cy">Print</span><span class="cw"> Test.length+</span><span class="cg">" chars"</span><span class="clb"> ' The number of characters - 5</span><br>
+<span class="cy">Print SizeOf</span><span class="cw">( Test )+</span><span class="cg">" bytes"</span><span class="clb">'The number of bytes - 10</span> 
+</td></tr>
+<tr><td colspan="2">&nbsp;</td></tr>
+<tr><td class="idx2"><a href="wave1.html">To Index</a> | <a href="wave18.html">Next Page</a></td>
+	<td align="right" class="cap">page 17</td></tr>
+</table>
+</BODY>
+
+<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave17.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
+</HTML>
