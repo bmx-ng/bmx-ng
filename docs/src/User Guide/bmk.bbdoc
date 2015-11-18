@@ -31,6 +31,7 @@ Valid options for makeapp are:
 * @{-l <target platform>} | Cross-compiles to the specific target platform. Valid targets are win32, linux, macos, ios, android, raspberrypi and emscripten.
 * @{-o} %OutputFile | Specify output file. By default, the output file is placed into the same directory as the root source file.
 * @{-q} | quiet build
+* @{-quick} | skips searching for modules it has to recompile. Without "-quick" all modules used by the programme are checked for changes. 
 * @{-r} | Build release version. By default, the debug version is built.
 * @{-t} %AppType | Specify application type. Should be either 'console' 
 or 'gui' (without single quote!). Default is console.
