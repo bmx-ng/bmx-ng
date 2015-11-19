@@ -53,7 +53,7 @@ This type of error is known as a %{compile time} error, because the bug was dete
 '
 Local an_array[10]
 
-For k=0 To 10
+For Local k=0 To 10
 	Print an_array[k]
 Next
 }}
@@ -136,7 +136,16 @@ and by navigating through the debug pane you can inspect your programs variables
 * Build Options:Threaded Build | Build app with threading support
 * Build Options:Build GUI App | Instructs BlitzMax to build a 'GUI' application. Disable this if you are building a lightweight, text-only applications.
 * Build Options:Verbose Build | Output more information to console when building/compiling
+* Build Options:Quick Scan | Don't scan modules for changes when building apps. This can improve compile times on some systems.
+* Build Options:Universal | Create a universal binary, merging two different architectures into the same app. x86/x64 on OSX, armv6/arm64 on iOS. (available on OS X only)
 *
+* Platform:Win32 | Build for Windows.
+* Platform:MacOS X | Build for OS X. (available on OS X only)
+* Platform:iOS | Build for iOS devices. (available on OS X only)
+* Platform:Linux | Build for Linux.
+* Platform:Raspberry Pi | Build for Raspberry Pi.
+* Platform:Android | Build for Android devices.
+* Platform:Web | Build for the emscripten target.
 *
 * Lock Build File | Lock the current source file for future @build and @{build and run} operations. This can be useful if you have a multifile project and are editing several source files but only ever rebuilding one of them.
 * Unlock Build File | Unlock the currently locked build file.
