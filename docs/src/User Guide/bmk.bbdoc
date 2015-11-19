@@ -27,7 +27,7 @@ Valid options for makeapp are:
 * @{-d} | Build debug version. This is the default.
 * @{-g <architecture>} | Compiles to the specified architecture. (the default is the native for this binary - x86) Options vary depending on the current OS, architecture and installed toolchain. MacOS: x86, x64. Win32: x86, x64. Linux: x86, x64. iOS: x86, x64 (simulator), armv7, arm64. Android: x86, x64, arm, armeabi, armeabiv7a, arm64v8a. RaspberryPi: arm. Emscripten: js.
 * @{-h} | Build multithreaded version. By default, the single threaded version is built.
-* @{-i} | Creates a Universal build on Mac x86 systems.
+* @{-i} | Creates a Universal build for MacOS or iOS. For MacOS, it will create an x86/x64 universal app. For iOS, it will create an armv7/arm64 universal app. If you want to profile your iOS apps, you need to use this option.
 * @{-l <target platform>} | Cross-compiles to the specific target platform. Valid targets are win32, linux, macos, ios, android, raspberrypi and emscripten.
 * @{-o} %OutputFile | Specify output file. By default, the output file is placed into the same directory as the root source file.
 * @{-q} | quiet build
