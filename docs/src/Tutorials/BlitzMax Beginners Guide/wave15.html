@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave15.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 <head>
 <title>Page 15</title>
 <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
@@ -9,8 +8,9 @@
 </head>
 <body bgcolor="#FFFFFF">
 <table border="0" width="700" align="center" cellspacing="0">
-<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
-<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr>
+  <td class="copy">Wave's~ BlitzMax Tutorial for NG</td><td align="right" class="copy">~ November, 2015 ~ Version 11</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">&nbsp;</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td class="cap" colspan="2">Abstract and Final</td></tr>
 <tr><td class="idx2" colspan="2">
@@ -26,42 +26,42 @@ The Link contains three fields:<br>
 In this way it is possible to loop thru the list because each link is connected to another link. Like a long chain. The number of links depends on the number of objects. You never need to use the Link by yourself, BlitzMax does that for you with methods and functions like AddLast( Object ) or RemoveLast().<br>&nbsp;</td></tr>
 <tr><td class="idx2" colspan="2"> 
 Put this code in a new file and test it, I'm going to extend it later.</td></tr>
-<tr><td class="code" colspan="2">
-<span class="cy">Type</span><span class="cw"> TShip<span><br>
-<span class="cy">Field</span><span class="cw"> Name$,Score<span><br>
-<span class="cy">EndType<span><br>&nbsp<br>
+<tr><td class="code" colspan="2"><span class="cy">Type</span><span class="cw"> TShip</span><br>
+<span class="cy">&nbsp;Field</span><span class="cw"> Name$,Score</span><br>
+<span class="cy">End Type</span><br>
+&nbsp;<br>
  
-<span class="clb">'Create some Ships<span><br>
-<span class="clb">'__________________________<span><br> 
-<span class="cy">Global</span><span class="cw"> Ship:TShip<span><br> 
-<span class="cw">Ship =</span><span class="cy"> New</span><span class="cw"> TShip<span><br>
-<span class="cw">Ship.Name =</span><span class="cg"> "My First Ship"<span><br>
-<span class="cw">Ship.Score =</span><span class="cb"> 11<span><br>&nbsp;<br>
+<span class="clb">'Create some Ships</span><br>
+<span class="clb">'__________________________</span><br> 
+<span class="cy">Global</span><span class="cw"> Ship:TShip</span><br> 
+<span class="cw">Ship =</span><span class="cy"> New</span><span class="cw"> TShip</span><br>
+<span class="cw">Ship.Name =</span><span class="cg"> "My First Ship"</span><br>
+<span class="cw">Ship.Score =</span><span class="cb"> 11</span><br>&nbsp;<br>
  
-<span class="cy">Global</span><span class="cw"> Ship2:TShip<span><br>
-<span class="cw">Ship2 =</span><span class="cy"> New</span><span class="cw"> TShip<span><br>
-<span class="cw">Ship2.Name =</span><span class="cg"> "My 2nd Ship  "<span><br>
-<span class="cw">Ship2.Score =</span><span class="cb"> 3<span><br>&nbsp;<br>
+<span class="cy">Global</span><span class="cw"> Ship2:TShip</span><br>
+<span class="cw">Ship2 =</span><span class="cy"> New</span><span class="cw"> TShip</span><br>
+<span class="cw">Ship2.Name =</span><span class="cg"> "My 2nd Ship  "</span><br>
+<span class="cw">Ship2.Score =</span><span class="cb"> 3</span><br>&nbsp;<br>
  
-<span class="cy">Global</span><span class="cw"> Ship3:TShip<span><br>
-<span class="cw">Ship3 =</span><span class="cy"> New</span><span class="cw"> TShip<span><br>
-<span class="cw">Ship3.Name =</span><span class="cg"> "The 3rd Ship "<span><br>
-<span class="cw">Ship3.Score =</span><span class="cb"> 9<span><br>
-<span class="clb">'___________________________<span><br>&nbsp;<br>
+<span class="cy">Global</span><span class="cw"> Ship3:TShip</span><br>
+<span class="cw">Ship3 =</span><span class="cy"> New</span><span class="cw"> TShip</span><br>
+<span class="cw">Ship3.Name =</span><span class="cg"> "The 3rd Ship "</span><br>
+<span class="cw">Ship3.Score =</span><span class="cb"> 9</span><br>
+<span class="clb">'___________________________</span><br>&nbsp;<br>
  
-<span class="cy">Global</span><span class="cw"> MyList:</span><span class="cy">TList</span><span class="clb"> 'Define the List<span><br>
-<span class="cw">MyList =</span><span class="cy"> CreateList</span><span class="cw">()</span><span class="clb"> 'Create a New List<span><br> 
-<span class="cw">MyList.AddFirst(Ship)</span><span class="clb">  'Add Object to List<span><br> 
-<span class="clb">'Now you could add to the top of the list<span><br>
-<span class="clb">'MyList.AddFirst()<span><br>
-<span class="clb">'Or add to the bottom<span><br> 
-<span class="cw">MyList.AddLast(Ship2)<span><br>
-<span class="cw">MyList.AddLast(Ship3)<span><br> 
-<span class="cy">For Local</span><span class="cw"> S:TShip =</span><span class="cy"> EachIn</span><span class="cw"> MyList<span><br> 
-<span class="cy">Print</span><span class="cg"> "Name: "</span><span class="cw">+S.Name+</span><span class="cg">" Score:"</span><span class="cw">+S.Score<span><br>
-<span class="cy">Next<span><br>
-<span class="clb">'How many objects in the List?<span><br>
-<span class="cy">Print</span><span class="cg"> "Links/Objects in the List: "</span><span class="cw">+MyList.Count()<span>
+<span class="cy">Global</span><span class="cw"> MyList:</span><span class="cy">TList</span><span class="clb"> 'Define the List</span><br>
+<span class="cw">MyList =</span><span class="cy"> CreateList</span><span class="cw">()</span><span class="clb"> 'Create a New List</span><br> 
+<span class="cw">MyList.AddFirst(Ship)</span><span class="clb">  'Add Object to List</span><br> 
+<span class="clb">'Now you could add to the top of the list</span><br>
+<span class="clb">'MyList.AddFirst()</span><br>
+<span class="clb">'Or add to the bottom</span><br> 
+<span class="cw">MyList.AddLast(Ship2)</span><br>
+<span class="cw">MyList.AddLast(Ship3)</span><br> 
+<span class="cy">For Local</span><span class="cw"> S:TShip =</span><span class="cy"> EachIn</span><span class="cw"> MyList</span><br> 
+<span class="cy">&nbsp;Print</span><span class="cg"> "Name: "</span><span class="cw">+S.Name+</span><span class="cg">" Score:"</span><span class="cw">+S.Score</span><br>
+<span class="cy">Next</span><br>
+<span class="clb">'How many objects in the List?</span><br>
+<span class="cy">Print</span><span class="cg"> "Links/Objects in the List: "</span><span class="cw">+MyList.Count()</span>
 </td></tr>
 <tr><td class="idx2" colspan="2"><br> 
 So far there is nothing new, this was just the basics. We have encountered a problem that came from the use of lists. If your program has a place where it loops through a list that does not exist, you'll receive a runtime error. The solution is simply to put an if statement around your For.. Eachin Loop.  You could also make sure you create the list before the loop (no matter what). Make sure you don't skip CreateList() or New Tlist.<br>&nbsp;<br> 
@@ -80,8 +80,8 @@ If you run the program you'll see only the Ships being displayed. But the number
 <tr><td class="idx2" colspan="2"><br>Add this:</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cy">For Local</span><span class="cw"> Str$ =</span><span class="cy"> EachIn</span><span class="cw"> MyList</span><br>
-<span class="cy">Print</span><span class="cg"> "String: "</span><span class="cw">+Str</span><br>
-<span class="cy">Next</td></tr>
+<span class="cy">&nbsp;&nbsp;Print</span><span class="cg"> "String: "</span><span class="cw">+Str</span><br>
+<span class="cy">Next</span></td></tr>
 <tr><td class="idx2" colspan="2"> 
 The Eachin-Loop only loops through the objects of the specified type found in the list. First I looped each Ship in MyList, now I Loop Each String in MyList.<br>&nbsp;<br>  
 The actual List looks something like this now:<br>
@@ -92,7 +92,7 @@ It's quite simple yet a little more complicated than before. What you do is loop
 Like this:</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cy">For Local</span><span class="cw"> TempObject:</span><span class="cy">Object</span><span class="cw"> =</span><span class="cy"> EachIn</span><span class="cw"> MyList</span><br>
-<span class="cy">Print</span><span class="cw"> TempObject</span><br>
+<span class="cy">&nbsp;&nbsp;Print</span><span class="cw"> TempObject</span><br>
 <span class="cy">Next</span></td></tr>
 <tr><td class="idx2" colspan="2"> 
 The above code does not work! It shouldn't.<br>&nbsp;<br>
@@ -100,11 +100,11 @@ It may be obvious that we can't print a Ship, but the String? No neither of them
 Replace both of the each-in loops with this loop.</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cy">For Local</span><span class="cw"> TempObject:</span><span class="cy">Object</span><span class="cw"> =</span><span class="cy"> EachIn</span><span class="cw"> MyList</span><br>
-<span class="cy">Local</span><span class="cw"> TempShip:TShip = TShip(TempObject)</span><br>
-<span class="cy">Local</span><span class="cw"> TempString$ =</span><span class="cy"> String</span><span class="cw">(TempObject)</span><br>
-<span class="cy">If</span><span class="cw"> TempShip</span><span class="cy"> Print</span><span class="cg"> "This Object is a Ship it's Name is: "</span><span class="cw">+TempShip.Name</span><br>
-<span class="cy">If</span><span class="cw"> TempString</span><span class="cy"> Print</span><span class="cg"> "String Object :"</span><span class="cw">+TempString</span><br>
-<span class="cy">If Not</span><span class="cw"> TempShip</span><span class="cy"> And Not</span><span class="cw"> TempString</span><span class="cy"> Print</span><span class="cg"> "Unknown Object in List"</span><br> 
+<span class="cy">&nbsp;&nbsp;Local</span><span class="cw"> TempShip:TShip = TShip(TempObject)</span><br>
+<span class="cy">&nbsp;&nbsp;Local</span><span class="cw"> TempString$ =</span><span class="cy"> String</span><span class="cw">(TempObject)</span><br>
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> TempShip</span><span class="cy"> Print</span><span class="cg"> "This Object is a Ship it's Name is: "</span><span class="cw">+TempShip.Name</span><br>
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> TempString</span><span class="cy"> Print</span><span class="cg"> "String Object :"</span><span class="cw">+TempString</span><br>
+<span class="cy">&nbsp;&nbsp;If Not</span><span class="cw"> TempShip</span><span class="cy"> And Not</span><span class="cw"> TempString</span><span class="cy"> Print</span><span class="cg"> "Unknown Object in List"</span><br> 
 <span class="cy">Next</span></td></tr>
 <tr><td class="idx2" colspan="2">
 If you would have added another object to the loop it would not print. Above I used casting to see the objects true type. See casting for more information.</td></tr>
@@ -118,17 +118,17 @@ If you would have added another object to the loop it would not print. Above I u
 <span class="cw">MyList.AddLast(</span><span class="cg">"Boat"</span><span class="cw">)</span><br>
 <span class="cw">MyList.AddLast(</span><span class="cg">"Train"</span><span class="cw">)</span><br>
 <span class="cw">MyList.AddLast(</span><span class="cg">"UFO"</span><span class="cw">)</span><br>&nbsp;<br> 
-<span class="cy">Print "--LIST--"</span><br>
+<span class="cy">Print </span><span class="cg">"--LIST--"</span><br>
 <span class="cy">For Local</span><span class="cw"> Vehicle$ =</span><span class="cy"> EachIn</span><span class="cw"> MyList</span><br>
-<span class="cy">Print</span><span class="cw"> Vehicle$</span><br> 
+<span class="cy">&nbsp;&nbsp;Print</span><span class="cw"> Vehicle$</span><br> 
 <span class="cy">Next</span><br>&nbsp;<br> 
 <span class="clb">'Let's say we want to add a Tank after bus</span><br> 
 <span class="cw">MyList.InsertAfterLink(</span><span class="cg">"Tank"</span><span class="cw"> , MyList.FindLink(</span><span class="cg">"Bus"</span><span class="cw">) )</span><br>
-'This would be the same as'MyList.InsertBeforeLink("Tank" , MyList.FindLink("Airplane") )</span><br> 
+<span class="clb">'This would be the same as'MyList.InsertBeforeLink("Tank" , MyList.FindLink("Airplane") )</span><br> 
 <span class="cy">Print</span><span class="cw"> "--LIST--With a Tank After Bus"</span><br>
 <span class="cy">For Local</span><span class="cw"> Vehicle$ =</span><span class="cy"> EachIn</span><span class="cw"> MyList</span><br>
-<span class="cy">Print</span><span class="cw"> Vehicle$</span><br>
-<span class="cy">Next</td></tr>
+<span class="cy">&nbsp;&nbsp;Print</span><span class="cw"> Vehicle$</span><br>
+<span class="cy">Next</span></td></tr>
 <tr><td class="idx2" colspan="2"> 
 InsertBeforeLink takes an Object and puts it before a Link. InsertBeforeLink( Object , TLink ). To get a TLink in our list we search the List for an Object "Bus". In this case it's a string so it's easy. If there are more strings with the same name it will take the first it encounters that match. The FindLink command checks the list for an object. So to use it you have to know the object. Like in our example you could use Ship,Ship2,Ship3 as reference to the object and FindLink would then retrieve that Link which you in turn can use with the other commands. You can also use the Method Contains MyList.Contains(Ship3) to check if that object exists in the list.
 
@@ -138,6 +138,4 @@ InsertBeforeLink takes an Object and puts it before a Link. InsertBeforeLink( Ob
 	<td align="right" class="cap">page 15</td></tr>
 </table>
 </body>
-
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave15.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 </html>

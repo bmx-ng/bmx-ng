@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave3.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 <head>
 <title>Page 3</title>
 <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
@@ -9,13 +8,15 @@
 </head>
 <body bgcolor="#FFFFFF">
 <table border="0" width="700" align="center">
-<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
-<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr>
+  <td class="copy">Wave's~ BlitzMax Tutorial for NG</td>
+<td align="right" class="copy">~ November, 2015 ~ Version 11</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">&nbsp;</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td class="cap" colspan="2">Variables</td></tr>
 <tr><td class="idx2" colspan="2"> 
 You probably know this: A variable is a place where you may store a number or a text. There are different variable "types" depending on their use. Here are the most basic types: Integers which store numbers, Strings which store text and Floats which store decimal numbers.We also have object-"types" which includes these basic types such as Arrays, Lists and your own custom Types (more on these later). See the Language Reference if you want more information about BlitzMax variables.<p> 
-If you want to increase a variable, let say speed. You can write Speed = Speed + Acceleration Or in a shorter way Speed:+Acceleration. Both are identical, but the last is shorter. It is strongly recommended but not required that you declare your variables before use.</td></tr>
+If you want to increase a variable, let say speed. You can write Speed = Speed + Acceleration Or in a shorter way Speed:+Acceleration. Both are identical, but the last is shorter. You must declare your variables before use.</td></tr>
 <tr><td class="code" colspan="2">
 <span class="cy">Local</span> <span class="cw">Speed:</span>
 <span class="cy">Float</span><span class="cw">=</span><span class="cb">0</span>
@@ -27,14 +28,15 @@ If you want to increase a variable, let say speed. You can write Speed = Speed +
 <tr><td class="idx2" colspan="2"> 
 These 2 lines are identical; use whatever you like, but be aware of both.<br>
 Note:<span class="hy">Local</span> is a way to declare the variable.<p>
-Note: If you want to force all variables to be declared by you, use the command <span class="hy">&nbsp;Strict&nbsp;</span>
-which gives you a compile error if there is a variable that you didn't declare like this: Local/Global VarName:VarType , 2ndVarName:VarType.</td></tr>
+Note: There are two levels of variable strictness in BlitzMax NG. The default assumes the command <span class="hy">&nbsp;Strict&nbsp;</span>
+which gives you a compile error if there is a variable that you didn't declare like this: Local/Global VarName:VarType , secondVarName:VarType, although any variable you declare with no type is assigned as an Int, and all functions/methods that do not declare a return type will also return Int. In <span class="hy">&nbsp;SuperStrict&nbsp;</span> mode you must declare everything with its type, including Int variables. A function/method without a return type cannot return anything.</td></tr>
 <tr><td class="idx2" colspan="2">Example:</td></tr>
 <tr><td class="code" colspan="2">
 <span class="cw"></span> <span class="cy">Local</span> 
 <span class="cw">Name$ =</span> <span class="cg">"-=[ Fireglue ]=-"</span></td></tr>
-<tr><td class="idx2" colspan="2">
-I do not use Strict in my examples, so if you want to use strict make sure you declare all my variables. You should always use Strict unless you are very lazy or are making a tiny examples or minor tests, it will help you find misspelling-bugs before they occur and save you hours of debugging.<p> 
+<tr>
+  <td class="idx2" colspan="2">Whether you use Strict or SuperStrict is entirely up to you, and how lazy you are about declaring everything.
+    <p> 
 Note: BlitzMax considers Speed and speed and sPeEd to be the SAME variable.</td></tr>
 <tr><td class="idx2" colspan="2">Same goes with all commands.</td></tr>
 <tr><td class="code" colspan="2">
@@ -43,8 +45,9 @@ Note: BlitzMax considers Speed and speed and sPeEd to be the SAME variable.</td>
 <span class="clb">reM</span><span class="cw">.</span></td></tr>
 <tr><td colspan="2"><a name="p3_1">&nbsp;</td></tr>
 <tr><td colspan="2" class="cap">Global or Local</td></tr> 
-<tr><td colspan="2" class="idx2">
-A variable can be Global or Local. Globals can be accessed from the entire program. Locals on the other hand are more complicated, cause where they exists depends on where they where declared. To declare a local variable use the keyword Local in front of the variable name. If you declare a local variable in a function it will only exist in that function. If it is declared in a loop if will only exists as long as you are in that loop. If a local is in an if-statement it will only exists in that if-statement.<br><a name="p3_2">&nbsp;</td></tr>
+<tr>
+  <td colspan="2" class="idx2">
+A variable can be Global or Local. Globals can be accessed from the entire program. Locals on the other hand are more complicated, because where they exists depends on where they where declared. This is called local scope. To declare a local variable use the keyword Local in front of the variable name. If you declare a local variable in a function it will only exist in that function. If it is declared in a loop if will only exists as long as you are in that loop. If a local is in an if-statement it will only exists in that if-statement.<br><a name="p3_2">&nbsp;</td></tr>
 <tr><td colspan="2" class="cap">Constants</td></tr>
 <tr><td colspan="2" class="idx2">
 You can also declare constants. A constant will have the value you gave it when you first declared it. The value of a Constant can never change, it will always stay the same. If you try to change a constant'a value the complier will warn you when you compile - build. Constant is useful for values that always will stay the same. You'll encounter constants in examples later on.</td></tr>
@@ -52,6 +55,4 @@ You can also declare constants. A constant will have the value you gave it when 
 <tr><td class="idx2"><a href="wave1.html">To Index</a> | <a href="wave4.html">Next Page</a></td><td align="right" class="cap">page 3</td></tr>
 </table>
 </body>
-
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave3.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 </html>

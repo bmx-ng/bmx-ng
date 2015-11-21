@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave16.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 <head>
 <title>Page 16</title>
 <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
@@ -9,8 +8,9 @@
 </head>
 <body bgcolor="#FFFFFF">
 <table border="0" width="700" align="center" cellspacing="0">
-<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
-<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr>
+  <td class="copy">Wave's~ BlitzMax Tutorial for NG</td><td align="right" class="copy">~ November, 2015 ~ Version 11</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">&nbsp;</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td class="cap" colspan="2">Sorting of Lists</td></tr>
 <tr><td class="idx2" colspan="2">
@@ -28,13 +28,13 @@ Here are some methods:
 Now to the sorting. To sort an array use the method sort(). It's the same as for arrays by the way, MyList.Sort. You can sort text like this. If you want to sort numbers then convert to an array or make objects out of them. You sort your own types by one or more fields, but to be able to sort ships by name you have to specify you want to sort them by the field called name.</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cy">Type</span><span class="cw"> TShip</span><br>
-<span class="cy">Field</span><span class="cw"> Name$,Score</span><br>
-<span class="cy">Global</span><span class="cw"> SortBy</span><br>
-<span class="cy">Const</span><span class="cw"> SortName =</span><span class="cb"> 1</span><br>
-<span class="cy">Const</span><span class="cw"> SortScore =</span><span class="cb"> 2</span><br> 
-<span class="cy">Method</span><span class="cw"> Compare(O:</span><span class="cy">Object</span><span class="cw">)</span><span class="clb"> 'Override Original</span><br>
-<span class="clb">'Enter Compare Method Here</span><br>
-<span class="cy">EndMethod</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> Name$,Score</span><br>
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> SortBy</span><br>
+<span class="cy">&nbsp;&nbsp;Const</span><span class="cw"> SortName =</span><span class="cb"> 1</span><br>
+<span class="cy">&nbsp;&nbsp;Const</span><span class="cw"> SortScore =</span><span class="cb"> 2</span><br> 
+<span class="cy">&nbsp;&nbsp;Method</span><span class="cw"> Compare(O:</span><span class="cy">Object</span><span class="cw">)</span><span class="clb"> 'Override Original</span><br>
+<span class="clb">&nbsp;&nbsp;&nbsp;&nbsp;'Enter Compare Method Here</span><br>
+<span class="cy">&nbsp;&nbsp;End Method</span><br>
 <span class="cy">EndType</span><br>
 <span class="clb">'__________________________</span><br> 
 <span class="cy">Global</span><span class="cw"> Ship:TShip</span><br>
@@ -65,7 +65,7 @@ Now to the sorting. To sort an array use the method sort(). It's the same as for
 <span class="cw">MyList.AddLast(Ship4)</span><br> 
 <span class="cw">MyList.Sort(</span><span class="cy">True</span><span class="cw">)</span><span class="clb"> 'False for Descending sort</span><br> 
 <span class="cy">For Local</span><span class="cw"> S:TShip =</span><span class="cy"> EachIn</span><span class="cw"> MyList</span><br> 
-<span class="cy">Print</span><span class="cg"> "Name: "</span><span class="cw">+S.Name+</span><span class="cg">"    Score:"</span><span class="cw">+S.Score</span><br>
+<span class="cy">&nbsp;&nbsp;Print</span><span class="cg"> "Name: "</span><span class="cw">+S.Name+</span><span class="cg">"    Score:"</span><span class="cw">+S.Score</span><br>
 <span class="cy">Next</span><br> 
 <span class="cy">Print</span><span class="cg"> "Links/Objects in the List: "</span><span class="cw">+MyList.Count()</span><span class="clb">  'How many objects in the List?</span></td></tr> 
 <tr><td class="idx2" colspan="2"><br>
@@ -73,38 +73,63 @@ That example won't be sorted. Not yet. First we have to complete the override me
 First I'll start with a simple sort by score method:</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cy">Method</span><span class="cw"> Compare(Obj:</span><span class="cy">Object</span><span class="cw">)</span><span class="clb"> 'Override Original</span><br>
-<span class="cy">If</span><span class="cw"> TShip( Obj ).Score > Score</span><span class="cy"> Return</span><span class="cb"> 1</span><span class="cy"> Else Return</span><span class="cw"> -</span><span class="cb">1</span><br>
-<span class="cy">EndMethod</span></td></tr>
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> TShip( Obj ).Score > Score</span><span class="cy"> Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cb"> 1<br>
+</span><span class="cy">&nbsp;&nbsp;Else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cw"> -</span><span class="cb">1<br>
+<span class="cy">&nbsp;&nbsp;End If</span>
+</span><br>
+<span class="cy">End Method</span></td></tr>
 <tr><td class="idx2" colspan="2"> 
 First we see if the object is a Ship. Next we look to see which field is the highest, in this case score of the Ship calling compare (Self) or Score of the Ship we compare it too (called S in this example).<br>&nbsp;<br></td></tr>
 <tr><td class="code" colspan="2">  
 <span class="cy">Method</span><span class="cw"> Compare(O:</span><span class="cy">Object</span><span class="cw">)</span><span class="clb"> 'Sort by Name</span><br>
-<span class="cy">If</span><span class="cw"> TShip(O).Name < Name</span><span class="cy"> Return</span><span class="cb"> 1</span><span class="cy"> Else Return</span><span class="cw"> -</span><span class="cb">1</span><br>
-<span class="cy">EndMethod</span></td></tr>
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> TShip(O).Name < Name</span><span class="cy"> Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cb"> 1<br>
+</span><span class="cy">&nbsp;&nbsp;Else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cw"> -</span><span class="cb">1</span><span class="cy"><br>
+&nbsp;&nbsp;End If<br>
+End Method</span></td></tr>
 <tr><td class="idx2" colspan="2"> 
 This does the same but it checks the field name, which happens to be a string. No problems there. What if we want both?<br>&nbsp;<br> 
 Sort by a primary and a secondary field:</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cy">Method</span><span class="cw"> Compare(O:</span><span class="cy">Object</span><span class="cw">)</span><span class="clb"> 'Override Original</span><br>
-<span class="cy">If</span><span class="cw"> TShip(O).Score = Score</span><br>
-<span class="cy">If</span><span class="cw"> TShip(O).Name < Name</span><span class="cy"> Return</span><span class="cb"> 1</span><span class="cy"> Else Return</span><span class="cw"> -</span><span class="cb">1</span><br>
-<span class="cy">Else</span><br>
-<span class="cy">If</span><span class="cw"> TShip(O).Score > Score</span><span class="cy"> Return</span><span class="cb"> 1</span><span class="cy"> Else Return</span><span class="cw"> -</span><span class="cb">1</span><br>
-<span class="cy">EndIf</span><br>
-<span class="cy">EndMethod</span></td></tr> 
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> TShip(O).Score = Score</span><span class="cy"> Then</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> TShip(O).Name < Name</span><span class="cy"> Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cb"> 1<br>
+</span><span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cw"> -</span><span class="cb">1</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;End If<br>
+&nbsp;&nbsp;Else</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> TShip(O).Score > Score</span><span class="cy"> Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cb"> 1<br>
+</span><span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cw"> -</span><span class="cb">1</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;End If<br>
+&nbsp;&nbsp;End If</span><br>
+<span class="cy">End Method</span></td></tr> 
 <tr><td class="idx2" colspan="2">
 This sorts by Score, unless the score is a tie, then it will sort by name. You can of course continue this. If the names are equal sort by age and if age also is equal sort by something else. If you don't care who gets second at a tie just leave it.</td></tr>
 <tr><td class="idx2" colspan="2"><br>
 To be able to sort a list in different ways you can specify a variable that holds the way to sort.</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cy">Method</span><span class="cw"> Compare(O:</span><span class="cy">Object</span><span class="cw">)</span><span class="clb"> 'Override Original</span><br> 
-<span class="cy">If</span><span class="cw"> SortBy = SortName</span><span class="clb"> 'constant</span><br> 
-<span class="cy">If</span><span class="cw"> TShip(O).Name < Name</span><span class="cy"> Return</span><span class="cb"> 1</span><span class="cy"> Else Return</span><span class="cw"> -</span><span class="cb">1</span><br> 
-<span class="cy">ElseIf</span><span class="cw"> SortBy = SortScore</span><span class="clb"> 'Constant</span><br> 
-<span class="cy">If</span><span class="cw"> TShip(O).Score > Score</span><span class="cy"> Return</span><span class="cb"> 1</span><span class="cy"> Else Return</span><span class="cw"> -</span><span class="cb">1</span><br> 
-<span class="cy">Else</span><span class="clb"> 'Don't sort</span><br> 
-<span class="cy">EndIf</span><br>
-<span class="cy">EndMethod</span></td></tr>
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> SortBy = SortName</span><span class="clb"> 'constant</span><br> 
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> TShip(O).Name < Name</span><span class="cy"> Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cb"> 1<br>
+</span><span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cw"> -</span><span class="cb">1</span><br> 
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;End If<br>
+&nbsp;&nbsp;ElseIf</span><span class="cw"> SortBy = SortScore</span><span class="clb"> 'Constant</span><br> 
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> TShip(O).Score > Score</span><span class="cy"> Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cb"> 1<br>
+</span><span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cw"> -</span><span class="cb">1</span><br> 
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;End If<br>
+&nbsp;&nbsp;Else</span><span class="clb"> 'Don't sort</span><br> 
+<span class="cy">&nbsp;&nbsp;End If</span><br>
+<span class="cy">End Method</span></td></tr>
 <tr><td class="idx2" colspan="2"><br> 
 Now with one line before sort you can decide weather you want to sort by name or score:<br>&nbsp;<br></td></tr>
 <tr><td class="code" colspan="2"> 
@@ -118,6 +143,4 @@ Now with one line before sort you can decide weather you want to sort by name or
 	<td align="right" class="cap">page 16</td></tr>
 </table>
 </body>
-
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave16.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 </html>

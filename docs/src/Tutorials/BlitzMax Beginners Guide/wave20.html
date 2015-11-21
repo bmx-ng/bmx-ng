@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave20.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 <HEAD>
 <TITLE>Page 20</TITLE>
 <META http-equiv="Content-type" content="text/html; charset=iso-8859-1">
@@ -9,8 +8,9 @@
 </head>
 <body bgcolor="#FFFFFF">
 <table border="0" width="700" align="center" cellspacing="0">
-<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
-<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr>
+  <td class="copy">Wave's~ BlitzMax Tutorial for NG</td><td align="right" class="copy">~ November, 2015 ~ Version 11</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">&nbsp;</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td class="cap" colspan="2">Animations</td></tr>
 <tr><td class="idx2" colspan="2">
@@ -38,7 +38,7 @@ To include a file put this code somewhere at the start of your file:</td></tr>
 <span class="clb">'Then when you load your images write:</span><br>
 <span class="cy">LoadImage</span><span class="cw">(</span><span class="cg"> "incbin::directory/filename.bmp"</span><span class="cw">)</span></td></tr>
 <tr><td class="idx2" colspan="2">
-The path can be in sub directories if you like, just refer to the same path when you loaded it with Incbin. I have been able to include .png but I'm unsure with .bmp Note: When you LoadImage using incbin:: make sure you spell incbin with small letters only! It's sensitive! When you incbin an image, "MyImage.png", the complier will tell you if the image is not found.</td></tr> 
+The path can be in sub directories if you like, just refer to the same path when you loaded it with Incbin.  Note: When you LoadImage using incbin:: make sure you spell incbin with small letters only! It's sensitive! When you incbin an image, "MyImage.png", the complier will tell you if the image is not found.</td></tr> 
 <tr><td class="idx2" colspan="2"><br>
 Animation Example, including incbin. Make sure you always Loadimages after Graphics!</td></tr>
 <tr><td class="code" colspan="2"> 
@@ -52,23 +52,34 @@ Animation Example, including incbin. Make sure you always Loadimages after Graph
  
 <span class="cy">SetMaskColor</span><span class="cb"> 255</span><span class="cw">,</span><span class="cb">255</span><span class="cw">,</span><span class="cb">255</span><span class="clb"> ' White</span><br>
 <span class="cy">Global</span><span class="cw"> My_Animation:Timage=</span><span class="cy">LoadAnimImage</span><span class="cw">(</span><span class="cg">"ExplosionTest.png"</span><span class="cw">,</span><span class="cb">50</span><span class="cw">,</span><span class="cb">50</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">5</span><span class="cw">)</span><br>
-<span class="cy">If</span><span class="cw"> My_Animation =</span><span class="cy"> Null Then DebugLog</span><span class="cg"> "Image could Not load - Check pathAnd filename"</span><span class="cw"> ;</span><span class="cy"> End</span><br>&nbsp;<br>
+<span class="cy">If</span><span class="cw"> My_Animation =</span><span class="cy"> Null Then<br>
+&nbsp;&nbsp;DebugLog</span><span class="cg"> "Image could Not load - Check pathAnd filename"</span><br>
+<span class="cy">&nbsp;&nbsp;End<br>
+End If</span><br>&nbsp;<br>
  
-<span class="cy">Repeat</span><br> 
-<span class="cy">If</span><span class="cw"> Explode =</span><span class="cy"> True</span><br>
-<span class="cy">DrawImage</span><span class="cw">(My_Animation,X,Y,Frame)</span><br>
-<span class="cw">Frame:+</span><span class="cb">1</span><br>
-<span class="cy">If</span><span class="cw"> Frame =</span><span class="cb"> 5</span><span class="cw"> Frame =</span><span class="cb"> 0</span><span class="cw"> ; XTimes:+</span><span class="cb">1</span><br>
-<span class="cy">If</span><span class="cw"> XTimes ></span><span class="cb"> 25</span><span class="cy"> Then</span><span class="cw"> Explode =</span><span class="cy"> False</span><span class="cw"> ; XTimes =</span><span class="cb"> 0</span><br>
-<span class="cy">EndIf</span><br>&nbsp;<br>
+<span class="cy">Repeat</span><br>
+<span class="cy">&nbsp;&nbsp;Cls</span> <br> 
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> Explode =</span><span class="cy"> True</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;DrawImage</span><span class="cw">(My_Animation,X,Y,Frame)</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Frame:+</span><span class="cb">1</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> Frame =</span><span class="cb"> 5</span><span class="cw"> <span class="cy">Then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Frame =</span><span class="cb"> 0</span><span class="cw"><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XTimes:+</span><span class="cb">1</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;End If</span> <br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> XTimes ></span><span class="cb"> 25</span><span class="cy"> Then<br>
+</span><span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Explode =</span><span class="cy"> False<br>
+</span><span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XTimes =</span><span class="cb"> 0</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;End If</span> <br>
+<span class="cy">&nbsp;&nbsp;End If</span><br>&nbsp;<br>
  
-<span class="clb">'Explode at Mouse Left Click</span><br> 
-<span class="cy">If KeyHit</span><span class="cw">(</span><span class="cb">1</span><span class="cw">)</span><br>
-<span class="cw">Explode =</span><span class="cy"> True</span><br>
-<span class="cw">X =</span><span class="cy"> MouseX</span><span class="cw">() ; Y =</span><span class="cy"> MouseY</span><span class="cw">()</span><br>
-<span class="cw">Frame =</span><span class="cb"> 0</span><br> 
-<span class="cy">EndIf</span><br>
-<span class="cy">Flip</span><span class="cw"> ;</span><span class="cy"> Cls</span><br>
+<span class="clb">&nbsp;&nbsp;'Explode at Mouse Left Click</span><br> 
+<span class="cy">&nbsp;&nbsp;If KeyHit</span><span class="cw">(</span><span class="cb">1</span><span class="cw">)</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Explode =</span><span class="cy"> True</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;X =</span><span class="cy"> MouseX</span><span class="cw">()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Y =</span><span class="cy"> MouseY</span><span class="cw">()</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Frame =</span><span class="cb"> 0</span><br> 
+<span class="cy">&nbsp;&nbsp;End If</span><br>
+<span class="cy">&nbsp;&nbsp;Flip</span><br>
 <span class="cy">Until KeyDown</span><span class="cw">(Key_Escape)</span>
 
 </td></tr>
@@ -77,6 +88,4 @@ Animation Example, including incbin. Make sure you always Loadimages after Graph
 	<td align="right" class="cap">page 20</td></tr>
 </table>
 </BODY>
-
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave20.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 </HTML>

@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave6.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 <head>
 <title>page 6</title>
 <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
@@ -9,21 +8,30 @@
 </head>
 <body bgcolor="#FFFFFF">
 <table border="0" width="700" align="center" cellspacing="0">
-<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
-<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr>
+  <td class="copy">Wave's~ BlitzMax Tutorial for NG</td><td width="441" align="right" class="copy">~ November, 2015 ~ Version 11</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">&nbsp;</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td class="cap" colspan="2">Sample Program</td></tr>
 <tr><td class="idx2" colspan="2">Note: If windowed mode fails to work (800,80,0) then use standard mode (800,600).</td></tr>
-<tr><td class="code" width="230">
-<span class="cy">Graphics</span><span class="cb"> 800,80,0</span><br>
-<span class="cy">repeat</span><br>
-<span class="cy">drawrect</span><span class="cw"> X</span><span class="cb">,40,10,12</span><br>
-<span class="cy">drawtext</span><span class="cg"> "- please wait -"</span><span class="cb">,0,0</span><br>
-<span class="cw">X:+</span><span class="cb">2</span><br>
-<span class="cy">flip</span><br>
-<span class="cy">until</span><span class="cw"> x >=</span><span class="cb"> 800</span>
+<tr>
+	<td class="code" width="255">
+<span class="cy">Strict<br>
+Local 
+<span class="cw">X</span><br>
+<br>
+Graphics</span><span class="cb"> 800,80,0</span><br>
+<span class="cy">Repeat</span><br>
+<span class="cy">&nbsp;&nbsp;DrawRect</span><span class="cw"> X</span><span class="cb">,40,10,12</span><br>
+<span class="cy">&nbsp;&nbsp;DrawText</span><span class="cg"> "- please wait -"</span><span class="cb">,0,0</span><br>
+<span class="cw">&nbsp;&nbsp;X:+</span><span class="cb">2</span><br>
+<span class="cy">&nbsp;&nbsp;Flip</span><br>
+<span class="cy">Until</span><span class="cw"> x >=</span><span class="cb"> 800</span>
 	</td><td class="code">
 	<span class="clb">
+	<br>
+	'Declare x variable<br>
+	<br>
 	'Smaller Window Size<br>
 	'Top of the Repeat-Until loop<br>
 	'40 = y coordinate, 10px = rect width, 12px = rect height<br>
@@ -31,27 +39,39 @@
 	'increase x with 2 every loop<br>
 	'show what you have drawn<br>
 	'Exit the loop when X is greater or equal to 800</span></td></tr>
-<tr><td class="idx2" colspan="2"> 
+<tr>
+  <td class="idx2" colspan="2"> 
 Press f5 to build and run the example. The above code will create a "loading line" on the screen. if you put a
-<span class="hy">&nbsp;cls&nbsp;</span> on a new line below <span class="hy">&nbsp;flip&nbsp;</span>, you'll notice that a instead of a line, a box will be traveling from 0 to 800, measured in pixels. You may also replace <span class="hy">&nbsp;DrawRect&nbsp;</span> with <span class="hy">&nbsp;DrawOval&nbsp;</span> and guess what...<br>&nbsp;</td></tr>
+<span class="hy">&nbsp;Cls&nbsp;</span> on a new line below <span class="hy">&nbsp;Flip&nbsp;</span>, you'll notice that a instead of a line, a box will be traveling from 0 to 800, measured in pixels. You may also replace <span class="hy">&nbsp;DrawRect&nbsp;</span> with <span class="hy">&nbsp;DrawOval&nbsp;</span> and guess what...<br>&nbsp;</td></tr>
 <tr><td class="cap" colspan="2">flip and clear</td></tr>
-<tr><td class="idx2" colspan="2"> 
-In blitzmax everything you draw is drawn to an invisible board. You can draw all you want to this board but it won't show up on screen. You can see it as if blitzmax is drawing on the back of your screen, then when you want to show it, you flip the board and we can see what has been drawn to it. if we keep drawing a lot of stuff and flip, then continue drawing a lot of stuff, the board will be a mess. this is why we clear the board after we have flipped it, but this also means we have to redraw everything we previously had on the board! That's how it works. This board is known as the back buffer. you do not need to (and cannot) set the back buffer as in blitz3d/blitzplus. This method with flip and clear is called double buffering and is done to prevent flickering graphics.<br>&nbsp;</td></tr> 
+<tr>
+  <td class="idx2" colspan="2"> 
+In BlitzMax everything you draw is drawn to an invisible board. You can draw all you want to this board but it won't show up on screen. You can see it as if blitzmax is drawing on the back of your screen, then when you want to show it, you flip the board and we can see what has been drawn to it. if we keep drawing a lot of stuff and flip, then continue drawing a lot of stuff, the board will be a mess. this is why we clear the board after we have flipped it, but this also means we have to redraw everything we previously had on the board! That's how it works. This board is known as the back buffer. you do not need to (and cannot) set the back buffer as in blitz3d/blitzplus. This method with flip and clear is called double buffering and is done to prevent flickering graphics.<br>&nbsp;</td></tr> 
 <tr><td class="idx2" colspan="2">How to make our loading bar work while using cls? (remove cls to see what happens)</td></tr>
-<tr><td class="code">
-<span class="cy">graphics</span><span class="cb"> 800,600,0</span><br>  
-<span class="cy">repeat<br> 
-<span class="cy">drawrect</span><span class="cb"> 0,40</span><span class="cw">,W,</span>
+<tr>
+	<td class="code">
+<span class="cy">Strict<br>
+Local 
+<span class="cw">W</span><br>
+<br>
+Graphics</span><span class="cb"> 800,600,0</span><br>  
+<span class="cy">Repeat</span><br>
+<span class="cy">&nbsp;&nbsp;Cls</span> <br> 
+<span class="cy">&nbsp;&nbsp;Drawrect</span><span class="cb"> 0,40</span><span class="cw">,W,</span>
 	<span class="cb">12</span><br>  
-<span class="cy">drawtext</span><span class="cg"> "- please wait -"</span>
+<span class="cy">&nbsp;&nbsp;drawtext</span><span class="cg"> "- please wait -"</span>
 	<span class="cb">,0,0</span><br> 
-<span class="cy">drawtext</span><span class="cg"> " width = "</span><span class="cw">+W</span>
+<span class="cy">&nbsp;&nbsp;drawtext</span><span class="cg"> " width = "</span><span class="cw">+W</span>
 	<span class="cb">,0,20</span><br> 
-<span class="cw">W:+</span><span class="cb">3</span><br>
-<span class="cy">Flip;Cls</span><br>
+<span class="cw">&nbsp;&nbsp;W:+</span><span class="cb">3</span><br>
+<span class="cy">&nbsp;&nbsp;Flip</span><br>
 <span class="cy">Until</span><span class="cw"> W >=</span><span class="cb"> 800</span></td>
 	<td class="code"> 
 	<span class="clb">
+	<br>
+	<br>
+	<br>
+	<br>
 	'set graphics mode<br><br>
 	'let's change the width of the box instead</span><br><br><br><br><br><br></td></tr>
 <tr><td colspan="2"><a name="p6_1">&nbsp;</td></tr>
@@ -66,14 +86,12 @@ This part is identical to BlitzBasic. At the Top Left of the screen we have the 
 <tr><td class="idx2" colspan="2">
 The X-Axis is the Horizontal Axis from the left side of the screen to the right side, The Y-Axis is Vertical and travels from the Top to the bottom. The resolution is what determines how many pixels you will have at each axis. So in our example the screen width (in pixels) would be 800 and the screen height 600. The more pixels at screen the more calculations is required by the computer both in 2D and 3D. You can get the current screen width with GraphicsWidth()The Line X1,Y1,X2,Y2 command creates a line from X1,Y1 to X2,Y2.<br>&nbsp;</td></tr>
 <tr><td class="idx2" colspan="2">Add the following to our example:</td></tr>
-<tr><td class="code" colspan="2">
-<span class="cy">DrawLine</span><span class="cb"> 40,40,80,80</span><span class="cw"> ;</span>
-<span class="cy">DrawLine</span><span class="cb"> 40,40,40,20</span></td></tr>
-<tr><td class="idx2" colspan="2">Remember:The ; allows several commands to be written on one line.</td></tr>
+<tr>
+  <td class="code" colspan="2">
+<span class="cy">DrawLine</span><span class="cb"> 40,40,80,80</span><span class="cy"><br>
+DrawLine</span><span class="cb"> 40,40,40,20</span></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td class="idx2"><a href="wave1.html">To Index</a> | <a href="wave7.html">Next Page</a></td><td align="right" class="cap">page 6</td></tr>
 </table>
 </body>
-
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave6.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 </html>

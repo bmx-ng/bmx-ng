@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave14.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 <head>
 <title>Page 14</title>
 <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
@@ -9,15 +8,17 @@
 </head>
 <body bgcolor="#FFFFFF">
 <table border="0" width="700" align="center" cellspacing="0">
-<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
-<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr>
+  <td class="copy">Wave's~ BlitzMax Tutorial for NG</td><td align="right" class="copy">~ November, 2015 ~ Version 11</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">&nbsp;</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td class="cap" colspan="2">Override Methods</td></tr>
 <tr><td class="idx2" colspan="2">
 If you have a type Car which is extended from a Vehicle then you'll inherit all methods in Vehicle to Car. You can still make a Method in Car with the same name as this Method in vehicle. If you call that method from your car you'll use the car's method. If you call it from vehicle you'll use the vehicle's method. When you have two methods of the same name in the same type it is called overriding methods. The Cars method overrides the vehicles method (car extends vehicle). This is also known as polymorphism. It can be useful because one command can do a lot of different things depending on who is calling it (what object-type). See the example below.<br>&nbsp;</td></tr> 
 <tr><td class="cap" colspan="2">Self</td></tr>
 <tr><td class="idx2" colspan="2">
-Self can only be used in methods. If you use Self it'll refer to the instance of that type that called the method.<br>Like:<br> C:Car = New Car; C.Run().<br> In the Run method Self would refer to the instance of Car known as C. So all fields in method can be accessed by Self.FieldName instead of just FieldName this use of Self would be quite pointless though. You use Self is if you in a method have a function/method that requires an instance of your type to be passed to it. Let's say that you inside your Method Run() in your Car-Type, need to call a function which accept Cars, to refer to your current instance of your car, use Self, StealTires( Self, Number ). Also you can use self when your function parameters have the same name as fields in your type.<br>
+Self can only be used in methods. If you use Self it'll refer to the instance of that type that called the method.<br>Like:<br> 
+Local C:Car = New Car; C.Run().<br> In the Run method Self would refer to the instance of Car known as C. So all fields in method can be accessed by Self.FieldName instead of just FieldName this use of Self would be quite pointless though. You use Self is if you in a method have a function/method that requires an instance of your type to be passed to it. Let's say that you inside your Method Run() in your Car-Type, need to call a function which accept Cars, to refer to your current instance of your car, use Self, StealTires( Self, Number ). Also you can use self when your function parameters have the same name as fields in your type.<br>
 Example:<br>
 Method SetPosition( X, Y )<br>
 Self.X = X<br>
@@ -26,50 +27,59 @@ If you haven't used Self here then your method must call it's parameters X1, Y1 
 <tr><td class="idx2" colspan="2"><br>Here is the real example:</td></tr> 
 <tr><td class="code" colspan="2">
 <span class="cy">Type</span><span class="cw"> Vehicle</span><br> 
-<span class="cy">Global</span><span class="cw"> Creator$ =</span><span class="cg"> " FX-Factory"</span><br>
-<span class="cy">Field</span><span class="cw"> Name$=</span><span class="cg">"Vehicle"</span><br> 
-<span class="cy">Field</span><span class="cw"> Broken=</span><span class="cy">False</span><br>&nbsp;<br> 
-<span class="cy">Method</span><span class="cw"> Test()</span><br>
-<span class="cy">If Not</span><span class="cw"> Broken</span><span class="cy"> print</span><span class="cw"> name+</span><span class="cg">" works!"</span><span class="cy"> Else Print</span><span class="cw"> name+</span><span class="cg">" is broken!"</span><br> 
-<span class="cy">End Method</span><br>&nbsp;<br> 
-<span class="clb">'Self refers to the Type calling</span><br>
-<span class="clb">'Example:'Bus.Collide( Train )</span><br>
-<span class="clb">'--> Bus is refered to as Self and Train as V (in the method below)</span><br>&nbsp;<br>
-<span class="clb">'Example2:'Train.Collide( Bus )</span><br>
-<span class="clb">'--> Train is refered to as Self and Bus as V (in this method Collide)</span><br>
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> Creator$ =</span><span class="cg"> " FX-Factory"</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> Name$=</span><span class="cg">"Vehicle"</span><br> 
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> Broken=</span><span class="cy">False</span><br>&nbsp;<br> 
+<span class="cy">&nbsp;&nbsp;Method</span><span class="cw"> Test()</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If Not</span><span class="cw"> Broken</span><span class="cy"> print</span><span class="cw"> name+</span><span class="cg">" works!"</span><span class="cy"> Else Print</span><span class="cw"> name+</span><span class="cg">" is broken!"</span><br> 
+<span class="cy">&nbsp;&nbsp;End Method</span><br>&nbsp;<br> 
+<span class="clb">&nbsp;&nbsp;'Self refers to the Type calling</span><br>
+<span class="clb">&nbsp;&nbsp;'Example:'Bus.Collide( Train )</span><br>
+<span class="clb">&nbsp;&nbsp;'--> Bus is refered to as Self and Train as V (in the method below)</span><br>&nbsp;<br>
+<span class="clb">&nbsp;&nbsp;'Example2:'Train.Collide( Bus )</span><br>
+<span class="clb">&nbsp;&nbsp;'--> Train is refered to as Self and Bus as V (in this method Collide)</span><br>
  
-<span class="cy">Method</span><span class="cw"> Collide(V:Vehicle)</span><br>
-<span class="cy">If</span><span class="cw"> Car(</span><span class="cy">Self</span><span class="cw">)</span><span class="cy"> And</span><span class="cw"> Car(V)</span><span class="cy"> Print</span><span class="cg"> "Car Collide with Car"</span><br>
-<span class="cy">If</span><span class="cw"> Car(</span><span class="cy">Self</span><span class="cw">)</span><span class="cy"> And</span><span class="cw"> Bus(V)</span><span class="cy"> Print</span><span class="cg"> "Car Collide with Bus"</span><br>
-<span class="cy">If</span><span class="cw"> Bus(</span><span class="cy">Self</span><span class="cw">)</span><span class="cy"> And</span><span class="cw"> Car(V)</span><span class="cy"> Print</span><span class="cg"> "Bus Collide with Car"</span><br>
-<span class="cy">If</span><span class="cw"> Bus(</span><span class="cy">Self</span><span class="cw">)</span><span class="cy"> And</span><span class="cw"> Bus(V)</span><span class="cy"> Print</span><span class="cg"> "Bus Collide with Bus"</span><br>
-<span class="cw">Broken=</span><span class="cy">True</span><span class="clb"> 'Note that Self. is not needed here</span><br>
-<span class="cw">V.Broken=</span><span class="cy">True</span><br> 
-<span class="cy">EndMethod</span><span class="clb"> 'If this Method feels strange, checkout "casting" below</span><br>&nbsp;<br>
+<span class="cy">&nbsp;&nbsp;Method</span><span class="cw"> Collide(V:Vehicle)</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> Car(</span><span class="cy">Self</span><span class="cw">)</span><span class="cy"> And</span><span class="cw"> Car(V)</span><span class="cy"> Print</span><span class="cg"> "Car Collide with Car"</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> Car(</span><span class="cy">Self</span><span class="cw">)</span><span class="cy"> And</span><span class="cw"> Bus(V)</span><span class="cy"> Print</span><span class="cg"> "Car Collide with Bus"</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> Bus(</span><span class="cy">Self</span><span class="cw">)</span><span class="cy"> And</span><span class="cw"> Car(V)</span><span class="cy"> Print</span><span class="cg"> "Bus Collide with Car"</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> Bus(</span><span class="cy">Self</span><span class="cw">)</span><span class="cy"> And</span><span class="cw"> Bus(V)</span><span class="cy"> Print</span><span class="cg"> "Bus Collide with Bus"</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Broken=</span><span class="cy">True</span><span class="clb"> 'Note that Self. is not needed here</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;V.Broken=</span><span class="cy">True</span><br> 
+<span class="cy">&nbsp;&nbsp;End Method</span><span class="clb"> 'If this Method feels strange, checkout "casting" below</span><br>&nbsp;<br>
  
 <span class="cy">End Type</span><br>&nbsp;<br>
  
 <span class="cy">Type</span><span class="cw"> Car</span><span class="cy"> Extends</span><span class="cw"> Vehicle</span><br>
-<span class="cy">Method</span><span class="cw"> Test()</span><br>
-<span class="cy">If Not</span><span class="cw"> Broken</span><span class="cy"> Print</span><span class="cg"> "Car works!"</span><span class="cy"> Else Print</span><span class="cg"> "Car is broken!"</span><br>
-<span class="cy">End Method</span><br>
+<span class="cy">&nbsp;&nbsp;Method</span><span class="cw"> Test()</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If Not</span><span class="cw"> Broken</span><span class="cy"> Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print</span><span class="cg"> "Car works!"<br>
+</span><span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print</span><span class="cg"> "Car is broken!"</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;End If</span> <br>
+<span class="cy">&nbsp;&nbsp;End Method</span><br>
 <span class="cy">End Type</span><br>&nbsp;<br>
  
 <span class="cy">Type</span><span class="cw"> Bus</span><span class="cy"> Extends</span><span class="cw"> Vehicle</span><br>
-<span class="cy">Method Test()</span><br>
-<span class="cy">If Not</span><span class="cw"> Broken</span><span class="cy"> Print</span><span class="cg"> "Bus works!"</span><span class="cy"> Else Print</span><span class="cg"> "Bus is broken!"</span><br>
-<span class="cy">End Method</span><br>&nbsp;<br>
+<span class="cy">&nbsp;&nbsp;Method Test()</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If Not</span><span class="cw"> Broken</span><span class="cy"> Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print</span><span class="cg"> "Bus works!"<br>
+</span><span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print</span><span class="cg"> "Bus is broken!"</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;End If <br>
+&nbsp;&nbsp;End Method</span><br>&nbsp;<br>
  
-<span class="cy">Method</span><span class="cw"> SuperTest()</span><br>
-<span class="cy">Super.Test()</span><span class="clb"> 'Calls Vehicle's Test()</span><br>
-<span class="cy">EndMethod</span><br>
-<span class="cy">End Type</span><br> 
+<span class="cy">&nbsp;&nbsp;Method</span><span class="cw"> SuperTest()</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Super.Test()</span><span class="clb"> 'Calls Vehicle's Test()</span><br>
+<span class="cy">&nbsp;&nbsp;End Method</span><br>
+<span class="cy">End Type</span><br>
+<br> 
 <span class="clb">'Just To test it all in an easy way</span><br> 
-<span class="cw">C:Car =</span><span class="cy"> New</span><span class="cw"> Car</span><br>
-<span class="cw">B:Bus =</span><span class="cy"> New</span><span class="cw"> Bus</span><br>
-<span class="cw">B.Collide( C )</span><br>
-<span class="cw">Car2:Car =</span><span class="cy"> New</span><span class="cw"> Car</span><br>
-<span class="cw">Bus2:Bus =</span><span class="cy"> New</span><span class="cw"> Bus</span><br>
+<span class="cw"><span class="cy">Local</span> C:Car =</span><span class="cy"> New</span><span class="cw"> Car</span><br>
+<span class="cw"><span class="cy">Local</span> B:Bus =</span><span class="cy"> New</span><span class="cw"> Bus</span><br>
+<span class="cw"><span class="cy">Local</span> B.Collide( C )</span><br>
+<span class="cw"><span class="cy">Local</span> Car2:Car =</span><span class="cy"> New</span><span class="cw"> Car</span><br>
+<span class="cw"><span class="cy">Local</span> Bus2:Bus =</span><span class="cy"> New</span><span class="cw"> Bus</span><br>
 <span class="cw">Bus2.Collide( B )</span><br>
 <span class="cw">Car2.Collide( Bus2 )</span><br>
 <span class="cw">Car2.Collide( C )</span><br>
@@ -77,7 +87,7 @@ If you haven't used Self here then your method must call it's parameters X1, Y1 
 <span class="cw">C.Test</span><br>
 <span class="cw">B.Test</span><br>
 <span class="cw">Bus2.Test</span><br>
-<span class="cw">Bus2.SuperTest()</span></td</tr>
+<span class="cw">Bus2.SuperTest()</span></td></tr>
 <tr><td class="idx2" colspan="2">
  
 This example shows method overriding, self, super, and casting.</td></tr>
@@ -86,7 +96,7 @@ This example shows method overriding, self, super, and casting.</td></tr>
 <tr><td class="idx2" colspan="2">
 If you have an overridden function or method Somefunction() in an extended type, let's take "Car" again. If you are somewhere in the car type, its functions or methods, and want to call Vehicles Somefunction() (With the same name!) you have to refer to it as Super.Somefunction(). Read Super as: Use parent's</td></tr>
  
-<tr><td class="cap2" colspan="2"><a name="p14_2"<br>Casting</td></tr>
+<tr><td class="cap2" colspan="2"><a name="p14_2"><br>Casting</a></td></tr>
 <tr><td class="idx2" colspan="2">
 In the above example I use casting. Casting is a way to check if an object is of a certain type (if it is a car not a bus). Objects are the instances of your types. If you create a new car, C:Car then C is your object, there will be times where you either want to check if C is a Car, Bus or perhaps a Vehicle. Well the answer here should be obvious, C is a Car and a Vehicle but not a bus.<br>
 Casting is done like this:<br>
@@ -95,39 +105,45 @@ If you look in the code example above at the method Collide() you'll see that I 
 <tr><td class="code" colspan="2"> 
 <span class="clb">'------------------------------------</span><br>
 <span class="cy">Type</span><span class="cw"> Tank</span><br> 
-<span class="cy">Field</span><span class="cw"> name$ =</span><span class="cg"> "Object Tank"</span><br>
-<span class="cy">EndType</span><br>
-<span class="cy">Type</span><span class="cw"> Bird</span><span class="cy"> EndType</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> name$ =</span><span class="cg"> "Object Tank"</span><br>
+<span class="cy">End Type</span><br>
+<br>
+<span class="cy">Type</span><span class="cw"> Bird<br>
+</span><span class="cy">End Type<br>
+</span><br>
 <span class="cy">Function</span><span class="cw"> ReturnsAnObject:</span><span class="cy">Object()</span><br>
-<span class="cw">T:Tank =</span><span class="cy"> New</span><span class="cw"> Tank</span><br> 
-<span class="cy">Return</span><span class="cw"> T</span><span class="clb"> 'But it is actually a Tank</span><br>
-<span class="cy">EndFunction</span><br>&nbsp;<br>
+<span class="cw">&nbsp;&nbsp;<span class="cy">Local</span> T:Tank =</span><span class="cy"> New</span><span class="cw"> Tank</span><br> 
+<span class="cy">&nbsp;&nbsp;Return</span><span class="cw"> T</span><span class="clb"> 'But it is actually a Tank</span><br>
+<span class="cy">End Function</span><br>&nbsp;<br>
  
 <span class="cw">TestObject:</span><span class="cy">Object</span><span class="cw"> = ReturnsAnObject()</span><br>
 <span class="clb">' Let's say we want to know if this TestObject is a Tank then we need</span><br>
 <span class="clb">' to cast it like this:</span><br> 
 <span class="cy">If</span><span class="cw"> Tank( TestObject )</span><br>
-<span class="clb">' This will evaluate True only If TestObject is of the Tank-Type.</span><br>
-<span class="clb">' Ok, we know it's of the TankType but how dowe do if we want to change</span><br>
-<span class="clb">' the name of this tank. We cannot do TestObject.Name$, We know it's a</span><br>
-<span class="clb">' tank but BlitzMax doesn't, so first we need to put the tank into a</span><br>
-<span class="clb">' variable of it's own:</span><br> 
-<span class="cw">myTank:Tank = Tank( TestObject )</span><br>
-<span class="cy">Print</span><span class="cw"> myTank.Name</span><br> 
-<span class="clb">'You can also cast And access an Object's field or method in one line:</span><br>
-<span class="cw">TestObject Tank( TestObject ).Name$ =</span><span class="cg"> "Cool Tank"</span><br>&nbsp;<br> 
+<span class="clb">&nbsp;&nbsp;' This will evaluate True only If TestObject is of the Tank-Type.</span><br>
+<span class="clb">&nbsp;&nbsp;' Ok, we know it's of the TankType but how dowe do if we want to change</span><br>
+<span class="clb">&nbsp;&nbsp;' the name of this tank. We cannot do TestObject.Name$, We know it's a</span><br>
+<span class="clb">&nbsp;&nbsp;' tank but BlitzMax doesn't, so first we need to put the tank into a</span><br>
+<span class="clb">&nbsp;&nbsp;' variable of it's own:</span><br> 
+<span class="cw"><span class="cy">&nbsp;&nbsp;Local</span> myTank:Tank = Tank( TestObject )</span><br>
+<span class="cy">&nbsp;&nbsp;Print</span><span class="cw"> myTank.Name</span><br> 
+<span class="clb">&nbsp;&nbsp;'You can also cast And access an Object's field or method in one line:</span><br>
+<span class="cw">&nbsp;&nbsp;Tank( TestObject ).Name$ =</span><span class="cg"> "Cool Tank"</span><br>
+<span class="cy">End If</span><br> 
 
 <span class="clb">' To show it all I made a Function which takes objects And If it is a</span><br>
 <span class="clb">' tank it prints the name.</span><br>&nbsp;<br>
  
 <span class="cy">Function</span><span class="cw"> GetTank( TestObject:</span><span class="cy">Object</span><span class="cw"> )</span><br>
-<span class="cy">If</span><span class="cw"> Tank( TestObject )</span><br>
-<span class="cw">myTank:Tank = Tank( TestObject )</span><br> 
-<span class="cy">If</span><span class="cw"> myTank</span><span class="cy"> Then Print</span><span class="cw"> myTank.Name</span><br>
-<span class="cy">Else</span><br>
-<span class="cy">Print</span><span class="cg"> "Not a Tank"</span><br>
-<span class="cy">EndIf</span><br>
-<span class="cy">EndFunction</span><br>&nbsp;<br>
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> Tank( TestObject )</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cy">Local</span> myTank:Tank = Tank( TestObject )</span><br> 
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> myTank</span><span class="cy"> Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print</span><span class="cw"> myTank.Name</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;End If</span> <br>
+<span class="cy">&nbsp;&nbsp;Else</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Print</span><span class="cg"> "Not a Tank"</span><br>
+<span class="cy">&nbsp;&nbsp;End If</span><br>
+<span class="cy">End Function</span><br>&nbsp;<br>
  
 <span class="clb">'See what happens when we give the Function some stuff.</span><br>
 <span class="cw">GetTank( TestObject )</span><br>
@@ -139,6 +155,4 @@ If you look in the code example above at the method Collide() you'll see that I 
 	<td align="right" class="cap">page 14</td></tr>
 </table>
 </body>
-
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave14.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 </html>

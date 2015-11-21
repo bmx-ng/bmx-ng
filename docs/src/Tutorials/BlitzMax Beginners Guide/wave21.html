@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave21.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 <HEAD>
 <TITLE>Page 21</TITLE>
 <META http-equiv="Content-type" content="text/html; charset=iso-8859-1">
@@ -9,8 +8,9 @@
 </head>
 <body bgcolor="#FFFFFF">
 <table border="0" width="700" align="center" cellspacing="0">
-<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
-<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr>
+  <td class="copy">Wave's~ BlitzMax Tutorial for NG</td><td align="right" class="copy">~ November, 2015 ~ Version 11</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">&nbsp;</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td class="cap" colspan="2">Sounds</td></tr>
 <tr><td class="idx2" colspan="2">
@@ -23,9 +23,9 @@ Let's say you want to know when your bullet hits the enemy.</td></tr>
 One way to do it is to use this simple function which I snapped from the forums:</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cy">Function</span><span class="cw"> RectsOverlap(x0, y0, w0, h0, x2, y2, w2, h2)</span><br>
-<span class="cy">If</span><span class="cw"> x0 > (x2 + w2)</span><span class="cy"> Or</span><span class="cw"> (x0 + w0) < x2</span><span class="cy"> Then Return False</span><br>
-<span class="cy">If</span><span class="cw"> y0 > (y2 + h2)</span><span class="cy"> Or</span><span class="cw"> (y0 + h0) < y2</span><span class="cy"> Then Return False</span><br>
-<span class="cy">Return True</span><br> 
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> x0 > (x2 + w2)</span><span class="cy"> Or</span><span class="cw"> (x0 + w0) < x2</span><span class="cy"> Return False</span><br>
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> y0 > (y2 + h2)</span><span class="cy"> Or</span><span class="cw"> (y0 + h0) < y2</span><span class="cy"> Return False</span><br>
+<span class="cy">&nbsp;&nbsp;Return True</span><br> 
 <span class="cy">End Function</span></td></tr>
 <tr><td class="idx2" colspan="2"> 
 This checks a rectangle at coordinate x0,y0 with a rectangle at x2,y2. w and h is the width and height of the rectangles, returns true if they overlap else false. This works perfect for enemy vs enemy or mouse-over-button collisions.<br>&nbsp;<br> 
@@ -33,19 +33,23 @@ Let's say you want to make sure that people don't walk thru walls, how would you
 <tr><td class="idx2" colspan="2"><br>
 Consider the following example:</td></tr>
 <tr><td class="code" colspan="2"> 
-<span class="cy">Graphics</span><span class="cb"> 800</span><span class="cw">,</span><span class="cb">600</span><span class="cw">,</span><span class="cb">0</span><br> 
+<span class="cy">Graphics</span><span class="cb"> 800</span><span class="cw">,</span><span class="cb">600</span><span class="cw">,</span><span class="cb">0</span><br>
+<span class="cy">Local</span><span class="cw"> LastX</span> <br> 
 <span class="cy">Global</span><span class="cw"> Xvel# =</span><span class="cb"> 0</span><span class="cw">.</span><span class="cb">5</span><span class="cw">, X# =</span><span class="cb"> 50</span><br> 
-<span class="cy">Repeat</span><br> 
-<span class="cw">LastX = X</span><span class="clb"> 'Save X</span><br>
-<span class="cw">X=X+Xvel</span><span class="clb"> 'Update X</span><br>
-<span class="clb">'Draw the wall</span><br>
-<span class="cy">SetColor</span><span class="cb"> 255</span><span class="cw">,</span><span class="cb">255</span><span class="cw">,</span><span class="cb">255</span><span class="clb"> 'White</span><br>
-<span class="cy">DrawRect</span><span class="cw">(</span><span class="cb"> 500</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">500</span><span class="cw">,</span><span class="cb">800</span><span class="cw"> )</span><br> 
-<span class="clb">'Draw moving object</span><br>
-<span class="cy">SetColor</span><span class="cb"> 255</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">0</span><span class="clb"> 'Red</span><br>
-<span class="cy">DrawRect</span><span class="cw">( X,</span><span class="cb"> 50</span><span class="cw">,</span><span class="cb"> 300</span><span class="cw">,</span><span class="cb"> 55</span><span class="cw"> )</span><br>
-<span class="cy">If</span><span class="cw"> X+</span><span class="cb">300</span><span class="cw"> ></span><span class="cb"> 500</span><span class="cw"> X=LastX</span><span class="clb"> 'We collided so reset to last saved X</span><br>
-<span class="cy">Flip</span><span class="cw"> ;</span><span class="cy"> Cls</span><br> 
+<span class="cy">Repeat</span><br>
+<span class="cy">&nbsp;&nbsp;Cls</span> <br> 
+<span class="cw">&nbsp;&nbsp;LastX = X</span><span class="clb"> 'Save X</span><br>
+<span class="cw">&nbsp;&nbsp;X=X+Xvel</span><span class="clb"> 'Update X</span><br>
+<span class="clb">&nbsp;&nbsp;'Draw the wall</span><br>
+<span class="cy">&nbsp;&nbsp;SetColor</span><span class="cb"> 255</span><span class="cw">,</span><span class="cb">255</span><span class="cw">,</span><span class="cb">255</span><span class="clb"> 'White</span><br>
+<span class="cy">&nbsp;&nbsp;DrawRect</span><span class="cw">(</span><span class="cb"> 500</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">500</span><span class="cw">,</span><span class="cb">800</span><span class="cw"> )</span><br> 
+<span class="clb">&nbsp;&nbsp;'Draw moving object</span><br>
+<span class="cy">&nbsp;&nbsp;SetColor</span><span class="cb"> 255</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">0</span><span class="clb"> 'Red</span><br>
+<span class="cy">&nbsp;&nbsp;DrawRect</span><span class="cw">( X,</span><span class="cb"> 50</span><span class="cw">,</span><span class="cb"> 300</span><span class="cw">,</span><span class="cb"> 55</span><span class="cw"> )</span><br>
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> X+</span><span class="cb">300</span><span class="cw"> ></span><span class="cb"> 500</span><span class="cw"> <span class="cy">Then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;X=LastX</span><span class="clb"> 'We collided so reset to last saved X</span><br>
+<span class="cy">&nbsp;&nbsp;End If</span> <br>
+<span class="cy">&nbsp;&nbsp;Flip</span><br> 
 <span class="cy">Until KeyDown</span><span class="cw">(Key_Escape)</span></td></tr>
 <tr><td class="idx2" colspan="2">
 The above shows how a simple wall check would work.<br>&nbsp;<br>
@@ -56,28 +60,29 @@ In the end checking the distance is the same as checking against circular target
 <tr><td class="code" colspan="2">
 <span class="cy">Strict</span><br>  
 <span class="cy">Function</span><span class="cw"> Distance#( X1, Y1, X2, Y2 )</span><br>
-<span class="cy">Local</span><span class="cw"> DX# = X2 - X1</span><br>
-<span class="cy">Local</span><span class="cw"> DY# = Y2 - Y1</span><br>
-<span class="cy">Return Sqr</span><span class="cw">( Dx*DX + Dy*Dy )</span><br> 
+<span class="cy">&nbsp;&nbsp;Local</span><span class="cw"> DX# = X2 - X1</span><br>
+<span class="cy">&nbsp;&nbsp;Local</span><span class="cw"> DY# = Y2 - Y1</span><br>
+<span class="cy">&nbsp;&nbsp;Return Sqr</span><span class="cw">( Dx*DX + Dy*Dy )</span><br> 
 <span class="cy">EndFunction</span><br> 
 <span class="cy">Graphics</span><span class="cb"> 800</span><span class="cw">,</span><span class="cb">600</span><span class="cw">,</span><span class="cb">0</span><br> 
 <span class="cy">Local</span><span class="cw"> LastX, LastY, MR =</span><span class="cb"> 20</span><span class="clb"> ' MR Short for MouseRadius</span><br>
 <span class="cy">Local</span><span class="cw"> TargetX =</span><span class="cb"> 400</span><span class="cw"> , TargetY =</span><span class="cb"> 400</span><br>
 <span class="cy">Local</span><span class="cw"> TR =</span><span class="cb"> 300</span><span class="clb"> ' TR Short for TargetRadius</span><br> 
-<span class="cy">Repeat</span><br> 
-<span class="clb">'Draw Mouse</span><br>
-<span class="cy">SetColor</span><span class="cb"> 0</span><span class="cw">,</span><span class="cb">155</span><span class="cw">,</span><span class="cb">0</span><span class="clb"> ' Green</span><br>
-<span class="cy">DrawOval MouseX</span><span class="cw">()-MR,</span><span class="cy"> MouseY</span><span class="cw">()-MR, MR*</span><span class="cb">2</span><span class="cw">, MR*</span><span class="cb">2</span><br> 
-<span class="clb">'Draw Target</span><br>
-<span class="cy">SetColor</span><span class="cb"> 0</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">255</span><span class="clb"> ' Blue</span><br>
-<span class="cy">DrawOval</span><span class="cw"> TargetX-TR, TargetY-TR, TR*</span><span class="cb">2</span><span class="cw">, TR*</span><span class="cb">2</span><br>
-<span class="cy">If</span><span class="cw"> Distance(</span><span class="cy"> MouseX</span><span class="cw">(),</span><span class="cy"> MouseY</span><span class="cw">(), TargetX, TargetY ) < TR+MR</span><br>
-<span class="cy">MoveMouse</span><span class="cw">( LastX, LastY )</span><span class="clb"> ' Move it back</span><br>
-<span class="cy">SetColor</span><span class="cb"> 255</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">0</span><br>
-<span class="cy">DrawText</span><span class="cg"> "CIRCULAR COLLISION DETECTED!"</span><span class="cw">,</span><span class="cb">20</span><span class="cw">,</span><span class="cb">20</span><br> 
-<span class="cy">EndIf</span><br>
-<span class="cw">LastX =</span><span class="cy"> MouseX</span><span class="cw">() ; LastY =</span><span class="cy"> MouseY</span><span class="cw">()</span><br> 
-<span class="cy">Flip</span><span class="cw"> ;</span><span class="cy"> Cls</span><br>
+<span class="cy">Repeat</span><br>
+<span class="cy">&nbsp;&nbsp;Cls</span> <br> 
+<span class="clb">&nbsp;&nbsp;'Draw Mouse</span><br>
+<span class="cy">&nbsp;&nbsp;SetColor</span><span class="cb"> 0</span><span class="cw">,</span><span class="cb">155</span><span class="cw">,</span><span class="cb">0</span><span class="clb"> ' Green</span><br>
+<span class="cy">&nbsp;&nbsp;DrawOval MouseX</span><span class="cw">()-MR,</span><span class="cy"> MouseY</span><span class="cw">()-MR, MR*</span><span class="cb">2</span><span class="cw">, MR*</span><span class="cb">2</span><br> 
+<span class="clb">&nbsp;&nbsp;'Draw Target</span><br>
+<span class="cy">&nbsp;&nbsp;SetColor</span><span class="cb"> 0</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">255</span><span class="clb"> ' Blue</span><br>
+<span class="cy">&nbsp;&nbsp;DrawOval</span><span class="cw"> TargetX-TR, TargetY-TR, TR*</span><span class="cb">2</span><span class="cw">, TR*</span><span class="cb">2</span><br>
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> Distance(</span><span class="cy"> MouseX</span><span class="cw">(),</span><span class="cy"> MouseY</span><span class="cw">(), TargetX, TargetY ) < TR+MR</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;MoveMouse</span><span class="cw">( LastX, LastY )</span><span class="clb"> ' Move it back</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;SetColor</span><span class="cb"> 255</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">0</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;DrawText</span><span class="cg"> "CIRCULAR COLLISION DETECTED!"</span><span class="cw">,</span><span class="cb">20</span><span class="cw">,</span><span class="cb">20</span><br> 
+<span class="cy">&nbsp;&nbsp;End If</span><br>
+<span class="cw">&nbsp;&nbsp;LastX =</span><span class="cy"> MouseX</span><span class="cw">() ; LastY =</span><span class="cy"> MouseY</span><span class="cw">()</span><br> 
+<span class="cy">&nbsp;&nbsp;Flip</span><br>
 <span class="cy">Until KeyDown</span><span class="cw">(Key_Escape)</span></td></tr>
 <tr><td class="idx2" colspan="2"><br> 
 The distance function is very handy. It gets a little more advanced if you want to stop, bounce or slide at surfaces. You can loop all your objects in a list and check each one against each other. Collision detection is very dependant on which type of game you are making. Blitz also has CollideImage functions, which can check your images for pixel perfect collisions. They are advanced and slow so I don't recommend any beginners to use them before they have proper documentation with good examples.
@@ -88,6 +93,4 @@ The distance function is very handy. It gets a little more advanced if you want 
 	<td align="right" class="cap">page 21</td></tr>
 </table>
 </BODY>
-
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave21.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:15 GMT -->
 </HTML>

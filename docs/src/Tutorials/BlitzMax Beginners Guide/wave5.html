@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave5.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 <head>
 <title>Page5</title>
 <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
@@ -9,12 +8,14 @@
 </head>
 <body bgcolor="#FFFFFF">
 <table width="700" align="center">
-<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
-<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr>
+  <td class="copy">Wave's~ BlitzMax Tutorial for NG</td><td align="right" class="copy">~ November, 2015 ~ Version 11</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">&nbsp;</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td class="cap" colspan="2">Then</td></tr>
-<tr><td class="idx2" colspan="2">
-When to use Then? You can put it after your If expression. The use of "Then", is not required and I think the code is just as easy to read without "Then". Like this, ( If A = 1 Then B = 2 ) is equal to ( If A = 1 B = 2 ). If you take a BlitzMax file and delete all "Then", it will run the same. Use "Then" If you think it helps you read the code. When I use then, then it is to make an if-statement on one line more readable, like in the example above and in the example below. My advice is, never use then if your if-statement is not on one line.<br>&nbsp;</td></tr>
+<tr>
+  <td class="idx2" colspan="2">
+When to use Then? You can put it after your If expression. The use of "Then", is not required. Like this, ( If A = 1 Then B = 2 ) is equal to ( If A = 1 B = 2 ). If you take a BlitzMax file and delete all "Then", it will run the same. Use "Then" If you think it helps you read the code. When I use then, then it is to make an if-statement on one line more readable, like in the example above and in the example below. <br>&nbsp;</td></tr>
 <tr><td class="cap" colspan="2">Not True or <> False?</td></tr>
 <tr><td class="idx2" colspan="2"> 
 True and False can be used in If-statements, usually to make the code a little easier to read, you can live without them.<br>
@@ -22,41 +23,60 @@ True and False can be used in If-statements, usually to make the code a little e
 False means something is equal to 0, True if it's not equal to 0. Many functions return 1 if success and 0 if fail.</td></tr> 
 <tr><td class="idx2" colspan="2">This can be used in an if-statement like this:</td></tr>
 <tr><td class="code" colspan="2"> 
-<span class="cy">If KeyDown</span><span class="cw">(Space) =</span> <span class="cy">True Then</span>
-<span class="cw"> A =</span><span class="cb"> 10</span><span class="cy"> Else</span>
-<span class="cw"> A =</span><span class="cb"> 0</span></td></tr>
+<span class="cy">If KeyDown</span><span class="cw">(Space) =</span> <span class="cy">True Then<br>
+</span><span class="cw">&nbsp;&nbsp;A =</span><span class="cb"> 10<br>
+</span><span class="cy">Else<br>
+</span><span class="cw">&nbsp;&nbsp;A =</span><span class="cb"> 0<br>
+<span class="cy">End If</span>
+</span></td></tr>
 <tr><td class="idx2" colspan="2"><br>
 This is also the same as writing:</td></tr>
-<tr><td class="code" colspan="2">
-<span class="cy">If KeyDown</span><span class="cw">(Key_Space)</span><span class="cy"> Then</span>
-<span class="cw"> A =</span><span class="cb"> 10</span><span class="cy"> Else</span>
-<span class="cw"> A =</span><span class="cb"> 0</span></td></tr>
+<tr>
+  <td class="code" colspan="2">
+<span class="cy">If KeyDown</span><span class="cw">(Key_Space)</span><span class="cy"> Then<br>
+</span><span class="cw">&nbsp;&nbsp;A =</span><span class="cb"> 10<br>
+</span><span class="cy">Else<br>
+</span><span class="cw">&nbsp;&nbsp;A =</span><span class="cb"> 0<br>
+<span class="cy">End If</span>
+</span></td></tr>
 <tr><td class="idx2" colspan="2"><br> 
 Because " = True" is assumed. You can also use "Not" after an IF to see if something is Not True (That is false),<br>Like this:</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cy">If KeyDown</span><span class="cw">(Key_Space) =</span>
-<span class="cy"> False Then</span><span class="cw"> A =</span><span class="cb"> 10</span>
-<span class="cy"> Else</span><span class="cw"> A =</span><span class="cb"> 0</span></td></tr>
+<span class="cy"> False Then</span><span class="cw"><br>
+&nbsp;&nbsp;A =</span><span class="cb"> 10<br>
+</span><span class="cy"> Else<br>
+</span><span class="cw">&nbsp;&nbsp;A =</span><span class="cb"> 0<br>
+<span class="cy">End If</span>
+</span></td></tr>
 <tr><td class="idx2" colspan="2">
 Can be written:</td></tr>
-<tr><td class="code" colspan="2"> 
-<span class="cy">If Not KeyDown</span><span class="cw">(Key_Space) <span class="cy">Then</span>
-<span class="cw"> A =</span><span class="cb"> 10</span><span class="cy"> Else</span>
-<span class="cw"> A =</span><span class="cb"> 0</span></td></tr>
+<tr>
+  <td class="code" colspan="2"> 
+    <p><span class="cy">If Not KeyDown</span><span class="cw">(Key_Space)</span> <span class="cy">Then<br>
+      </span><span class="cw">&nbsp;&nbsp;A =</span><span class="cb"> 10<br>
+        </span><span class="cy">Else<br>
+  </span><span class="cw">&nbsp;&nbsp;A =</span><span class="cb"> 0<br>
+  <span class="cy">End If</span>  </span></p></td></tr>
 <tr><td class="idx2" colspan="2"><br> 
-The two lines above do the exact same thing. You can also check objects with true and false, if an object is "null" (does not exist) it's false else it's true.
+The two sections above do the exact same thing. You can also check objects with true and false, if an object is "null" (does not exist) it's false else it's true.
 Example:</td></tr>
-<tr><td class="code" colspan="2"> 
-<span class="cy">If Not </span><span class="cw">Car</span><span class="cy"> Then Print</span>
-<span class="cg"> "Car not Found"</span></td></tr>
+<tr>
+  <td class="code" colspan="2"> 
+<span class="cy">If Not </span><span class="cw">Car</span><span class="cy"> Then<br>
+&nbsp;&nbsp;Print</span>
+<span class="cg"> "Car not Found"<br>
+<span class="cy">End If</span>
+</span></td></tr>
 <tr><td class="idx2" colspan="2"> 
 <> means "greater or higher than" and is therefore the same as not.</td></tr>
 <tr><td class="code" colspan="2">
 <span class="cy">If</span><span class="cw"> A <></span><span class="cb"> 10</span></td></tr>
 <tr><td class="idx2" colspan="2"> 
 above is the same as:<td></tr>
-<tr><td class="code" colspan="2"> 
-<span class="cy">if not</span><span class="cw"> A =</span><span class="cb"> 10</span></td></tr>
+<tr>
+  <td class="code" colspan="2"> 
+<span class="cy">If Not</span><span class="cw"> A =</span><span class="cb"> 10</span></td></tr>
 <tr><td class="idx2" colspan="2"><a name="p5_1">&nbsp;</td></tr> 
 <tr><td class="cap" colspan="2"><br>Start with Graphics</td></tr>
 <tr><td class="idx2" colspan="2"> 
@@ -71,6 +91,4 @@ Try to run the example on the page 6: </td></tr>
 <tr><td class="idx2"><a href="wave1.html">To Index</a> | <a href="wave6.html">Next Page</a></td><td align="right" class="cap">page 5</td></tr>
 </table>
 </body>
-
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave5.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 </html>

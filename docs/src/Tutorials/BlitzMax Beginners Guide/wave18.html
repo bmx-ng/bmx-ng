@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave18.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 <HEAD>
 <TITLE>Page 18</TITLE>
 <META http-equiv="Content-type" content="text/html; charset=iso-8859-1">
@@ -9,29 +8,31 @@
 </head>
 <body bgcolor="#FFFFFF">
 <table border="0" width="700" align="center" cellspacing="0">
-<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
-<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr>
+  <td class="copy">Wave's~ BlitzMax Tutorial for NG</td><td align="right" class="copy">~ November, 2015 ~ Version 11</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">&nbsp;</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td class="cap" colspan="2">Refreshrate and Delta Time</td></tr>
 <tr><td class="idx2" colspan="2">
 FPS, Frames per Second is the speed at which your game updates. By default BlitzMax tries to update at the monitors refreshrate. In the Graphics command: Graphics Width , Height ,Depth, Refreshrate. You can specify a refreshrate which BlitzMax will try to follow. If you have a simple game like pong and play it on a very fast computer without any limitation to the refreshrate, that game would be so fast you wouldn't even see the ball. If you try to play a game on a slow system which gives you a refreshrate below the one specified your game will run slow, that's your games minimum requirements.</td></tr>
 <tr><td class="idx2" colspan="2"><br>
-Put this type into any graphics code:</td</tr>
+Put this type into any graphics code:</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cy">DrawText</span><span class="cg"> "Your FPS: "</span><span class="cw">+FPS.Calc(),</span><span class="cb">10</span><span class="cw">,</span><span class="cb">10</span><span class="clb"> 'This goes in main-loop</span><br> 
 <span class="clb">' FPS_Counter <> Runs and displays the FPS</span><br>
 <span class="clb">' --------------------------------------------</span><br>
 <span class="cy">Type</span><span class="cw"> FPS</span><br>
-<span class="cy">Global</span><span class="cw"> Counter, Time, TFPS</span><br>
-<span class="cy">Function</span><span class="cw"> Calc%()</span><br>
-<span class="cw">Counter:+</span><span class="cb">1</span><br> 
-<span class="cy">If</span><span class="cw"> Time <</span><span class="cy"> MilliSecs</span><span class="cw">()TFPS = Counter</span><span class="clb"> ' <-Frames/Sec</span><br>
-<span class="cw">Time =</span><span class="cy"> MilliSecs</span><span class="cw">() +</span><span class="cb"> 1000</span><span class="clb"> 'Update</span><br>
-<span class="cw">Counter =</span><span class="cb"> 0</span><br>
-<span class="cy">EndIf</span><br>
-<span class="cy">Return TFPS</span><br>
-<span class="cy">EndFunction</span><br>
-<span class="cy">EndTyp</span><br>
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> Counter, Time, TFPS</span><br>
+<span class="cy">&nbsp;&nbsp;Function</span><span class="cw"> Calc%()</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Counter:+</span><span class="cb">1</span><br> 
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> Time <</span><span class="cy"> MilliSecs</span><span class="cw">()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TFPS = Counter</span><span class="clb"> ' <-Frames/Sec</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Time =</span><span class="cy"> MilliSecs</span><span class="cw">() +</span><span class="cb"> 1000</span><span class="clb"> 'Update</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Counter =</span><span class="cb"> 0</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;EndIf</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Return <span class="cw">TFPS</span></span><br>
+<span class="cy">&nbsp;&nbsp;End Function</span><br>
+<span class="cy">End Type</span><br>
 <span class="clb">' -------------------------------------------</span></td></tr>
 <tr><td class="idx2" colspan="2">
 You can run at maximum refreshrate (set it free) and with the use of timing control your logic so it stays at the speed specified by you. In this way no matter what system that runs the game it will run with the same speed; Object A will travel to B in the same time. The object will not slow down but with severe lag the object will warp instead. Once you have specified an objects speed in pixels/sec it will always follow that speed no matter the FPS. But to counter, why would you want lag before slowdown? Multiplayer! In multiplayer each client has to run the game at the same speed. After I learnt how delta timing works I would never choose not to use it, unless we're talking about a very small game. Is deltatiming complicated? The answer is no, but it does require you to add a couple of lines of code to your game. If you add delta time you'll also be able to easily change the game speed while keeping the FPS constant which can be good sometimes.</td></tr>
@@ -48,90 +49,92 @@ Here follows the Tank example again, this time with DeltaTime. Try to pretend th
 <span class="clb">'is it smooth?</span><br>&nbsp;<br> 
 
 <span class="cy">Type</span><span class="cw"> MoveObject</span><br>
-<span class="cy">Field</span><span class="cw"> X#,Y#</span><br>
-<span class="cy">Field</span><span class="cw"> Dir%</span><br>
-<span class="cy">Global</span><span class="cw"> DeltaTime:</span><span class="cy">Float</span><br>
-<span class="cy">Global</span><span class="cw"> TimeDelay:</span><span class="cy">Int</span><span class="clb"> ' Millisecs() returns int</span><br> 
-<span class="cy">Function</span><span class="cw"> UpdateDeltaTime()</span><br> 
-<span class="cw">DeltaTime = (</span><span class="cy"> MilliSecs</span><span class="cw">()- TimeDelay )*</span><span class="cb">0.001</span><span class="clb"> 'Delta Timer</span><br>
-<span class="cw">TimeDelay =</span><span class="cy"> MilliSecs</span><span class="cw">()</span><br>
-<span class="cy">End Function</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> X#,Y#</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> Dir%</span><br>
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> DeltaTime:</span><span class="cy">Float</span><br>
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> TimeDelay:</span><span class="cy">Int</span><span class="clb"> ' Millisecs() returns int</span><br> 
+<span class="cy">&nbsp;&nbsp;Function</span><span class="cw"> UpdateDeltaTime()</span><br> 
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;DeltaTime = (</span><span class="cy"> MilliSecs</span><span class="cw">()- TimeDelay )*</span><span class="cb">0.001</span><span class="clb"> 'Delta Timer</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;TimeDelay =</span><span class="cy"> MilliSecs</span><span class="cw">()</span><br>
+<span class="cy">&nbsp;&nbsp;End Function</span><br>
 <span class="cy">End Type</span><br>&nbsp;<br>
  
 <span class="cy">Type Tank</span><span class="cy"> Extends</span><span class="cw"> MoveObject</span><br> 
-<span class="clb">'Override the Speed Field in MoveObject</span><br>
-<span class="cy">Field</span><span class="cw"> Speed# =</span><span class="cb"> 400</span><span class="cw">/</span><span class="cb">1</span><span class="clb"> ' Pixels / Seconds</span><br>
-<span class="cy">Field</span><span class="cw"> Size%=</span><span class="cb">5</span><br>
-<span class="cy">Global</span><span class="cw"> TankNumber=</span><span class="cb">0</span><span class="clb"> 'The current number of tanks</span><br>
-<span class="cy">Global</span><span class="cw"> TankList:</span><span class="cy">TList</span><br>&nbsp;<br>
+<span class="clb">&nbsp;&nbsp;'Override the Speed Field in MoveObject</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> Speed# =</span><span class="cb"> 400</span><span class="cw">/</span><span class="cb">1</span><span class="clb"> ' Pixels / Seconds</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> Size%=</span><span class="cb">5</span><br>
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> TankNumber=</span><span class="cb">0</span><span class="clb"> 'The current number of tanks</span><br>
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> TankList:</span><span class="cy">TList</span><br>&nbsp;<br>
 
-<span class="clb">'Draw draws a rect at the tank's X,Y</span><br>
-<span class="cy">Method</span><span class="cw"> Draw()</span><br>
-<span class="cy">DrawRect</span><span class="cw"> X,Y,Size,Size</span><br>
-<span class="cy">EndMethod</span><br>&nbsp;<br>
+<span class="clb">&nbsp;&nbsp;'Draw draws a rect at the tank's X,Y</span><br>
+<span class="cy">&nbsp;&nbsp;Method</span><span class="cw"> Draw()</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;DrawRect</span><span class="cw"> X,Y,Size,Size</span><br>
+<span class="cy">&nbsp;&nbsp;End Method</span><br>&nbsp;<br>
  
-<span class="clb">'Go update the tank's movement</span><br>
-<span class="cy">Method</span><span class="cw"> Go()</span><br>
-<span class="cw">X:+Speed*</span><span class="cy">Cos</span><span class="cw">(Dir)*DeltaTime</span><br>
-<span class="cw">Y:+Speed*</span><span class="cy">Sin</span><span class="cw">(Dir)*DeltaTime</span><br>
-<span class="cy">EndMethod</span><br>&nbsp;<br> 
+<span class="clb">&nbsp;&nbsp;'Go update the tank's movement</span><br>
+<span class="cy">&nbsp;&nbsp;Method</span><span class="cw"> Go()</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;X:+Speed*</span><span class="cy">Cos</span><span class="cw">(Dir)*DeltaTime</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Y:+Speed*</span><span class="cy">Sin</span><span class="cw">(Dir)*DeltaTime</span><br>
+<span class="cy">&nbsp;&nbsp;End Method</span><br>&nbsp;<br> 
 
-<span class="clb">'Sets the starting values of the Tank</span><br>
-<span class="cy">Method</span><span class="cw"> SetupNew()</span><br>
-<span class="cw">Dir =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb">0</span><span class="cw">,</span><span class="cb">360</span><span class="cw">)</span><br>
-<span class="cw">X = (</span><span class="cy">GraphicsWidth</span><span class="cw">()/</span><span class="cb">2</span><span class="cw">) ; Y = (</span><span class="cy">GraphicsHeight</span><span class="cw">()/</span><span class="cb">2</span><span class="cw">)</span><br>
-<span class="cw">Speed:*</span><span class="cy">Rnd</span><span class="cw">(</span><span class="cb">0.1</span><span class="cw">,</span><span class="cb">1</span><span class="cw">)</span><br> 
-<span class="cy">End Method</span><br>&nbsp;<br>
+<span class="clb">&nbsp;&nbsp;'Sets the starting values of the Tank</span><br>
+<span class="cy">&nbsp;&nbsp;Method</span><span class="cw"> SetupNew()</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Dir =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb">0</span><span class="cw">,</span><span class="cb">360</span><span class="cw">)</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;X = (</span><span class="cy">GraphicsWidth</span><span class="cw">()/</span><span class="cb">2</span><span class="cw">)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Y = (</span><span class="cy">GraphicsHeight</span><span class="cw">()/</span><span class="cb">2</span><span class="cw">)</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Speed:*</span><span class="cy">Rnd</span><span class="cw">(</span><span class="cb">0.1</span><span class="cw">,</span><span class="cb">1</span><span class="cw">)</span><br> 
+<span class="cy">&nbsp;&nbsp;End Method</span><br>&nbsp;<br>
  
-<span class="clb">'This function Creates a new tank</span><br>
-<span class="cy">Function</span><span class="cw"> Create()</span><br>
-<span class="clb">'Create a List if none exists</span><br>
-<span class="cy">If Not</span><span class="cw"> TankList TankList =</span><span class="cy"> CreateList</span><span class="cw">()</span><br>
-<span class="cy">Local</span><span class="cw"> NewTank:Tank = </span><span class="cy">New</span><span class="cw"> Tank</span><br>
-<span class="cw">NewTank.SetupNew()</span><br>
-<span class="cw">TankList.AddLast( NewTank )</span><br>
-<span class="cw">TankNumber:+</span><span class="cb">1</span><br> 
-<span class="cy">End Function</span><br> 
+<span class="clb">&nbsp;&nbsp;'This function Creates a new tank</span><br>
+<span class="cy">&nbsp;&nbsp;Function</span><span class="cw"> Create()</span><br>
+<span class="clb">&nbsp;&nbsp;&nbsp;&nbsp;'Create a List if none exists</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If Not</span><span class="cw"> TankList TankList =</span><span class="cy"> CreateList</span><span class="cw">()</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Local</span><span class="cw"> NewTank:Tank = </span><span class="cy">New</span><span class="cw"> Tank</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;NewTank.SetupNew()</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;TankList.AddLast( NewTank )</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;TankNumber:+</span><span class="cb">1</span><br> 
+<span class="cy">&nbsp;&nbsp;End Function</span><br> 
 <span class="cy">End Type</span><br>&nbsp;<br>
  
 <span class="cy">Graphics</span><span class="cb"> 800</span><span class="cw">,</span><span class="cb">600</span><span class="cw">,</span><span class="cb">32</span><span class="cw">,Refreshrate</span><br> 
 <span class="clb">' Create a bunch of new Tanks</span><br> 
 <span class="cy">For Local</span><span class="cw"> Nr =</span><span class="cb"> 1</span><span class="cy"> To</span><span class="cw"> Number_of_Tanks</span><br>
-<span class="cw">Tank.Create()</span><br> 
+<span class="cw">&nbsp;&nbsp;Tank.Create()</span><br> 
 <span class="cy">Next</span><br>
 <span class="cy">Delay</span><span class="cb"> 500</span><br>
 <span class="cw">Tank.TimeDelay=</span><span class="cy">MilliSecs</span><span class="cw">()</span><br>
-<span class="cy">While Not KeyDown</span><span class="cw">(Key_Escape)</span><br> 
-<span class="cy">DrawText</span><span class="cg"> "Your FPS: "</span><span class="cw">+FPS.Calc(),</span><span class="cb">20</span><span class="cw">,</span><span class="cb">40</span><br>&nbsp;<br>
+<span class="cy">While Not KeyDown</span><span class="cw">(Key_Escape)</span><br>
+<span class="cy">&nbsp;&nbsp;Cls</span> <br> 
+<span class="cy">&nbsp;&nbsp;DrawText</span><span class="cg"> "Your FPS: "</span><span class="cw">+FPS.Calc(),</span><span class="cb">20</span><span class="cw">,</span><span class="cb">40</span><br>&nbsp;<br>
  
-<span class="cw">MoveObject.UpdateDeltaTime()</span><span class="clb"> 'Update for all MoveObjects</span><br>&nbsp;<br>
+<span class="cw">&nbsp;&nbsp;MoveObject.UpdateDeltaTime()</span><span class="clb"> 'Update for all MoveObjects</span><br>&nbsp;<br>
  
-<span class="cy">For Local T:Tank =</span><span class="cy"> EachIn</span><span class="cw"> Tank.TankList</span><br> 
-<span class="cw">T.Draw</span><br>  
-<span class="cy">DrawText</span><span class="cg"> "Number of Tanks : "</span><span class="cw">+Tank.TankNumber,</span><span class="cb">20</span><span class="cw">,</span><span class="cb">20</span><br>
-<span class="cw">T.Go</span><span class="clb"> 'update</span><br>
-<span class="cy">Next</span><br>
-<span class="cy">Flip</span><span class="cw">;</span><span class="cy">Cls</span><br>
+<span class="cy">&nbsp;&nbsp;For Local T:Tank =</span><span class="cy"> EachIn</span><span class="cw"> Tank.TankList</span><br> 
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;T.Draw</span><br>  
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;DrawText</span><span class="cg"> "Number of Tanks : "</span><span class="cw">+Tank.TankNumber,</span><span class="cb">20</span><span class="cw">,</span><span class="cb">20</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;T.Go</span><span class="clb"> 'update</span><br>
+<span class="cy">&nbsp;&nbsp;Next</span><br>
+<span class="cy">&nbsp;&nbsp;Flip</span><br>
 <span class="cy">Wend</span><br>&nbsp;<br>  
 
 <span class="clb">' FPS_Counter <> Runs And displays the FPS</span><br>
 <span class="clb">'-------------------------------------------</span><br> 
 <span class="cy">Type</span><span class="cw"> FPS</span><br>
-<span class="cy">Global</span><span class="cw"> Counter, Time, TFPS</span><br>
-<span class="cy">Function</span><span class="cw"> Calc%()</span><br> 
-<span class="cw">Counter:+</span><span class="cb">1</span><br> 
-<span class="cy">If</span><span class="cw"> Time <</span><span class="cy"> MilliSecs</span><span class="cw">()</span><br>
-<span class="cw">TFPS = Counter</span><span class="clb"> ' <-Frames/Sec</span><br>
-<span class="cw">Time =</span><span class="cy"> MilliSecs</span><span class="cw">() +</span><span class="cb"> 1000</span><span class="clb"> ' Update</span><br>
-<span class="cw">Counter =</span><span class="cb"> 0</span><br> 
-<span class="cy">EndIf</span><br>
-<span class="cy">Return</span><span class="cw"> TFPS</span><br>
-<span class="cy">EndFunction</span><br>
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> Counter, Time, TFPS</span><br>
+<span class="cy">&nbsp;&nbsp;Function</span><span class="cw"> Calc%()</span><br> 
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Counter:+</span><span class="cb">1</span><br> 
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;If</span><span class="cw"> Time <</span><span class="cy"> MilliSecs</span><span class="cw">()</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TFPS = Counter</span><span class="clb"> ' <-Frames/Sec</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Time =</span><span class="cy"> MilliSecs</span><span class="cw">() +</span><span class="cb"> 1000</span><span class="clb"> ' Update</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Counter =</span><span class="cb"> 0</span><br> 
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;End If</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cw"> TFPS</span><br>
+<span class="cy">&nbsp;&nbsp;End Function</span><br>
 <span class="cy">EndType</span><br>
 <span class="clb">' -------------------------------------------</span></td></tr>
 <tr><td class="idx2" colspan="2"><br>
 When you want to add DeltaTime you can follow these steps:<br>&nbsp;<br> 
-1. Add these lines to your main loop.</td</tr>
+1. Add these lines to your main loop.</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cw">DeltaTime# = (</span><span class="cy"> MilliSecs</span><span class="cw">()- TimeDelay )*</span><span class="cb">0</span><span class="cw">.</span><span class="cb">001</span><span class="clb"> ' Delta Timer</span><br>
 <span class="cw">TimeDelay =</span><span class="cy"> MilliSecs</span><span class="cw">()</span></td></tr>
@@ -142,7 +145,7 @@ Make sure that DeltaTime and TimeDelay are Globals so that you can use them in y
 <tr><td class="code" colspan="2"> 
 <span class="cw">X:+Speed*</span><span class="cy">Cos</span><span class="cw">(Dir)*DeltaTime</span><br>
 <span class="cw">Y:+Speed*</span><span class="cy">Sin</span><span class="cw">(Dir)*DeltaTime</span><br>
-<span class="cw">Sheild:+ SheildRechargeRate*DeltaTime</span></td</tr>
+<span class="cw">Sheild:+ SheildRechargeRate*DeltaTime</span></td></tr>
 <tr><td class="idx2" colspan="2"><br> 
 Make these variables are floats or doubles.<br>&nbsp;<br> 
 
@@ -153,53 +156,53 @@ Here is my Delta-Type. It will help you with delta time. No excuse not to use it
 <span class="clb">' _____________________________________________________</span><br>
 <span class="clb">' ------------------------------------------------------</span><br>  
 <span class="cy">Type Delta</span><br> 
-<span class="clb">' D E L T A T I M E</span><br>
-<span class="clb">' -----------------------------------------------------</span><br>
-<span class="clb">' This type is Fully global. Which means you'll always</span><br>
-<span class="clb">' refere to it as Delta.Start() , Delta.Time(),</span><br>
-<span class="clb">' Delta.Update()</span><br>
-<span class="clb">'</span><br>
-<span class="clb">' You shouldn't create instances of this type!</span><br>
-<span class="clb">' DeltaTime is the same for all your objects!</span><br>
-<span class="clb">'</span><br> 
-<span class="cy">Global</span><span class="cw"> DeltaTime#</span><br>
-<span class="cy">Global</span><span class="cw"> TimeDelay%</span><br> 
-<span class="clb">' Do this before your main loop</span><br>
-<span class="clb">' If you don't there will be a jump in deltatime</span><br>
-<span class="clb">' where it is very big until it cools down</span><br>
-<span class="clb">' If anything is moving under that time it would get speeds</span><br>
-<span class="clb">' well above 100000. So put this line before your main-loop</span><br> 
-<span class="cy">Function</span><span class="cw"> Start()</span><br>
-<span class="cw">TimeDelay =</span><span class="cy"> MilliSecs</span><span class="cw">()</span><br>
-<span class="cy">End Function</span><br>&nbsp;<br>
+<span class="clb">&nbsp;&nbsp;' D E L T A T I M E</span><br>
+<span class="clb">&nbsp;&nbsp;' -----------------------------------------------------</span><br>
+<span class="clb">&nbsp;&nbsp;' This type is Fully global. Which means you'll always</span><br>
+<span class="clb">&nbsp;&nbsp;' refere to it as Delta.Start() , Delta.Time(),</span><br>
+<span class="clb">&nbsp;&nbsp;' Delta.Update()</span><br>
+<span class="clb">&nbsp;&nbsp;'</span><br>
+<span class="clb">&nbsp;&nbsp;' You shouldn't create instances of this type!</span><br>
+<span class="clb">&nbsp;&nbsp;' DeltaTime is the same for all your objects!</span><br>
+<span class="clb">&nbsp;&nbsp;'</span><br> 
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> DeltaTime#</span><br>
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> TimeDelay%</span><br> 
+<span class="clb">&nbsp;&nbsp;' Do this before your main loop</span><br>
+<span class="clb">&nbsp;&nbsp;' If you don't there will be a jump in deltatime</span><br>
+<span class="clb">&nbsp;&nbsp;' where it is very big until it cools down</span><br>
+<span class="clb">&nbsp;&nbsp;' If anything is moving under that time it would get speeds</span><br>
+<span class="clb">&nbsp;&nbsp;' well above 100000. So put this line before your main-loop</span><br> 
+<span class="cy">&nbsp;&nbsp;Function</span><span class="cw"> Start()</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;TimeDelay =</span><span class="cy"> MilliSecs</span><span class="cw">()</span><br>
+<span class="cy">&nbsp;&nbsp;End Function</span><br>&nbsp;<br>
  
-<span class="clb">' Everytime where you want to get the deltatime</span><br>
-<span class="clb">' call this: Delta.Time</span><br>
-<span class="clb">' You should add this to every place which</span><br>
-<span class="clb">' adds to your position/speed/acceleration</span><br>
-<span class="clb">' But not to everything that adds</span><br>
-<span class="clb">'</span><br>
-<span class="clb">' The basic rule is to add deltatime to all</span><br>
-<span class="clb">' things which get added to every frame (over time)</span><br>
-<span class="clb">' because this means they will get huge if</span><br>
-<span class="clb">' you don't use delta.</span><br>
-<span class="clb">' Like Speed:+ 10*Delta.Time</span><br> 
-<span class="cy">Function</span><span class="cw"> Time#()</span><br>
-<span class="cy">Return</span><span class="cw"> DeltaTime#</span><br>
-<span class="cy">End Function</span><br>&nbsp;<br> 
+<span class="clb">&nbsp;&nbsp;' Everytime where you want to get the deltatime</span><br>
+<span class="clb">&nbsp;&nbsp;' call this: Delta.Time</span><br>
+<span class="clb">&nbsp;&nbsp;' You should add this to every place which</span><br>
+<span class="clb">&nbsp;&nbsp;' adds to your position/speed/acceleration</span><br>
+<span class="clb">&nbsp;&nbsp;' But not to everything that adds</span><br>
+<span class="clb">&nbsp;&nbsp;'</span><br>
+<span class="clb">&nbsp;&nbsp;' The basic rule is to add deltatime to all</span><br>
+<span class="clb">&nbsp;&nbsp;' things which get added to every frame (over time)</span><br>
+<span class="clb">&nbsp;&nbsp;' because this means they will get huge if</span><br>
+<span class="clb">&nbsp;&nbsp;' you don't use delta.</span><br>
+<span class="clb">&nbsp;&nbsp;' Like Speed:+ 10*Delta.Time</span><br> 
+<span class="cy">&nbsp;&nbsp;Function</span><span class="cw"> Time#()</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Return</span><span class="cw"> DeltaTime#</span><br>
+<span class="cy">&nbsp;&nbsp;End Function</span><br>&nbsp;<br> 
 
-<span class="clb">' Put this once in your main loop</span><br>
-<span class="clb">' it calculates the current deltatime</span><br>
-<span class="clb">' depending on your framerate or more exact</span><br>
-<span class="clb">' the time between each/the last frame.</span><br>
-<span class="cy">Function</span><span class="cw"> Update()</span><br> 
-<span class="clb">' _____________________________________________________</span><br>
-<span class="clb">' Purpose: Calculates DeltaTime , put it in mainloop</span><br>
-<span class="clb">' ----------------------------------------------------</span><br>
-<span class="cw">DeltaTime = (</span><span class="cy"> MilliSecs</span><span class="cw">() - TimeDelay )*0.001
-TimeDelay = MilliSecs()</span><br>&nbsp;<br>
+<span class="clb">&nbsp;&nbsp;' Put this once in your main loop</span><br>
+<span class="clb">&nbsp;&nbsp;' it calculates the current deltatime</span><br>
+<span class="clb">&nbsp;&nbsp;' depending on your framerate or more exact</span><br>
+<span class="clb">&nbsp;&nbsp;' the time between each/the last frame.</span><br>
+<span class="cy">&nbsp;&nbsp;Function</span><span class="cw"> Update()</span><br> 
+<span class="clb">&nbsp;&nbsp;&nbsp;&nbsp;' _____________________________________________________</span><br>
+<span class="clb">&nbsp;&nbsp;&nbsp;&nbsp;' Purpose: Calculates DeltaTime , put it in mainloop</span><br>
+<span class="clb">&nbsp;&nbsp;&nbsp;&nbsp;' ----------------------------------------------------</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;DeltaTime = (</span><span class="cy"> MilliSecs</span><span class="cw">() - TimeDelay )*0.001<br>
+&nbsp;&nbsp;&nbsp;&nbsp;TimeDelay = MilliSecs()</span><br>&nbsp;<br>
 
-<span class="cy">EndFunction</span><br>
+<span class="cy">&nbsp;&nbsp;End Function</span><br>
 <span class="cy">End Type</span><br>
 <span class="clb">'_____________________________________________________</span><br>
 <span class="clb">'------------------------------------------------------</span><br>  
@@ -209,6 +212,4 @@ TimeDelay = MilliSecs()</span><br>&nbsp;<br>
 	<td align="right" class="cap">page 18</td></tr>
 </table>
 </BODY>
-
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave18.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 </HTML>

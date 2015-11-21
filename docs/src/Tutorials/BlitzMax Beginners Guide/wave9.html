@@ -2,7 +2,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave9.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:15 GMT -->
 <head>
 <title>Page9</title>
 <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
@@ -10,8 +9,9 @@
 </head>
 <body bgcolor="#FFFFFF">
 <table border="0" width="700" align="center" cellspacing="0">
-<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
-<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr>
+  <td class="copy">Wave's~ BlitzMax Tutorial for NG</td><td align="right" class="copy">~ November, 2015 ~ Version 11</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">&nbsp;</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td class="cap" colspan="2">Types</td></tr>
 <tr><td class="idx2"" colspan="2"> 
@@ -21,21 +21,21 @@ A type is like a structure or a blueprint of variables. It's like a skeleton you
 <tr><td class="idx2"" colspan="2"> 
 let's say we want a spaceship then let's first create a structure for it:</td></tr>
 <tr><td class="code" colspan="2"> 
-<span class="cy">Type</span><span class="cw"> spaceship</span><span class="clb" 'declares a new type</span><br>
-<span class="clb">'this is what the structure contains:</span><br> 
-<span class="cy">Global</span><span class="cw"> fleet$</span><br>
-<span class="cy">Field</span><span class="cw"> maxspeed#</span><br>
-<span class="cy">Field</span><span class="cw"> armor%=</span><span class="cb">2000</span><br>
-<span class="cy">Field</span><span class="cw"> name$</span><br>
+<span class="cy">Type</span><span class="cw"> spaceship</span><span class="clb"> 'declares a new type</span><br>
+<span class="clb">&nbsp;&nbsp;'this is what the structure contains:</span><br> 
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> fleet$</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> maxspeed#</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> armor%=</span><span class="cb">2000</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> name$</span><br>
 <span class="cy">End Type</span><span class="clb"> 'ends declaration</span></td></tr>
 <tr><td class="idx2"" colspan="2"><br> 
 Note that above is the same as this:</td></tr>
 <tr><td class="code" colspan="2"> 
 <span class="cy">Type</span><span class="cw"> spaceship</span><br> 
-<span class="cy">Global</span><span class="cw"> fleet:</span></span><span class="cy">String</span><br> 
-<span class="cy">Field</span><span class="cw"> maxspeed:</span><span class="cy">Float</span><br> 
-<span class="cy">Field</span><span class="cw"> armor:</span><span class="cy">Int</span><span class="cw">=</span><span class="cb">2000</span><br> 
-<span class="cy">Field</span><span class="cw"> name:</span><span class="cy">String</span><br>
+<span class="cy">&nbsp;&nbsp;Global</span><span class="cw"> fleet:</span></span><span class="cy">String</span><br> 
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> maxspeed:</span><span class="cy">Float</span><br> 
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> armor:</span><span class="cy">Int</span><span class="cw">=</span><span class="cb">2000</span><br> 
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> name:</span><span class="cy">String</span><br>
 <span class="cy">End Type</span></td></tr>
 <tr><td class="idx2" colspan="2"><br> 
 There is no rule that says we need to have our type at the top of our file, types are like functions in this case. They can be declared almost anywhere except inside of another type. You can even keep them in separate files which is common when working with oop.</td></tr> 
@@ -55,8 +55,9 @@ To access the field of this new object called ship we use dot, you can see it as
 <span class="cw">Ship.Name =</span><span class="cg"> "wavebreaker"</span></td></tr>
 <tr><td class="idx2" colspan="2"><br> 
 let's create another ship:</td></tr>
-<tr><td class="code" colspan="2"> 
-<span class="cy">local</span><span class="cw"> ship2:spaceship =</span><span class="cy"> New</span><span class="cw"> SpaceShip</span><br>
+<tr>
+  <td class="code" colspan="2"> 
+<span class="cy">Local</span><span class="cw"> ship2:spaceship =</span><span class="cy"> New</span><span class="cw"> SpaceShip</span><br>
 <span class="cw">Ship2.MaxSpeed =</span><span class="cb"> 7.5</span></td></tr>
 <tr><td class="idx2" colspan="2">
 Let's use the default armor value (see SpaceShip-Type if unsure)</td></tr>
@@ -65,8 +66,9 @@ Let's use the default armor value (see SpaceShip-Type if unsure)</td></tr>
 <tr><td class="idx2" colspan="2"><br>
 Now I have two objects of the SpaceShip Type, Ship and Ship2. I can always use the fields of these objects as a variable.</td></tr>
 <tr><td class="idx2" colspan="2"><br>For example:</td><tr>
-<tr><td class="code" colspan="2"> 
-<span class="cy">if</span><span class="cw"> ship.maxspeed ></span><span class="cb"> 200</span> <span class="cy">Then</span><span class="cw"> Ship.Name =</span><span class="cg"> "LightBreaker"</span></td></tr>
+<tr>
+  <td class="code" colspan="2"> 
+<span class="cy">If</span><span class="cw"> ship.maxspeed ></span><span class="cb"> 200</span> <span class="cy">Then</span><span class="cw"> Ship.Name =</span><span class="cg"> "LightBreaker"</span></td></tr>
 <tr><td class="idx2" colspan="2"><br> 
 Note that if I would set Ship2 = Ship then both Ship and Ship2 would point to Ship, in that case Ship2 would be lost and there would be no way to access it, and it will be automatically deleted by BlitzMax. Ship/Ship2 is simply the addresses to these objects. One object can have several pointers to it. The object itself is unique but the address to it can reside in several different variables. Think about it.</td></tr>   
 <tr><td class="idx2" colspan="2"><br>Let's continue on our space ship example:</td></tr>
@@ -92,15 +94,15 @@ If we collect all our objects into one place we would not need to refer to them 
 The solution is called Lists. Lists are more dynamic than arrays and therefore offer a great advantage that makes your code easier. It's all about removing and adding objects. Arrays have a set length, lists do not. The length of a list is depending on the number of objects inside it. Study code below to see example.</td></tr>
 <tr><td class="idx2" colspan="2">Create a new file. Paste, Read, Build, Read, Learn.</td></tr>
 <tr><td class="code" colspan="2"> 
-<span class="cy">Strict</span><span class="clb"> 'This time I'll use Strict mode</span><br>
+<span class="cy">Strict</span><br>
 <span class="cy">Global</span><span class="cw"> Number_of_Tanks =</span><span class="cb"> 10</span><span class="clb"> 'How many tanks to create?</span><br>&nbsp;<br>
 <span class="clb">' Having a Global like the one above makes it easy To change how the program</span><br>
 <span class="clb">' acts at least in small examples like this. Now let's declare a new type</span><br>
 <span class="clb">' called Tank.</span><br>&nbsp;<br>
 <span class="cy">Type</span><span class="cw"> TTank</span><span class="clb"> 'The extra T infront of the type name is good use</span><br>
-<span class="cy">Field</span><span class="cw"> X#, Y#</span><br>
-<span class="cy">Field</span><span class="cw"> Dir, Armor =</span><span class="cb"> 100</span><br>
-<span class="cy">Field</span><span class="cw"> Speed# =</span><span class="cb"> 0.2,</span><span class="cw"> Size =</span><span class="cb"> 25</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> X#, Y#</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> Dir, Armor =</span><span class="cb"> 100</span><br>
+<span class="cy">&nbsp;&nbsp;Field</span><span class="cw"> Speed# =</span><span class="cb"> 0.2,</span><span class="cw"> Size =</span><span class="cb"> 25</span><br>
 <span class="cy">End Type</span><br>&nbsp;<br>
 <span class="cy">Graphics</span><span class="cb"> 800,600</span><br>&nbsp;<br>
 <span class="cy">Global TankList:</span><span class="cy">TList</span><span class="cw"> =</span><span class="cy"> CreateList</span><span class="cw">()</span><span class="clb">'Create a list to store all tanks</span><br>&nbsp;<br>
@@ -111,28 +113,30 @@ The solution is called Lists. Lists are more dynamic than arrays and therefore o
 <span class="clb">' functions.</span><br>&nbsp;<br>
 <span class="clb">' Create a bunch of new Tanks</span><br>
 <span class="cy">For Local</span><span class="cw"> N =</span><span class="cb"> 1</span><span class="cy"> To</span><span class="cw"> number_of_tanks</span><span class="clb"> ' Number_of_Tanks is a Global</span><br>
-<span class="cy">Local</span><span class="cw"> NewTank:TTank</span><span class="clb"> 'Declares a variable to store our Tank-Type</span><br>
-<span class="clb">'Put the address of this new Tank into variable NewTank</span><br> 
-<span class="cw">NewTank =</span><span class="cy"> New</span><span class="cw"> TTank</span><br> 
-<span class="clb">'Set a random Armor 150 + 10,20,30,40 or 50</span><br>
-<span class="cw">NewTank.Armor =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 5</span><span class="cw"> )*</span><span class="cb">10</span><span class="cw"> +</span><span class="cb"> 150</span><br> 
-<span class="clb">'Random Start Location</span><br>
-<span class="cw">NewTank.X =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 5, 800</span><span class="cw"> ) ; NewTank.Y =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 5, 600)</span><br>
-<span class="cw"> NewTank.Dir =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 0, 360</span><span class="cw"> )</span><br>
-<span class="clb">'Put this tank called NewTank into our TankList</span><br> 
-<span class="cy">ListAddLast</span><span class="cw">( TankList, NewTank )</span><br>
+<span class="cy">&nbsp;&nbsp;Local</span><span class="cw"> NewTank:TTank</span><span class="clb"> 'Declares a variable to store our Tank-Type</span><br>
+<span class="clb">&nbsp;&nbsp;'Put the address of this new Tank into variable NewTank</span><br> 
+<span class="cw">&nbsp;&nbsp;NewTank =</span><span class="cy"> New</span><span class="cw"> TTank</span><br> 
+<span class="clb">&nbsp;&nbsp;'Set a random Armor 150 + 10,20,30,40 or 50</span><br>
+<span class="cw">&nbsp;&nbsp;NewTank.Armor =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 5</span><span class="cw"> )*</span><span class="cb">10</span><span class="cw"> +</span><span class="cb"> 150</span><br> 
+<span class="clb">&nbsp;&nbsp;'Random Start Location</span><br>
+<span class="cw">&nbsp;&nbsp;NewTank.X =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 5, 800</span><span class="cw"> )<br>
+&nbsp;&nbsp;NewTank.Y =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 5, 600)</span><br>
+<span class="cw">&nbsp;&nbsp;NewTank.Dir =</span><span class="cy"> Rand</span><span class="cw">(</span><span class="cb"> 0, 360</span><span class="cw"> )</span><br>
+<span class="clb">&nbsp;&nbsp;'Put this tank called NewTank into our TankList</span><br> 
+<span class="cy">&nbsp;&nbsp;ListAddLast</span><span class="cw">( TankList, NewTank )</span><br>
 <span class="cy">Next</span><br>&nbsp;<br> 
-<span class="cy">While Not KeyDown</span><span class="cw">(Key_Escape)</span><br>&nbsp;<br> 
-<span class="clb">'Local T is declared to hold the current Tank each loop</span><br>
-<span class="clb">'Because we called our Type TTank, Tank is availible as variable</span><br>
-<span class="cy">For Local</span><span class="cw"> Tank:TTank =</span><span class="cy"> EachIn</span><span class="cw"> TankList</span><br>
-<span class="cy">DrawOval</span><span class="cw">( Tank.X, Tank.Y, Tank.Size, Tank.Size )</span><br>
-<span class="cy">DrawText</span><span class="cg"> "Number of Tanks : "</span><span class="cw">+TankList.Count(),</span><span class="cb"> 20, 20</span><br>
-<span class="cy">DrawText</span><span class="cg"> "Press ESC to exit"</span><span class="cb">, 20, 40</span><span class="clb"> '20 is X-coordinate, 40 is Y</span><br>
-<span class="cw">Tank.X:+ Tank.Speed*</span><span class="cy">Cos</span><span class="cw">( Tank.Dir )</span><br>
-<span class="cw">Tank.Y:+ Tank.Speed*</span><span class="cy">Sin</span><span class="cw">( Tank.Dir )</span><br>
-<span class="cy">Next</span><span class="clb"> 'This loop will loop for every Tank that was added to TankList</span><br>&nbsp;<br> 
-<span class="cy">Flip</span><span class="cw"> ;</span><span class="cy"> Cls</span><br>
+<span class="cy">While Not KeyDown</span><span class="cw">(Key_Escape)</span><br>
+<span class="cy">&nbsp;&nbsp;Cls</span> <br>&nbsp;<br> 
+<span class="clb">&nbsp;&nbsp;'Local T is declared to hold the current Tank each loop</span><br>
+<span class="clb">&nbsp;&nbsp;'Because we called our Type TTank, Tank is availible as variable</span><br>
+<span class="cy">&nbsp;&nbsp;For Local</span><span class="cw"> Tank:TTank =</span><span class="cy"> EachIn</span><span class="cw"> TankList</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;DrawOval</span><span class="cw">( Tank.X, Tank.Y, Tank.Size, Tank.Size )</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;DrawText</span><span class="cg"> "Number of Tanks : "</span><span class="cw">+TankList.Count(),</span><span class="cb"> 20, 20</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;DrawText</span><span class="cg"> "Press ESC to exit"</span><span class="cb">, 20, 40</span><span class="clb"> '20 is X-coordinate, 40 is Y</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Tank.X:+ Tank.Speed*</span><span class="cy">Cos</span><span class="cw">( Tank.Dir )</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Tank.Y:+ Tank.Speed*</span><span class="cy">Sin</span><span class="cw">( Tank.Dir )</span><br>
+<span class="cy">&nbsp;&nbsp;Next</span><span class="clb"> 'This loop will loop for every Tank that was added to TankList</span><br>&nbsp;<br> 
+<span class="cy">&nbsp;&nbsp;Flip</span><br>
 <span class="cy">Wend</span></td></tr>
 <tr><td class="idx2" colspan="2"> 
 In this way you can change all your tanks in an Eachin-loop. Note that in the above example Number_of_Tanks could have been a constant and it could have been inside the Tank-Type. Also the Global TankList could have been put inside the Type with success.</td></tr>
@@ -141,6 +145,4 @@ In this way you can change all your tanks in an Eachin-loop. Note that in the ab
 	<td align="right" class="cap">page 9</td></tr>
 </table>
 </body>
-
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave9.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:15 GMT -->
 </html>

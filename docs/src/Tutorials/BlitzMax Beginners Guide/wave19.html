@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave19.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 <HEAD>
 <TITLE>Page 19</TITLE>
 <META http-equiv="Content-type" content="text/html; charset=iso-8859-1">
@@ -9,8 +8,9 @@
 </head>
 <body bgcolor="#FFFFFF">
 <table border="0" width="700" align="center" cellspacing="0">
-<tr><td class="copy">Wave's~ BlitzMax Tutorial</td><td align="right" class="copy">~ July 20, 2005 ~ Version 10</td></tr>
-<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">version 7</td></tr>
+<tr>
+  <td class="copy">Wave's~ BlitzMax Tutorial for NG</td><td align="right" class="copy">~ November, 2015 ~ Version 11</td></tr>
+<tr><td class="cap2">Beginners guide to BlitzMax</td><td align="right" class="cap2">&nbsp;</td></tr>
 <tr><td colspan="2"><hr></td></tr>
 <tr><td class="cap" colspan="2">Images</td></tr>
 <tr><td class="idx2" colspan="2">
@@ -22,8 +22,9 @@ Maskcolor is the color you want to use as the transparent color. If black are yo
 <tr><td class="code" colspan="2"> 
 <span class="cy">SetMaskColor</span><span class="cb"> 0</span><span class="cw">,</span><span class="cb">0</span><span class="cw">,</span><span class="cb">0</span><span class="clb"> 'Black is the default anyway</span><br>
 <span class="cy">Global</span><span class="cw"> My_Image:Timage=</span><span class="cy">LoadImage</span><span class="cw">(</span><span class="cg"> "ImageName.bmp"</span><span class="cw"> )</span></td></tr>
-<tr><td class="idx2" colspan="2"> 
-It is recommended to load images into Timage objects because that way BMax can help you clean up the memory when the image are no longer being used.<br>&nbsp;<br>
+<tr>
+  <td class="idx2" colspan="2"> 
+It is recommended to load images into Timage objects because that way BlitzMax can help you clean up the memory when the image are no longer being used.<br>&nbsp;<br>
  
 Loadimage returns an image-object. This is what blitz uses to keep track of all your loaded images. You use this object which points to the address of this image when you want to draw or edit an image. Loadimage has to come after you initiate your graphics. Otherwise your images will be plain white or you'll receive a runtime error.</td></tr>
 <tr><td class="code" colspan="2"> 
@@ -34,7 +35,7 @@ Loadimage returns an image-object. This is what blitz uses to keep track of all 
 
 <span class="clb">' These commands alter how an image is drawn.</span><br>
 <span class="clb">' Set them before you draw an image to make it take effect.</span><br>
-<span class="cy">Setcolor</span><span class="cw">(red,green,blue):</span><span class="clb"> 'Changes the color of your image<br>
+<span class="cy">Setcolor</span><span class="cw">(red,green,blue):</span><span class="clb"> 'Changes the color of your image</span><br>
 <span class="clb">' White which is 255,255,255 = nocolor change.</span><br>
 <span class="cy">SetAlpha</span><span class="cw">( Alpha# )</span><span class="clb"> 'Set the transparency of the image. 1 solid, 0 invisible, 0.5 half-cloaked.</span><br>&nbsp;<br>
 
@@ -44,7 +45,7 @@ Loadimage returns an image-object. This is what blitz uses to keep track of all 
 <span class="clb">' This command considers 0 rotation to be to the right.</span><br>&nbsp;<br>
 
 <span class="clb">' If your image is not already rotated to the right add</span><br>
-<span class="cy">SetRotation</span><span class="cw">(direction + offset)</span><span class="clb"> 'where offset is 90 if the original image points up.<br>
+<span class="cy">SetRotation</span><span class="cw">(direction + offset)</span><span class="clb"> 'where offset is 90 if the original image points up.</span><br>
 <span class="clb">' 180 if to left, -90 if down.</span><br>&nbsp;<br>
 
 <span class="clb">' This does depend on your game. If you use movement in 2D</span><br>
@@ -70,13 +71,16 @@ Timers that that does not stop your game. They are used when you need timing in 
 <span class="cw">EndTime =</span><span class="cy"> MilliSecs</span><span class="cw">() +</span><span class="cb"> 8000</span><span class="clb"> 'Set "EndTime" to current time + 8 seconds</span><br>&nbsp;<br>
 
 <span class="cy">Repeat</span><br>
-<span class="cy">If</span><span class="cw"> SecTime <</span><span class="cy"> MilliSecs</span><span class="cw">()</span><br>
-<span class="cy">Print</span><span class="cw"> Secs+</span><span class="cg">" seconds passed"</span><br>
-<span class="cw">Secs:+</span><span class="cb">1</span><br>
-<span class="cw">SecTime =</span><span class="cy"> MilliSecs</span><span class="cw">() +</span><span class="cb"> 1000</span><br>
-<span class="cy">EndIf</span><br> 
-<span class="clb">'If the current time is greater than EndTime then End</span><br> 
-<span class="cy">If MilliSecs</span><span class="cw">() > EndTime</span><span class="cy"> Print</span><span class="cg"> "8 seconds...Exit"</span><span class="cw"> ;</span><span class="cy"> End</span><br>
+<span class="cy">&nbsp;&nbsp;If</span><span class="cw"> SecTime <</span><span class="cy"> MilliSecs</span><span class="cw">()</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;Print</span><span class="cw"> Secs+</span><span class="cg">" seconds passed"</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;Secs:+</span><span class="cb">1</span><br>
+<span class="cw">&nbsp;&nbsp;&nbsp;&nbsp;SecTime =</span><span class="cy"> MilliSecs</span><span class="cw">() +</span><span class="cb"> 1000</span><br>
+<span class="cy">&nbsp;&nbsp;EndIf</span><br> 
+<span class="clb">&nbsp;&nbsp;'If the current time is greater than EndTime then End</span><br> 
+<span class="cy">&nbsp;&nbsp;If MilliSecs</span><span class="cw">() > EndTime</span><span class="cy"> Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Print</span><span class="cg"> "8 seconds...Exit"</span><br>
+<span class="cy">&nbsp;&nbsp;&nbsp;&nbsp;End<br>
+&nbsp;&nbsp;End If</span><br>
 <span class="cy">Forever</span>
 
 </td></tr>
@@ -85,6 +89,4 @@ Timers that that does not stop your game. They are used when you need timing in 
 	<td align="right" class="cap">page 19</td></tr>
 </table>
 </BODY>
-
-<!-- Mirrored from www.truplo.com/blitzmaxbeginnersguide/wave19.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 16 Nov 2015 17:47:14 GMT -->
 </HTML>
