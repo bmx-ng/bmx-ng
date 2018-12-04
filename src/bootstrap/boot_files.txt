@@ -1,0 +1,3 @@
+win32x86	i686-8.1.0-release-posix-sjlj-rt_v6-rev0.7z	https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/8.1.0/threads-posix/sjlj/i686-8.1.0-release-posix-sjlj-rt_v6-rev0.7z	mingw32	MinGW32x86
+win32x64	x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z	https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z	mingw64	MinGW32x64
+
