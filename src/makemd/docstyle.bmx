@@ -10,7 +10,7 @@ Import "docnode.bmx"
 
 Global BmxDocDir$=BlitzMaxPath()+"/docs/md"
 
-Global NodeKinds$[]=[ "/","Module","Type" ]
+Global NodeKinds$[]=[ "/","Module","Type", "Interface" ]
 
 Global LeafKinds$[]=[ "Const","Field","Global","Method","Function","Keyword" ]
 
@@ -99,7 +99,7 @@ Type TDocStyle Extends TBBLinkResolver
 
 			If doc.kind = "Module" Then
 				url = "../.." + url
-			Else If doc.kind = "Type" Then
+			Else If doc.kind = "Type" Or doc.kind = "Interface" Then
 				url = "../../.." + url
 			End If
 		Else
@@ -120,7 +120,7 @@ Type TDocStyle Extends TBBLinkResolver
 		docURL=NodeURL( doc )
 		absDocDir=BmxDocDir+ExtractDir( docURL )
 
-		If doc.kind = "Type" Then
+		If doc.kind = "Type" Or doc.kind = "Interface" Then
 			relRootDir="../../.."
 		Else
 			relRootDir="../.."
@@ -136,7 +136,7 @@ Type TDocStyle Extends TBBLinkResolver
 			
 		outputPath = BmxDocDir+docURL
 		
-		If doc.docDir CopyDir doc.docDir,absDocDir
+		If doc.docDir FilteredCopyDir doc.docDir,absDocDir
 
 		Local intro$=absDocDir+"/index.bbdoc"
 		If FileType( intro )<>FILETYPE_FILE intro$=absDocDir+"/intro.bbdoc"
@@ -233,3 +233,33 @@ Type TDocStyle Extends TBBLinkResolver
 	Method EmitDecls( parent:TDocNode, kind$ ) Abstract
 	
 End Type
+
+Function FilteredCopyDir:Int( src$,dst$ )
+
+	Function CopyDir_:Int( src$,dst$ )
+		If FileType( dst )=FILETYPE_NONE CreateDir dst
+		If FileType( dst )<>FILETYPE_DIR Return False
+		For Local file$=EachIn LoadDir( src )
+			Select FileType( src+"/"+file )
+			Case FILETYPE_DIR
+				If file <> ".bmx" Then
+					If Not CopyDir_( src+"/"+file,dst+"/"+file ) Return False
+				End If
+			Case FILETYPE_FILE
+				Local ext:String = ExtractExt(file).ToLower()
+				If ext = "bmx" Or ext = "bbdoc" Then
+					If Not CopyFile( src+"/"+file,dst+"/"+file ) Return False
+				End If
+			End Select
+		Next
+		Return True
+	End Function
+	
+	FixPath src
+	If FileType( src )<>FILETYPE_DIR Return False
+
+	FixPath dst
+	
+	Return CopyDir_( src,dst )
+
+End Function

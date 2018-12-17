@@ -10,7 +10,7 @@ Type TRstStyle Extends TDocStyle
 
 		If doc.kind = "/" Return
 
-		If doc.kind = "Module" Or doc.kind = "Type" Then
+		If doc.kind = "Module" Or doc.kind = "Type" Or doc.kind = "Interface" Then
 			Emit "---"
 			Emit "id: " + doc.id.ToLower() 
 			Emit "title: " + doc.id
@@ -21,11 +21,11 @@ Type TRstStyle Extends TDocStyle
 		
 		Local s:String
 		
-		If doc.kind <> "Module" And doc.kind <> "Type" Then
+		If doc.kind <> "Module" And doc.kind <> "Type" And doc.kind <> "Interface" Then
 			Emit s + doc.id
 		End If
 
-		If doc.kind = "Type" And doc.bbdoc Then
+		If (doc.kind = "Type" Or doc.kind = "Interface") And doc.bbdoc Then
 			Emit doc.bbdoc
 			Emit ""
 		EndIf
@@ -35,6 +35,10 @@ Type TRstStyle Extends TDocStyle
 		If doc.about Then
 			Emit doc.about
 			Emit ""
+		End If
+		
+		If doc.kind = "Type" Or doc.kind = "Interface" Then
+			EmitExample(doc)
 		End If
 		
 	End Method
@@ -67,7 +71,7 @@ Type TRstStyle Extends TDocStyle
 		
 			Emit "## "+kind+"s"
 		
-			Emit "| Type | Description |"
+			Emit "| " + kind + " | Description |"
 			Emit "|---|---|"
 			
 			For Local t:TDocNode=EachIn list
@@ -114,24 +118,58 @@ Type TRstStyle Extends TDocStyle
 			
 			'indent :- 1
 
+			EmitExample(t)
+			Rem
 			If t.example 
 				Emit "#### Example"
 				Emit "```blitzmax"
 
-				Local p:String = t.example
+				Local p:String = t.example.ToLower()
 
-				Local code$=LoadText( absDocDir+"/"+p).Trim()
+				Local path:String = absDocDir+"/"+p
+		
+				If Not FileType(path) Then
+					' try one level up...
+					path = ExtractDir(absDocDir) + "/"+p
+				End If
+
+				Local code$=LoadText(path).Trim()
 				For Local line:String = EachIn code.Split("~n")
 					Emit line
 				Next
 				Emit "```"
 
 			EndIf
+			End Rem
 
+			Emit "<br/>"
 
 			Emit ""
 			
 		Next
+	End Method
+	
+	Method EmitExample(t:TDocNode)
+		If t.example 
+			Emit "#### Example"
+			Emit "```blitzmax"
+
+			Local p:String = t.example.ToLower()
+
+			Local path:String = absDocDir+"/"+p
+
+			If Not FileType(path) Then
+				' try one level up...
+				path = ExtractDir(absDocDir) + "/"+p
+			End If
+
+			Local code$=LoadText(path).Trim()
+			For Local line:String = EachIn code.Split("~n")
+				Emit line
+			Next
+			Emit "```"
+
+		EndIf	
 	End Method
 
 End Type

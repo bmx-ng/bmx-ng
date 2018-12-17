@@ -49,7 +49,6 @@ Function DocMods()
 
 	For Local modid$=EachIn EnumModules()
 
-'		If not modid.StartsWith("sdl.") Continue
 		If Not modid.StartsWith( "brl." ) And Not modid.StartsWith( "pub." ) And Not modid.StartsWith("maxgui.") And Not modid.StartsWith("sdl.") Continue
 
 		Local p$=ModuleSource( modid )
@@ -172,7 +171,7 @@ Function docBmxFile( filePath$,docPath$ )
 			bbdoc=""
 			inrem=True
 			
-		Else If id="endtype"
+		Else If id="endtype" Or id="endinterface"
 
 			If typePath
 				docPath=typePath
@@ -213,7 +212,7 @@ Function docBmxFile( filePath$,docPath$ )
 				Local path$
 
 				Select kind
-				Case "Type"
+				Case "Type", "Interface"
 					If Not docPath Throw "No doc path"
 					If typePath Throw "Type path already set"
 					typePath=docPath
@@ -246,7 +245,7 @@ Function docBmxFile( filePath$,docPath$ )
 				EndIf
 				
 				Local node:TDocNode=TDocNode.Create( id,path,kind )
-				
+
 				node.proto=proto
 				node.protoId = BuildProtoId(proto)
 				node.bbdoc=bbdoc
@@ -254,11 +253,22 @@ Function docBmxFile( filePath$,docPath$ )
 				node.about=about
 				node.params=params
 				
-				If kind="Module" node.docDir=docDir
-				
-				Local tmpExampleFilePath$ = CasedFileName(docDir+"/"+id+".bmx")
-				If docDir And FileType( tmpExampleFilePath )=FILETYPE_FILE
-					node.example=StripDir(tmpExampleFilePath)
+				If kind="Module" node.docDir=docDir		
+
+				If docDir Then
+					' try type method/function - type_method.bmx
+					Local m:String = StripDir(path)
+					Local t:String = StripDir(ExtractDir(path))
+					Local tmpExampleFilePath:String = CasedFileName(docDir+"/" + t + "_" + m +".bmx")
+					If FileType(tmpExampleFilePath) = FILETYPE_FILE Then
+						node.example=StripDir(tmpExampleFilePath)
+					Else
+						tmpExampleFilePath = CasedFileName(docDir+"/"+id+".bmx")
+
+						If FileType( tmpExampleFilePath )=FILETYPE_FILE
+							node.example=StripDir(tmpExampleFilePath)
+						End If
+					End If
 				EndIf
 				
 			EndIf
