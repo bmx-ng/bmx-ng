@@ -179,7 +179,7 @@ Type TMagnet
 		Local Degrees
 		SetColor 255,255,255
 		For Degrees = 0 To 360
-			DrawRect Self.X + (Sin(Degrees) * Self.Radius), Self.Y + (Cos(Degrees) * Self.Radius),1,1
+			DrawRect Float(Self.X + (Sin(Degrees) * Self.Radius)), Float(Self.Y + (Cos(Degrees) * Self.Radius)),1,1
 		Next
     End Method
 '#End Region
@@ -378,7 +378,7 @@ Type TPhysicsProvider Extends TLink
         If (Self.World.ApplyMagnets = True) And (Self.ApplyMagnets = True) Then
 			Local Magnet:TMagnet
 			For Magnet=EachIn Self.World.Magnets
-				Local Pull:TPointD = Magnet.GetForces(Self.X,Self.Y)
+				Local Pull:TPointD = Magnet.GetForces(Int(Self.X),Int(Self.Y))
 
 				Self.VelocityX = Self.VelocityX + Pull.X
 				Self.VelocityY = Self.VelocityY + Pull.Y
