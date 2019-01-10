@@ -171,7 +171,7 @@ Function docBmxFile( filePath$,docPath$ )
 			bbdoc=""
 			inrem=True
 			
-		Else If id="endtype" Or id="endinterface"
+		Else If id="endtype" Or id="endinterface" Or id="endstruct"
 
 			If typePath
 				docPath=typePath
@@ -212,7 +212,7 @@ Function docBmxFile( filePath$,docPath$ )
 				Local path$
 
 				Select kind
-				Case "Type", "Interface"
+				Case "Type", "Interface", "Struct"
 					If Not docPath Throw "No doc path"
 					If typePath Throw "Type path already set"
 					typePath=docPath

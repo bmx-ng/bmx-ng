@@ -10,7 +10,7 @@ Import "docnode.bmx"
 
 Global BmxDocDir$=BlitzMaxPath()+"/docs/md"
 
-Global NodeKinds$[]=[ "/","Module","Type", "Interface" ]
+Global NodeKinds$[]=[ "/","Module","Type", "Interface", "Struct" ]
 
 Global LeafKinds$[]=[ "Const","Field","Global","Method","Function","Keyword" ]
 
@@ -99,7 +99,7 @@ Type TDocStyle Extends TBBLinkResolver
 
 			If doc.kind = "Module" Then
 				url = "../.." + url
-			Else If doc.kind = "Type" Or doc.kind = "Interface" Then
+			Else If doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Then
 				url = "../../.." + url
 			End If
 		Else
@@ -120,7 +120,7 @@ Type TDocStyle Extends TBBLinkResolver
 		docURL=NodeURL( doc )
 		absDocDir=BmxDocDir+ExtractDir( docURL )
 
-		If doc.kind = "Type" Or doc.kind = "Interface" Then
+		If doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Then
 			relRootDir="../../.."
 		Else
 			relRootDir="../.."
