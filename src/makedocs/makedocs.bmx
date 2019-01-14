@@ -270,8 +270,13 @@ Function docBmxFile( filePath$,docPath$ )
 				node.params=params
 				
 				If kind="Module" node.docDir=docDir
-				
-				Local tmpExampleFilePath$ = CasedFileName(docDir+"/"+id+".bmx")
+
+				Local prefix:String
+				If kind = "Method" Then
+					prefix = StripDir(ExtractDir(path)) + "_"
+				End If
+
+				Local tmpExampleFilePath$ = CasedFileName(docDir+"/"+prefix + id+".bmx")
 				If docDir And FileType( tmpExampleFilePath )=FILETYPE_FILE
 					node.example=StripDir(tmpExampleFilePath)
 				EndIf

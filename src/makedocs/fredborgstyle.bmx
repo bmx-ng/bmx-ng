@@ -85,7 +85,7 @@ Type TFredborgStyle Extends TDocStyle
 	
 	End Method
 	
-	Method EmitDecls( kind$ )
+	Method EmitDecls( kind$, parent:TDocNode )
 
 		Local list:TList=ChildList( kind )
 		If Not list Return
@@ -111,12 +111,14 @@ Type TFredborgStyle Extends TDocStyle
 				Emit "<tr><td class=docleft width=1%>Information</td><td class=docright>"+t.about+"</td></tr>"
 			EndIf
 			
-			If t.example 
-				Local p$=t.example
-				Local link$="<a href=~q"+p+"~q>Example</a>"
-				Local code$=LoadText( absDocDir+"/"+p ).Trim()
-				code="~n{{~n"+code+"~n}}~n"
-				Emit "<tr><td class=docleft width=1%>"+link+"</td><td class=docright>"+code+"</td></tr>"
+			If t.example
+				Local p$=t.example.tolower()
+				If FileType(absDocDir + "/" + p) = FILETYPE_FILE Then
+						Local link$="<a href=~q"+p+"~q>Example</a>"
+						Local code$=LoadText( absDocDir+"/"+p ).Trim()
+						code="~n{{~n"+code+"~n}}~n"
+						Emit "<tr><td class=docleft width=1%>"+link+"</td><td class=docright>"+code+"</td></tr>"
+				End If
 			EndIf
 	
 			Emit "</table>"
