@@ -9,7 +9,7 @@ Import "docnode.bmx"
 
 Global BmxDocDir$=BlitzMaxPath()+"/docs/html"
 
-Global NodeKinds$[]=[ "/","Module","Type" ]
+Global NodeKinds$[]=[ "/","Module","Type","Struct","Interface" ]
 
 Global LeafKinds$[]=[ "Const","Field","Global","Method","Function","Keyword" ]
 
@@ -132,7 +132,7 @@ Type TDocStyle Extends TBBLinkResolver
 			Select t.kind
 			Case "Keyword"
 				commands.Insert t.id+" : "+t.bbdoc,NodeURL( t )
-			Case "Const","Global","Function","Type"	',"Module"
+			Case "Const","Global","Function","Type","Struct","Interface"	',"Module"
 				Local i=t.proto.Find( " " )
 				If i<>-1 commands.Insert t.proto[i+1..].Trim()+" : "+t.bbdoc,NodeURL( t )
 			End Select
