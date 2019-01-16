@@ -27,9 +27,27 @@ Type TDocNode
 
 	End Function
 	
-	Function Create:TDocNode( id$,path$,kind$ )
-	
+	Function GetDocNodeOrOverloadPath:TDocNode(kind:String, origPath:String, path:String Var, protoId:String, count:Int = 0)
 		Local t:TDocNode=TDocNode( _pathMap.ValueForKey( path ) )
+
+		If kind <> "Method" And kind <> "Function" Then
+			Return t
+		End If
+		
+		If t And t.protoId <> protoId Then
+			count :+ 1
+			
+			path = origPath + "_" + count
+			
+			Return GetDocNodeOrOverloadPath(kind, origPath, path, protoId, count)
+		End If
+		
+		Return t
+	End Function
+	
+	Function Create:TDocNode( id$,path$,kind$, protoId:String )
+	
+		Local t:TDocNode = GetDocNodeOrOverloadPath(kind, path, path, protoId)
 		
 		If t
 			If t.kind<>"/" And t.path<>path Throw "ERROR: "+t.kind+" "+kind
@@ -42,6 +60,7 @@ Type TDocNode
 		t.id=id
 		t.path=path
 		t.kind=kind
+		t.protoId = protoId
 		
 		Local q:TDocNode=t
 		

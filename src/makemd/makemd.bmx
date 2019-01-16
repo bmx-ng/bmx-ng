@@ -16,7 +16,7 @@ Local style:TDocStyle=New TRstStyle
 
 DeleteDir BmxDocDir,True
 
-Local root:TDocNode=TDocNode.Create( "BlitzMax Help","/","/" )
+Local root:TDocNode=TDocNode.Create( "BlitzMax Help","/","/", Null )
 
 
 DocMods
@@ -77,7 +77,7 @@ Function DocBBDocs( docPath$ )
 				If id="index" Or id="intro" Continue
 				
 				Local path$=(docPath+"/"+id).Replace( "//","/" )
-				Local node:TDocNode=TDocNode.Create( id,path,"/" )
+				Local node:TDocNode=TDocNode.Create( id,path,"/", Null )
 
 				node.about=LoadText( q )
 			End Select
@@ -244,10 +244,9 @@ Function docBmxFile( filePath$,docPath$ )
 					proto=proto[..i]
 				EndIf
 				
-				Local node:TDocNode=TDocNode.Create( id,path,kind )
+				Local node:TDocNode=TDocNode.Create( id,path,kind, BuildProtoId(proto) )
 
 				node.proto=proto
-				node.protoId = BuildProtoId(proto)
 				node.bbdoc=bbdoc
 				node.returns=returns
 				node.about=about
