@@ -85,15 +85,51 @@ Type TFredborgStyle Extends TDocStyle
 	
 	End Method
 	
-	Method EmitDecls( kind$, parent:TDocNode )
+	Method EmitDecls( kind$, parent:TDocNode, category:String = Null )
 
 		Local list:TList=ChildList( kind )
 		If Not list Return
-		
-		Emit "<h2>"+kind+" reference</h2>"
+
+		Local title:String
+		Local emittedTitle:Int
+	
+		If category And category <> "-" Then
+			title = "<h2>"+category+" reference</h2>"
+		Else
+			title = "<h2>"+kind+" reference</h2>"
+		End If
+
+		'Emit "<h2>"+kind+" reference</h2>"
 		
 		For Local t:TDocNode=EachIn list
-		
+
+			If category Then
+				Local id:String = t.id.ToLower()
+				Select category
+					Case "-"
+						If id = "new" Or id = "delete" Or id = "operator" Then
+							Continue
+						End If
+					Case "Constructor"
+						If id <> "new" Then
+							Continue
+						End If
+					Case "Destructor"
+						If id <> "delete" Then
+							Continue
+						End If
+					Case "Operator"
+						If id <> "operator" Then
+							Continue
+						End If
+				End Select
+			End If
+			
+			If Not emittedTitle Then
+				Emit title
+				emittedTitle = True
+			End If
+
 			Emit "<a name=~q"+t.id+"~q></a>"
 		
 			Emit "<p><table class=doc width=100% cellspacing=3>"

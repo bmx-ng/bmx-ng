@@ -5,12 +5,20 @@ Function IsAlphaChar( char )
 	Return (char>=Asc("A") And char<=Asc("Z")) Or (char>=Asc("a") And char<=Asc("z")) Or (char=Asc("_"))
 End Function
 
+Function IsProtoAlphaChar( char )
+	Return (char>=Asc("A") And char<=Asc("Z")) Or (char>=Asc("a") And char<=Asc("z"))
+End Function
+
 Function IsDecChar( char )
 	Return (char>=Asc("0") And char<=Asc("9"))
 End Function
 
 Function IsIdentChar( char )
 	Return IsAlphaChar( char ) Or IsDecChar( char )
+End Function
+
+Function IsProtoIdentChar( char )
+	Return IsProtoAlphaChar( char ) Or IsDecChar( char )
 End Function
 
 Function IsHexChar( char )

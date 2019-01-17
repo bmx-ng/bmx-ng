@@ -25,7 +25,7 @@ DeleteDir BmxDocDir,True
 
 CopyDir BlitzMaxPath()+"/docs/src",BmxDocDir
 
-Local root:TDocNode=TDocNode.Create( "BlitzMax Help","/","/" )
+Local root:TDocNode=TDocNode.Create( "BlitzMax Help","/","/", Null )
 root.about=LoadText( BmxDocDir+"/index.html" )
 
 DocMods
@@ -96,7 +96,7 @@ Function DocBBDocs( docPath$ )
 				If id="index" Or id="intro" Continue
 				
 				Local path$=(docPath+"/"+id).Replace( "//","/" )
-				Local node:TDocNode=TDocNode.Create( id,path,"/" )
+				Local node:TDocNode=TDocNode.Create( id,path,"/", Null )
 				
 				node.about=LoadText( q )
 			End Select
@@ -121,9 +121,9 @@ Function docBmxFile( filePath$,docPath$ )
 	
 	Local bbdoc$,returns$,about$,keyword$,params:TList
 	
-	Local text$=LoadText( filepath )
+	Local Text$=LoadText( filepath )
 	
-	For Local line$=EachIn text.Split( "~n" )
+	For Local line$=EachIn Text.Split( "~n" )
 
 		line=line.Trim()
 		Local tline$=line.ToLower()
@@ -261,7 +261,7 @@ Function docBmxFile( filePath$,docPath$ )
 					proto=proto[..i]
 				EndIf
 				
-				Local node:TDocNode=TDocNode.Create( id,path,kind )
+				Local node:TDocNode=TDocNode.Create( id,path,kind, BuildProtoId(proto) )
 				
 				node.proto=proto
 				node.bbdoc=bbdoc
@@ -288,4 +288,26 @@ Function docBmxFile( filePath$,docPath$ )
 		EndIf
 	Next
 	
+End Function
+
+Function BuildProtoId:String(proto:String)
+	' function-stripdir-path"
+	Local s:String
+	Local previousIdentChar:Int = False
+	For Local n:Int = EachIn proto.Trim()
+		If IsProtoIdentChar(n) Then
+			s :+ Chr(n)
+			previousIdentChar = True
+		Else
+			If previousIdentChar Then
+				s :+ "-"
+			End If
+			previousIdentChar = False
+		End If
+	Next
+	If s.EndsWith("-") Then
+		s = s[..s.Length-1]
+	End If
+	
+	Return s.ToLower()
 End Function
