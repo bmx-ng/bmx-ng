@@ -169,11 +169,18 @@ Type TDocStyle Extends TBBLinkResolver
 		End If
 		
 		Local leafOrder:String[] = ["Field", "Method", "Function", "Global", "Const", "Keyword"]
+		Local categoryOrder:String[] = ["Constructor", "Operator", "-", "Destructor"]
 
 		For Local order:String = EachIn leafOrder
 			For Local t$=EachIn LeafKinds
 				If order = t Then
-					EmitDecls node, t
+					If order = "Method" Then
+						For Local category:String = EachIn categoryOrder
+							EmitDecls node, t, category
+						Next
+					Else
+						EmitDecls node, t
+					End If
 				End If
 			Next
 		Next
@@ -230,7 +237,7 @@ Type TDocStyle Extends TBBLinkResolver
 	
 	Method EmitLinks( kind$ ) Abstract
 	
-	Method EmitDecls( parent:TDocNode, kind$ ) Abstract
+	Method EmitDecls( parent:TDocNode, kind$, category:String = Null ) Abstract
 	
 End Type
 

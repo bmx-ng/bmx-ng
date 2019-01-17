@@ -82,15 +82,50 @@ Type TRstStyle Extends TDocStyle
 		EndIf
 	End Method
 	
-	Method EmitDecls( parent:TDocNode, kind$ )
+	Method EmitDecls( parent:TDocNode, kind$, category:String = Null )
 		Local list:TList=ChildList( kind )
 		If Not list Return
 
-		Emit "## " + kind + "s"
+		Local title:String
+		Local emittedTitle:Int
+		
+		If category And category <> "-" Then
+			title = "## " + category + "s"
+		Else
+			title = "## " + kind + "s"
+		End If
 
-		Emit ""
+		'Emit ""
 		
 		For Local t:TDocNode=EachIn list
+		
+			If category Then
+				Local id:String = t.id.ToLower()
+				Select category
+					Case "-"
+						If id = "new" Or id = "delete" Or id = "operator" Then
+							Continue
+						End If
+					Case "Constructor"
+						If id <> "new" Then
+							Continue
+						End If
+					Case "Destructor"
+						If id <> "delete" Then
+							Continue
+						End If
+					Case "Operator"
+						If id <> "operator" Then
+							Continue
+						End If
+				End Select
+			End If
+			
+			If Not emittedTitle Then
+				Emit title
+				Emit ""
+				emittedTitle = True
+			End If
 
 			Local s:String
 			
