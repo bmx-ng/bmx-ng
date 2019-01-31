@@ -103,7 +103,11 @@ Type TDocStyle Extends TBBLinkResolver
 				url = "../../.." + url
 			End If
 		Else
-			url=relRootDir+url
+			If doc.kind = "Module" And node.kind = "Module" Then
+				url=".." + url
+			Else
+				url=relRootDir+url
+			End If
 		EndIf
 		Return "[" + link + "](" + url + ")"
 
