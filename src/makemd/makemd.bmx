@@ -189,6 +189,7 @@ Function docBmxFile( filePath$,docPath$ )
 		Else If bbdoc
 		
 			Local kind$,proto$
+			Local op:String
 			
 			If keyword
 				id=keyword
@@ -203,6 +204,12 @@ Function docBmxFile( filePath$,docPath$ )
 					kind=t
 					proto=line
 					id=ParseIdent( line,i )
+
+					If id.ToLower() = "operator" Then
+						op = ParseOperator(line, i)
+						id :+ op
+					End If
+
 					Exit
 				Next
 			EndIf
@@ -251,6 +258,7 @@ Function docBmxFile( filePath$,docPath$ )
 				node.returns=returns
 				node.about=about
 				node.params=params
+				node.op = op
 				
 				If kind="Module" node.docDir=docDir		
 

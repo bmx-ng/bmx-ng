@@ -103,7 +103,7 @@ Type TRstStyle Extends TDocStyle
 				Local id:String = t.id.ToLower()
 				Select category
 					Case "-"
-						If id = "new" Or id = "delete" Or id = "operator" Then
+						If id = "new" Or id = "delete" Or t.op Then
 							Continue
 						End If
 					Case "Constructor"
@@ -115,7 +115,7 @@ Type TRstStyle Extends TDocStyle
 							Continue
 						End If
 					Case "Operator"
-						If id <> "operator" Then
+						If Not t.op Then
 							Continue
 						End If
 				End Select

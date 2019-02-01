@@ -1,6 +1,13 @@
 
 Strict
 
+Global OPERATORS:String[] = ["*", "/", "+", "-", "&", "|", "~~", "^", ":*", ":/", ..
+		":+", ":-", ":&", ":|", ":~~", ":^", "<", "<=", ">", ">=", ..
+		"=", "<>", "mod", "shl", "shr", ":mod", ":shl", ":shr", "[]", "[]="]
+Global OPERATOR_MAP:String[] = ["_mul", "_div", "_add", "_sub", "_and", "_or", "_xor", "_pow", "_muleq", ..
+		"_diveq", "_addeq", "_subeq", "_andeq", "_oreq", "_xoreq", "_poweq", "_lt", "_le", "_gt", ..
+		"_ge", "_eq", "_ne", "_mod", "_shl", "_shr", "_modeq", "_shleq", "_shreq", "_iget", "_iset"]
+
 Function IsAlphaChar( char )
 	Return (char>=Asc("A") And char<=Asc("Z")) Or (char>=Asc("a") And char<=Asc("z")) Or (char=Asc("_"))
 End Function
@@ -53,6 +60,19 @@ Function ParseIdent$( t$,i Var )
 		Wend
 	EndIf
 	Return t[i0..i]
+End Function
+
+Function ParseOperator:String(t:String, i:Int Var)
+	ParseWS t, i
+	Local i0=i
+	For Local n:Int = 0 Until OPERATORS.length
+		Local op:String = OPERATORS[n]
+		Local o:String = t[i..i + op.length]
+		If op = o Then
+			i :+ op.length
+			Return OPERATOR_MAP[n]
+		End If
+	Next
 End Function
 
 Function ParseString$( t$,i Var )

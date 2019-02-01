@@ -20,6 +20,7 @@ Type TDocNode
 	Field example$	'eg: LoadImage.bmx (path)
 	
 	Field children:TList=New TList
+	Field op:String
 	
 	Function ForPath:TDocNode( path$ )
 
