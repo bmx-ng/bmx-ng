@@ -3,10 +3,10 @@ Strict
 
 Global OPERATORS:String[] = ["*", "/", "+", "-", "&", "|", "~~", "^", ":*", ":/", ..
 		":+", ":-", ":&", ":|", ":~~", ":^", "<", "<=", ">", ">=", ..
-		"=", "<>", "mod", "shl", "shr", ":mod", ":shl", ":shr", "[]", "[]="]
+		"=", "<>", "mod", "shl", "shr", ":mod", ":shl", ":shr", "[]=", "[]"]
 Global OPERATOR_MAP:String[] = ["_mul", "_div", "_add", "_sub", "_and", "_or", "_xor", "_pow", "_muleq", ..
 		"_diveq", "_addeq", "_subeq", "_andeq", "_oreq", "_xoreq", "_poweq", "_lt", "_le", "_gt", ..
-		"_ge", "_eq", "_ne", "_mod", "_shl", "_shr", "_modeq", "_shleq", "_shreq", "_iget", "_iset"]
+		"_ge", "_eq", "_ne", "_mod", "_shl", "_shr", "_modeq", "_shleq", "_shreq", "_iset", "_iget"]
 
 Function IsAlphaChar( char )
 	Return (char>=Asc("A") And char<=Asc("Z")) Or (char>=Asc("a") And char<=Asc("z")) Or (char=Asc("_"))
