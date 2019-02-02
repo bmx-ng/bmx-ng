@@ -18,7 +18,7 @@ End Return Continue Exit Assert
 Public Protected Private
 True False Pi Null Self Super
 Byte Short Int UInt Long ULong Size_T Float Double Object String
-Var Ptr VarPtr Chr Len Asc SizeOf Sgn Abs Min Max Mod
+Var Ptr VarPtr Chr Len Asc SizeOf Mod
 Shl Shr Sar Not And Or
 New Release Delete
 Incbin IncbinPtr IncbinLen
