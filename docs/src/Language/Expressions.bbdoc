@@ -16,8 +16,6 @@ BlitzMax supports the following operators. Operators are grouped into levels of 
 * Pi | @Pi
 * True | @True
 * False | @False
-* Minumum | @Min @( %Expression1 @, %Expression2 @)
-* Maximum | @Max @( %Expression1 @, %Expression2 @)
 *
 *
 * Member | %Expression @{.} %Identifier
@@ -29,8 +27,6 @@ BlitzMax supports the following operators. Operators are grouped into levels of 
 * Posate | @+ %Expression
 * Bitwise complement | @{~~} %Expression
 * Boolean not | @Not %Expression
-* Absolute value | @Abs %Expression
-* Sign | @Sgn %Expression
 * Value byte size | @SizeOf %Expression
 * Variable address | @Varptr %Variable
 * Convert type expression | %Type %Expression
