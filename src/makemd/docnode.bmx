@@ -17,7 +17,7 @@ Type TDocNode
 	Field params:TList	'eg: [x - the x coord, y - the y coord]
 	
 	Field docDir$		'eg: ../mod/brl.mod/max2d.mod/doc
-	Field example$	'eg: LoadImage.bmx (path)
+	Field examples:String[]	'eg: LoadImage.bmx (path)
 	
 	Field children:TList=New TList
 	Field op:String
@@ -84,6 +84,23 @@ Type TDocNode
 		
 		Return t
 	End Function
+	
+	Method AddExample(examplePath:String)
+
+		examples :+ [StripDir(examplePath)]
+		
+		' check for extra examples
+		Local i:Int
+		While True
+			i :+ 1
+			Local path:String = StripExt(examplePath) + "_" + i + ".bmx"
+			If FileType(path) = FILETYPE_FILE Then
+				examples :+ [StripDir(path)]
+				Continue
+			End If
+			Exit
+		Wend
+	End Method
 	
 	Global _pathMap:TMap=New TMap
 

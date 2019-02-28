@@ -185,25 +185,35 @@ Type TRstStyle Extends TDocStyle
 	End Method
 	
 	Method EmitExample(t:TDocNode)
-		If t.example 
-			Emit "#### Example"
-			Emit "```blitzmax"
+		If t.examples.length
+			Local showCount:Int = t.examples.length > 1
+			
+			Local count:Int
+			For Local example:String = EachIn t.examples
+				count :+ 1
+				
+				Local title:String = "#### Example"
+				If showCount Then
+					title :+ " " + count
+				End If
+				Emit title
+				Emit "```blitzmax"
 
-			Local p:String = t.example.ToLower()
+				Local p:String = example.ToLower()
 
-			Local path:String = absDocDir+"/"+p
+				Local path:String = absDocDir+"/"+p
 
-			If Not FileType(path) Then
-				' try one level up...
-				path = ExtractDir(absDocDir) + "/"+p
-			End If
+				If Not FileType(path) Then
+					' try one level up...
+					path = ExtractDir(absDocDir) + "/"+p
+				End If
 
-			Local code$=LoadText(path).Trim()
-			For Local line:String = EachIn code.Split("~n")
-				Emit line
+				Local code$=LoadText(path).Trim()
+				For Local line:String = EachIn code.Split("~n")
+					Emit line
+				Next
+				Emit "```"
 			Next
-			Emit "```"
-
 		EndIf	
 	End Method
 

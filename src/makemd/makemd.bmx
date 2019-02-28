@@ -12,12 +12,18 @@ Import "docnode.bmx"
 
 Import "mdstyle.bmx"
 
+Global opt_api_dump:String
+Global apiDumpStream:TStream
+
+ParseArgs(AppArgs[1..])
+
 Local style:TDocStyle=New TRstStyle
 
 DeleteDir BmxDocDir,True
 
 Local root:TDocNode=TDocNode.Create( "BlitzMax Help","/","/", Null )
 
+CheckConfig()
 
 DocMods
 
@@ -26,6 +32,10 @@ DocBBDocs "/"
 style.EmitDoc TDocNode.ForPath( "/" )
 
 Cleanup BmxDocDir
+
+If apiDumpStream Then
+	apiDumpStream.Close()
+End If
 
 '*****
 
@@ -259,21 +269,38 @@ Function docBmxFile( filePath$,docPath$ )
 				node.about=about
 				node.params=params
 				node.op = op
-				
+
 				If kind="Module" node.docDir=docDir		
 
 				If docDir Then
 					' try type method/function - type_method.bmx
 					Local m:String = StripDir(path)
 					Local t:String = StripDir(ExtractDir(path))
-					Local tmpExampleFilePath:String = CasedFileName(docDir+"/" + t + "_" + m +".bmx")
-					If FileType(tmpExampleFilePath) = FILETYPE_FILE Then
-						node.example=StripDir(tmpExampleFilePath)
-					Else
-						tmpExampleFilePath = CasedFileName(docDir+"/"+id+".bmx")
+					
+					Local a:String = ExtractArgs(node.protoId)
+					
+					If node.protoId And apiDumpStream Then
+						If t.Find(".") = -1 And m.Find(".") = -1 Then
+							If a Then
+								apiDumpStream.WriteLine(t + "|" + m + "|" + (t + "_" + m + "_" + a + ".bmx").ToLower() )
+							End If
+							apiDumpStream.WriteLine(t + "|" + m + "|" + (t + "_" + m + ".bmx").ToLower() )
+						End If
+					End If
 
-						If FileType( tmpExampleFilePath )=FILETYPE_FILE
-							node.example=StripDir(tmpExampleFilePath)
+					Local tmpExampleFilePath:String = CasedFileName(docDir+"/" + t + "_" + m + "_" + a + ".bmx")
+					If FileType(tmpExampleFilePath) = FILETYPE_FILE Then
+						node.AddExample(tmpExampleFilePath)
+					Else
+						tmpExampleFilePath = CasedFileName(docDir+"/" + t + "_" + m +".bmx")
+						If FileType(tmpExampleFilePath) = FILETYPE_FILE Then
+							node.AddExample(tmpExampleFilePath)
+						Else
+							tmpExampleFilePath = CasedFileName(docDir+"/"+id+".bmx")
+
+							If FileType( tmpExampleFilePath )=FILETYPE_FILE
+								node.AddExample(tmpExampleFilePath)
+							End If
 						End If
 					End If
 				EndIf
@@ -287,7 +314,17 @@ Function docBmxFile( filePath$,docPath$ )
 	
 End Function
 
+Function ExtractArgs:String(proto:String)
+	Local s:String[] = proto.Split("+")
+	If s.length = 2 Then
+		Return s[1]
+	End If
+	Return ""
+End Function
+
 Function BuildProtoId:String(proto:String)
+	proto = proto.ToLower()
+	
 	' function-stripdir-path"
 	Local s:String
 	Local previousIdentChar:Int = False
@@ -306,6 +343,101 @@ Function BuildProtoId:String(proto:String)
 		s = s[..s.Length-1]
 	End If
 	
-	Return s.ToLower()
+	If s.startsWith("method") Or s.StartsWith("function")
+		Local argsList:String
+		Local i:Int = proto.Find("(")
+		Local argStr:String = proto
+		If i >= 0 Then
+			argStr = proto[i+1..]
+		End If
+
+		Local args:String[] = argStr.Split(",")
+		For Local arg:String = EachIn args
+			Local p:String[] = arg.split("=")
+			Local a:String = p[0].Trim()
+			If a = ")" Then
+				Exit
+			End If
+			p = a.Split(":")
+			Local ty:String
+			If p.length = 2 Then
+				ty = GetType(p[1].Split(" ")[0].Trim())
+			Else
+				ty = "i"
+			End If
+			argsList :+ ty
+		Next
+		
+		Local count:Int
+		For i:Int = 0 Until s.length
+			If s[i] = Asc("-")
+				count :+ 1
+				If count = 2 Then
+					s = s[..i] + "+" + argsList
+				End If
+			End If
+		Next
+	End If
+	Return s
 End Function
 
+Function GetType:String(s:String)
+
+	If s.EndsWith(")") Then
+		s = s[..s.length-1]
+	End If
+
+	Local ty:String = s
+	s = s.ToLower()
+	
+	Select s
+		Case "byte", "short", "int", "long", "uint", "float", "double"
+			ty = s[0..1]
+		Case "ulong"
+			ty = "ul"
+		Case "size_t"
+			ty = "t"
+		Case "string", "$"
+			ty = "r"
+	End Select
+	Return ty
+End Function
+
+Function CheckConfig()
+
+	If opt_api_dump Then
+		apiDumpStream = WriteFile(opt_api_dump)
+		
+		If Not apiDumpStream Then
+			Print "Unable to create api dump file : " + opt_api_dump
+		End If
+	
+	End If
+	
+End Function
+
+Function ParseArgs(args:String[])
+
+	Local count:Int
+
+	While count < args.length
+	
+		Local arg:String = args[count]
+
+		If arg[..1] <> "-" Then
+			Exit
+		End If
+		
+		Select arg[1..]
+			Case "d"
+				count :+ 1
+				If count = args.length Then
+					Throw "Command line error - Missing output file arg for '-d'"
+				End If
+				opt_api_dump = args[count]
+		End Select
+		
+		count :+ 1
+	Wend
+	
+End Function
