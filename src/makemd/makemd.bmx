@@ -262,7 +262,7 @@ Function docBmxFile( filePath$,docPath$ )
 				EndIf
 				
 				Local node:TDocNode=TDocNode.Create( id,path,kind, BuildProtoId(proto) )
-
+				node.protoExId = BuildProtoExId(node.protoId)
 				node.proto=proto
 				node.bbdoc=bbdoc
 				node.returns=returns
@@ -277,9 +277,9 @@ Function docBmxFile( filePath$,docPath$ )
 					Local m:String = StripDir(path)
 					Local t:String = StripDir(ExtractDir(path))
 					
-					Local a:String = ExtractArgs(node.protoId)
+					Local a:String = ExtractArgs(node.protoExId)
 					
-					If node.protoId And apiDumpStream Then
+					If node.protoExId And apiDumpStream Then
 						If t.Find(".") = -1 And m.Find(".") = -1 Then
 							If a Then
 								apiDumpStream.WriteLine(t + "|" + m + "|" + (t + "_" + m + "_" + a + ".bmx").ToLower() )
@@ -323,12 +323,15 @@ Function ExtractArgs:String(proto:String)
 End Function
 
 Function BuildProtoId:String(proto:String)
-	proto = proto.ToLower()
-	
+
 	' function-stripdir-path"
 	Local s:String
 	Local previousIdentChar:Int = False
 	For Local n:Int = EachIn proto.Trim()
+		' ignore brackets
+		If n = Asc("(") Then
+			Continue
+		End If
 		If IsProtoIdentChar(n) Then
 			s :+ Chr(n)
 			previousIdentChar = True
@@ -343,6 +346,13 @@ Function BuildProtoId:String(proto:String)
 		s = s[..s.Length-1]
 	End If
 	
+	Return s.ToLower()
+End Function
+
+Function BuildProtoExId:String(proto:String)
+
+	Local s:String = proto
+
 	If s.startsWith("method") Or s.StartsWith("function")
 		Local argsList:String
 		Local i:Int = proto.Find("(")
@@ -378,6 +388,7 @@ Function BuildProtoId:String(proto:String)
 			End If
 		Next
 	End If
+
 	Return s
 End Function
 

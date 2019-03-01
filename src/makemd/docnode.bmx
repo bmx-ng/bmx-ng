@@ -11,6 +11,7 @@ Type TDocNode
 	
 	Field proto$		'eg: Function LoadImage(...)
 	Field protoId:String
+	Field protoExId:String
 	Field bbdoc$		'eg: Load an image (shortdesc?)
 	Field returns$	'eg: A new image
 	Field about$		'eg: blah etc blah (longdesc?)
