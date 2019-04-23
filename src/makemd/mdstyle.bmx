@@ -10,7 +10,7 @@ Type TRstStyle Extends TDocStyle
 
 		If doc.kind = "/" Return
 
-		If doc.kind = "Module" Or doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Then
+		If doc.kind = "Module" Or doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Or doc.kind = "Enum" Then
 			Emit "---"
 			Emit "id: " + doc.id.ToLower() 
 			Emit "title: " + doc.id
@@ -21,11 +21,11 @@ Type TRstStyle Extends TDocStyle
 		
 		Local s:String
 		
-		If doc.kind <> "Module" And doc.kind <> "Type" And doc.kind <> "Interface" And doc.kind <> "Struct" Then
+		If doc.kind <> "Module" And doc.kind <> "Type" And doc.kind <> "Interface" And doc.kind <> "Struct"  And doc.kind <> "Enum" Then
 			Emit s + doc.id
 		End If
 
-		If (doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct") And doc.bbdoc Then
+		If (doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Or doc.kind = "Enum") And doc.bbdoc Then
 			Emit doc.bbdoc
 			Emit ""
 		EndIf
@@ -37,7 +37,7 @@ Type TRstStyle Extends TDocStyle
 			Emit ""
 		End If
 		
-		If doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Then
+		If doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Or doc.kind = "Enum" Then
 			EmitExample(doc)
 		End If
 		
@@ -129,7 +129,7 @@ Type TRstStyle Extends TDocStyle
 
 			Local s:String
 			
-			Emit "### `" + t.proto + "`"
+			Emit "### `" + t.proto.orig + "`"
 			Emit ""
 			
 			If t.bbdoc

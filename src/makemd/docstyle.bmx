@@ -10,7 +10,7 @@ Import "docnode.bmx"
 
 Global BmxDocDir$=BlitzMaxPath()+"/docs/md"
 
-Global NodeKinds$[]=[ "/","Module","Type", "Interface", "Struct" ]
+Global NodeKinds$[]=[ "/","Module","Type", "Interface", "Struct", "Enum" ]
 
 Global LeafKinds$[]=[ "Const","Field","Global","Method","Function","Keyword" ]
 
@@ -59,7 +59,7 @@ Type TDocStyle Extends TBBLinkResolver
 		Else If NodeIsLeaf( node )
 			Local path:String = node.path.ToLower()
 
-			Return ExtractDir( path )+"/#"+node.protoId
+			Return ExtractDir( path )+"/#"+node.proto.protoId
 		Else If node.path<>"/"
 			If node.kind = "Module" Then
 				Return node.path.Replace(".", "_")+".md"
@@ -99,7 +99,7 @@ Type TDocStyle Extends TBBLinkResolver
 
 			If doc.kind = "Module" Then
 				url = "../.." + url
-			Else If doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Then
+			Else If doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Or doc.kind = "Enum" Then
 				url = "../../.." + url
 			End If
 		Else
@@ -124,7 +124,7 @@ Type TDocStyle Extends TBBLinkResolver
 		docURL=NodeURL( doc )
 		absDocDir=BmxDocDir+ExtractDir( docURL )
 
-		If doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Then
+		If doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Or doc.kind = "Enum" Then
 			relRootDir="../../.."
 		Else
 			relRootDir="../.."
@@ -195,7 +195,7 @@ Type TDocStyle Extends TBBLinkResolver
 		If node.kind <> "/" Then
 			generated=BBToHtml( sb.ToString(),Self )
 
-			SaveText generated,outputPath
+			SaveText generated,outputPath,ETextStreamFormat.UTF8,False
 		End If
 
 		sb.SetLength(0)

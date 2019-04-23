@@ -21,7 +21,7 @@ Local style:TDocStyle=New TRstStyle
 
 DeleteDir BmxDocDir,True
 
-Local root:TDocNode=TDocNode.Create( "BlitzMax Help","/","/", Null )
+Local root:TDocNode=TDocNode.Create( "BlitzMax Help","/","/", Null, Null )
 
 CheckConfig()
 
@@ -87,7 +87,7 @@ Function DocBBDocs( docPath$ )
 				If id="index" Or id="intro" Continue
 				
 				Local path$=(docPath+"/"+id).Replace( "//","/" )
-				Local node:TDocNode=TDocNode.Create( id,path,"/", Null )
+				Local node:TDocNode=TDocNode.Create( id,path,"/", Null, Null )
 
 				node.about=LoadText( q )
 			End Select
@@ -114,8 +114,9 @@ Function docBmxFile( filePath$,docPath$ )
 	
 	Local Text$=LoadText( filepath )
 	
+	Local lineNumber:Int
 	For Local line$=EachIn Text.Split( "~n" )
-
+		lineNumber :+ 1
 		line=line.Trim()
 		Local tline$=line.ToLower()
 		
@@ -170,7 +171,7 @@ Function docBmxFile( filePath$,docPath$ )
 						params.AddLast String( params.RemoveLast() )+" "+line
 					Default
 						'remaining sections 1 line only...
-						If line Print "Error: Illegal bbdoc section in '"+filePath+"'"
+						If line Print "Error: Illegal bbdoc section in '"+filePath+"' on line " + lineNumber
 					End Select
 				End Select
 			
@@ -181,7 +182,7 @@ Function docBmxFile( filePath$,docPath$ )
 			bbdoc=""
 			inrem=True
 			
-		Else If id="endtype" Or id="endinterface" Or id="endstruct"
+		Else If id="endtype" Or id="endinterface" Or id="endstruct" Or id="endenum"
 
 			If typePath
 				docPath=typePath
@@ -229,7 +230,7 @@ Function docBmxFile( filePath$,docPath$ )
 				Local path$
 
 				Select kind
-				Case "Type", "Interface", "Struct"
+				Case "Type", "Interface", "Struct", "Enum"
 					If Not docPath Throw "No doc path"
 					If typePath Throw "Type path already set"
 					typePath=docPath
@@ -261,9 +262,7 @@ Function docBmxFile( filePath$,docPath$ )
 					proto=proto[..i]
 				EndIf
 				
-				Local node:TDocNode=TDocNode.Create( id,path,kind, BuildProtoId(proto) )
-				node.protoExId = BuildProtoExId(node.protoId)
-				node.proto=proto
+				Local node:TDocNode=TDocNode.Create( id,path,kind, proto, BuildProtoId(proto) )
 				node.bbdoc=bbdoc
 				node.returns=returns
 				node.about=about
@@ -277,9 +276,9 @@ Function docBmxFile( filePath$,docPath$ )
 					Local m:String = StripDir(path)
 					Local t:String = StripDir(ExtractDir(path))
 					
-					Local a:String = ExtractArgs(node.protoExId)
-					
-					If node.protoExId And apiDumpStream Then
+					Local a:String = node.proto.args
+
+					If apiDumpStream Then
 						If t.Find(".") = -1 And m.Find(".") = -1 Then
 							If a Then
 								apiDumpStream.WriteLine(t + "|" + m + "|" + (t + "_" + m + "_" + a + ".bmx").ToLower() )
@@ -314,22 +313,14 @@ Function docBmxFile( filePath$,docPath$ )
 	
 End Function
 
-Function ExtractArgs:String(proto:String)
-	Local s:String[] = proto.Split("+")
-	If s.length = 2 Then
-		Return s[1]
-	End If
-	Return ""
-End Function
-
-Function BuildProtoId:String(proto:String)
+Function BuildProtoId:String(proto:String, ignoreBrackets:Int = True)
 
 	' function-stripdir-path"
 	Local s:String
 	Local previousIdentChar:Int = False
 	For Local n:Int = EachIn proto.Trim()
 		' ignore brackets
-		If n = Asc("(") Then
+		If ignoreBrackets And n = Asc("(") Then
 			Continue
 		End If
 		If IsProtoIdentChar(n) Then
@@ -345,73 +336,8 @@ Function BuildProtoId:String(proto:String)
 	If s.EndsWith("-") Then
 		s = s[..s.Length-1]
 	End If
-	
+
 	Return s.ToLower()
-End Function
-
-Function BuildProtoExId:String(proto:String)
-
-	Local s:String = proto
-
-	If s.startsWith("method") Or s.StartsWith("function")
-		Local argsList:String
-		Local i:Int = proto.Find("(")
-		Local argStr:String = proto
-		If i >= 0 Then
-			argStr = proto[i+1..]
-		End If
-
-		Local args:String[] = argStr.Split(",")
-		For Local arg:String = EachIn args
-			Local p:String[] = arg.split("=")
-			Local a:String = p[0].Trim()
-			If a = ")" Then
-				Exit
-			End If
-			p = a.Split(":")
-			Local ty:String
-			If p.length = 2 Then
-				ty = GetType(p[1].Split(" ")[0].Trim())
-			Else
-				ty = "i"
-			End If
-			argsList :+ ty
-		Next
-		
-		Local count:Int
-		For i:Int = 0 Until s.length
-			If s[i] = Asc("-")
-				count :+ 1
-				If count = 2 Then
-					s = s[..i] + "+" + argsList
-				End If
-			End If
-		Next
-	End If
-
-	Return s
-End Function
-
-Function GetType:String(s:String)
-
-	If s.EndsWith(")") Then
-		s = s[..s.length-1]
-	End If
-
-	Local ty:String = s
-	s = s.ToLower()
-	
-	Select s
-		Case "byte", "short", "int", "long", "uint", "float", "double"
-			ty = s[0..1]
-		Case "ulong"
-			ty = "ul"
-		Case "size_t"
-			ty = "t"
-		Case "string", "$"
-			ty = "r"
-	End Select
-	Return ty
 End Function
 
 Function CheckConfig()
