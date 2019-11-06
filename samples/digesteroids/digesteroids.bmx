@@ -26,7 +26,7 @@ Framework SDL.gl2sdlmax2d
 Import brl.pngloader
 Import brl.wavloader
 Import brl.oggloader
-Import brl.random
+Import brl.Random
 Import sdl.sdlfreeaudio
 
 ' Import various utilities.
@@ -39,7 +39,7 @@ SetAudioDriver("FreeAudio SDL")
 ' Screen settings.
 Const WIDTH       = 1024    ' Width of the screen.
 Const HEIGHT      = 768     ' Height of the screen.
-Const DEPTH       = 32      ' Depth of the screen.
+Const DEPTH       = 0      ' Depth of the screen.
 Const REFRESHRATE = 75      ' How often to update the screen (Per second).
 
 ' Game Settings

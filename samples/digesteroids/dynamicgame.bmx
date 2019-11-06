@@ -30,6 +30,7 @@
 ' Required:
 '  - minitimer.bmx   - Timer framework.
 ' *******************************************************************
+Strict
 
 Import "minitimer.bmx"
 
