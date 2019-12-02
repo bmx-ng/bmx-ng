@@ -123,7 +123,7 @@ Function docBmxFile( filePath$,docPath$ )
 	
 	Local Text$=LoadText( filepath )
 	
-	Local blocks:TList = CreateList()
+	Local blocks:Int = 0
 	
 	For Local line$=EachIn Text.Split( "~n" )
 
@@ -142,10 +142,10 @@ Function docBmxFile( filePath$,docPath$ )
 		
 		Select id
 		Case "type", "interface", "struct"
-			ListAddLast(blocks, id)
+			blocks :+ 1
 			
 		Case "endtype", "endinterface", "endstruct"
-			ListRemoveLast(blocks)
+			blocks :- 1
 			
 		EndSelect
 		
@@ -274,7 +274,7 @@ Function docBmxFile( filePath$,docPath$ )
 				
 				Local node:TDocNode=TDocNode.Create( id,path,kind, BuildProtoId(proto) )
 				
-				If(Not ListIsEmpty(blocks)) Then node.block = True
+				If(blocks) Then node.block = True
 				
 				node.proto=proto
 				node.bbdoc=bbdoc
