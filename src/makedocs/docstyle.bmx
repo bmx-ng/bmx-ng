@@ -128,6 +128,13 @@ Type TDocStyle Extends TBBLinkResolver
 
 			list.AddLast t
 			
+			If(t.kind = "Function" And t.block)
+				Local i=t.proto.Find( " " )
+				If i<>-1
+					Continue
+				EndIf
+			EndIf
+			
 			'update commands.txt
 			Select t.kind
 			Case "Keyword"
