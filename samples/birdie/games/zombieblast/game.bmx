@@ -7,7 +7,7 @@ Framework SDL.gl2sdlmax2d
 ?
 Import brl.ramstream
 Import brl.pngloader
-Import brl.random
+Import brl.Random
 
 '
 ' Game Demo Coded By David Bird (Birdie)
@@ -46,7 +46,7 @@ Global CloudList:TList  = New TList
 Global ScanList:TList   = New TList
 
 Global TitleWidth#,TitleHeight#
-Graphics Int(C_ScreenWidth), Int(C_ScreenHeight) ,32
+Graphics Int(C_ScreenWidth), Int(C_ScreenHeight) ,0
 HideMouse
 AutoImageFlags MASKEDIMAGE|FILTEREDIMAGE|MIPMAPPEDIMAGE
 
@@ -194,7 +194,7 @@ EndFunction
 Type Entity
   Field x#,y#
   Field height#
-  Field rotation#
+  Field Rotation#
   Field spd#=1
 
   Method Update() Abstract
@@ -234,15 +234,15 @@ Type Player Extends Entity
       Local a,thei#
       thei = height +(3.5*Cos(osc) )
 
-      Shots.Create x, y, spd+5, thei, rotation
+      Shots.Create x, y, spd+5, thei, Rotation
       For a=0 Until 3
-        Shots.Create x, y, spd+5, thei, Float(rotation+Rnd(-1.75,1.75))
+        Shots.Create x, y, spd+5, thei, Float(Rotation+Rnd(-1.75,1.75))
       Next
     EndIf
     Local sz#=14*(1+(height/140.0))
     Local sd#=16
-    Local cs#= Cos(rotation-90)
-    Local sn#= Sin(rotation-90)
+    Local cs#= Cos(Rotation-90)
+    Local sn#= Sin(Rotation-90)
     Local ddx# = sz
     Local ddy# = 9
 
@@ -255,17 +255,17 @@ Type Player Extends Entity
     Local thei#
     thei = height +(3.5*Cos(osc) )
     Local deltasm#= ( 0.5 * (spd/8.0))
-    Trail.Create( x+tx1, y+ty1, thei, deltasm, rotation )
-    Trail.Create( x+tx2, y+ty2, thei, deltasm, rotation )
+    Trail.Create( x+tx1, y+ty1, thei, deltasm, Rotation )
+    Trail.Create( x+tx2, y+ty2, thei, deltasm, Rotation )
 
-    Local tx#= 20 * Cos(rotation)
-    Local ty#= 20 * Sin(rotation)
+    Local tx#= 20 * Cos(Rotation)
+    Local ty#= 20 * Sin(Rotation)
     Local rd= 255*thrust*2
     Local gn= rd*0.7
     Local bl= gn*0.5
-    ColTrail.Create( x-tx, y-ty, thei, 0.3, rotation, [rd, gn, bl] ,2.0)
+    ColTrail.Create( x-tx, y-ty, thei, 0.3, Rotation, [rd, gn, bl] ,2.0)
 
-    ColTrail.Create( x-tx, y-ty, thei, 0.3, rotation, [rd*2, 0, 0] ,1.0)
+    ColTrail.Create( x-tx, y-ty, thei, 0.3, Rotation, [rd*2, 0, 0] ,1.0)
 
     If KeyDown(KEY_RIGHT)
       rotationSpd:+0.25
@@ -279,7 +279,7 @@ Type Player Extends Entity
         rotationSpd=-2
       EndIf
     EndIf
-    rotation:+rotationSpd
+    Rotation:+rotationSpd
     rotationSpd:*0.95
 
     If KeyDown(KEY_A)
@@ -306,8 +306,8 @@ Type Player Extends Entity
       height = 50
       liftspd=0
     EndIf
-    x=x+(spd*Cos(rotation))
-    y=y+(spd*Sin(rotation))
+    x=x+(spd*Cos(Rotation))
+    y=y+(spd*Sin(Rotation))
     If x>WorldSize x=-WorldSize
     If x<-WorldSize x=WorldSize
     If y>WorldSize y=-WorldSize
@@ -319,7 +319,7 @@ Type Player Extends Entity
     Local dx#,dy#,sz#,thei#
     thei = height +(3.5*Cos(osc) )
     sz =(0.002*thei)
-    SetRotation rotation+90
+    SetRotation Rotation+90
     SetBlend ALPHABLEND
     SetScale 0.25+sz,0.25+sz
     SetColor 0,0,0
@@ -332,7 +332,7 @@ Type Player Extends Entity
     thei = height +(3.5*Cos(osc) )
     sz =(0.002*thei)
     SetAlpha 1
-    SetRotation rotation+90
+    SetRotation Rotation+90
     SetBlend MASKBLEND
     SetColor 255,255,255
     dx=thei/3.0
@@ -352,7 +352,7 @@ Type Player Extends Entity
 EndType
 
 Type Cloud
-  Field x#,y#,height#, rotation
+  Field x#,y#,height#, Rotation
 
   Method Update()
     x:+1
@@ -370,7 +370,7 @@ Type Cloud
     SetBlend LIGHTBLEND
     SetAlpha 1
     SetScale 2.4,2.4
-    SetRotation rotation
+    SetRotation Rotation
     SetColor 255,255,255
     DrawImage media_cloud,(MapPosition_X+dx-x) + C_ScreenMidX,(MapPosition_Y+dy-y) + C_ScreenMidY
   EndMethod
@@ -380,7 +380,7 @@ Type Cloud
     SetColor 0,0,0
     SetAlpha 0.2
     SetScale 4, 4
-    SetRotation rotation
+    SetRotation Rotation
     DrawImage media_cloud,(MapPosition_X-x) + C_ScreenMidX,(MapPosition_Y-y) + C_ScreenMidY
   EndMethod
 
@@ -388,7 +388,7 @@ Type Cloud
     Local c:Cloud = New Cloud
     c.x= x
     c.y= y
-    c.rotation = Rnd(360)
+    c.Rotation = Rnd(360)
     c.height = 75
     CloudList.AddLast c
     Return c
@@ -405,7 +405,7 @@ Type Shots Extends Entity
     SetColor 255,255,255
     SetAlpha 1
     SetScale 1, 1
-    SetRotation rotation + 90
+    SetRotation Rotation + 90
     DrawImage media_shots,(MapPosition_X+dx-x) + C_ScreenMidX,(MapPosition_Y+dy-y) + C_ScreenMidY
   EndMethod
 
@@ -414,12 +414,12 @@ Type Shots Extends Entity
     SetColor 0,0,0
     SetAlpha 0.2
     SetScale 1, 1
-    SetRotation rotation + 90
+    SetRotation Rotation + 90
     DrawImage media_shots,(MapPosition_X-x) + C_ScreenMidX,(MapPosition_Y-y) + C_ScreenMidY
   EndMethod
   Method Update()
-    x=x+(spd*Cos(rotation))
-    y=y+(spd*Sin(rotation))
+    x=x+(spd*Cos(Rotation))
+    y=y+(spd*Sin(Rotation))
     If x>WorldSize x=-WorldSize
     If x<-WorldSize x=WorldSize
     If y>WorldSize y=-WorldSize
@@ -427,10 +427,10 @@ Type Shots Extends Entity
     If life<80
       height:-0.75
     EndIf
-    Trail.Create( x, y, height, 0.3, rotation )
+    Trail.Create( x, y, height, 0.3, Rotation )
     If height<0
       ObjectList.Remove Self
-      Mud.Create(x, y, rotation)
+      Mud.Create(x, y, Rotation)
       Local ee#
       ee=1
       SmokeEmitter.Create( x#,y#, 0,ee, ee, ee )
@@ -446,7 +446,7 @@ Type Shots Extends Entity
     Local s:Shots = New Shots
     s.x=x
     s.y=y
-    s.rotation = rot
+    s.Rotation = rot
     s.spd = spd
     s.height = hei
     s.life = 100
@@ -670,18 +670,18 @@ Type Baddie Extends Entity
       frame:+1
       If frame = 17 frame = 0
     EndIf
-    x=x+(spd*Cos(rotation-90))
-    y=y+(spd*Sin(rotation-90))
+    x=x+(spd*Cos(Rotation-90))
+    y=y+(spd*Sin(Rotation-90))
     If x>WorldSize x=-WorldSize
     If x<-WorldSize x=WorldSize
     If y>WorldSize y=-WorldSize
     If y<-WorldSize y=WorldSize
 
     spd=0.3
-    rotation:+1
-    If rotation<0 rotation:+360
-    If rotation>=360 rotation:-360
-    direct = rotation / 45
+    Rotation:+1
+    If Rotation<0 Rotation:+360
+    If Rotation>=360 Rotation:-360
+    direct = Rotation / 45
   EndMethod
   Method DrawShadow()
     Local dx = -12
@@ -708,7 +708,7 @@ Type Baddie Extends Entity
     Local s:Baddie = New Baddie
     s.x=x
     s.y=y
-    s.rotation = Rand(350)
+    s.Rotation = Rand(350)
     s.spd = Rnd(1,2)
     s.height = 0
     s.life = 100

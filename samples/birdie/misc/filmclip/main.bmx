@@ -5,10 +5,10 @@ Framework SDL.d3d9sdlmax2d
 ?Not win32
 Framework SDL.gl2sdlmax2d
 ?
-Import brl.random
+Import brl.Random
 Import brl.pngloader
 
-Graphics 640,480,32
+Graphics 640,480,0
 
 AutoMidHandle True
 Global BMX01IMG:TImage = LoadImage("media/B-Max.png",FILTEREDIMAGE|DYNAMICIMAGE)

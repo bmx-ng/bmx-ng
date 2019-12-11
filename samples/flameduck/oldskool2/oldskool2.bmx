@@ -16,7 +16,7 @@ Framework SDL.gl2sdlmax2d
 Import brl.pngloader
 Import brl.ramstream
 Import brl.oggloader
-Import brl.random
+Import brl.Random
 Import sdl.sdlfreeaudio
 
 Incbin "circlefont.png"
@@ -190,22 +190,13 @@ Local intro = 0
 Local i = 0
 Local term:Double = 0
 
-Local dd=32
-
-Graphics 640,480,dd
+Graphics 640,480,0
 
 HideMouse
 
 Local myChannel:TChannel = PlaySound (muzak)
 
 While term < 1
-
-	If KeyHit( KEY_ENTER )
-		dd=32-dd
-		Graphics 640,480,dd
-		HideMouse
-		FlushKeys
-	EndIf
 
 	Cls
 

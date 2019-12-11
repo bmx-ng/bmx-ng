@@ -5,7 +5,7 @@ Framework SDL.d3d9sdlmax2d
 ?Not win32
 Framework SDL.gl2sdlmax2d
 ?
-Import brl.random
+Import brl.Random
 Import brl.ramstream
 Import brl.pngloader
 
@@ -15,7 +15,7 @@ Incbin "media/part.png"
 Incbin "media/pointer.PNG"
 Incbin "media/shine.png"
 
-Graphics 640,480
+Graphics 640,480,0
 Global backIm:TImage = LoadImage("incbin::media/back.png")
 AutoMidHandle 1
 Global blocks:TImage = LoadAnimImage("incbin::media/blocks.png",32,32,0,16)
@@ -27,7 +27,7 @@ Global Map[8,14]
 Global t1x,t1y,t2x,t2y
 Global mouse_left_state
 Global selection_done
-Global rotation# = 0
+Global Rotation# = 0
 Global Center_X#
 Global Center_Y#
 Global mt1,mt2
@@ -298,7 +298,7 @@ Function Do_Swap_Tiles()
   Select selection_done
     Case 1
       'setup tile swap
-      rotation=180
+      Rotation=180
       selection_done = 2
       'calculate center
       x1 = 208+t1x*32
@@ -330,51 +330,51 @@ Function Do_Swap_Tiles()
       THE_Axis = 1
       If t1y=t2y THE_Axis = 0
     Case 2
-      If rotation<0
+      If Rotation<0
         If Switch(t1x,t1y,t2x,t2y)
           selection_done = 0
         Else
           selection_done = 3
         EndIf
       Else
-        rotation:-FLIPSPEED
-        size2# = 0.80+0.20*Sin(rotation)
-        size1# = 0.80+0.20*Sin(-rotation)
+        Rotation:-FLIPSPEED
+        size2# = 0.80+0.20*Sin(Rotation)
+        size1# = 0.80+0.20*Sin(-Rotation)
         Select THE_Axis
           Case 0 'x
             SetScale size1,size1
-            DrawImage blocks, Float(Center_X+Tile_Rad*Cos(rotation)), Center_Y, mt1-1
+            DrawImage blocks, Float(Center_X+Tile_Rad*Cos(Rotation)), Center_Y, mt1-1
             SetScale size2,size2
-            DrawImage blocks, Float(Center_X-Tile_Rad*Cos(rotation)), Center_Y, mt2-1
+            DrawImage blocks, Float(Center_X-Tile_Rad*Cos(Rotation)), Center_Y, mt2-1
             SetScale 1,1
           Case 1 ' y
             SetScale size1,size1
-            DrawImage blocks, Center_X, Float(Center_Y+Tile_Rad*Cos(rotation)), mt1-1
+            DrawImage blocks, Center_X, Float(Center_Y+Tile_Rad*Cos(Rotation)), mt1-1
             SetScale size2,size2
-            DrawImage blocks, Center_X, Float(Center_Y-Tile_Rad*Cos(rotation)), mt2-1
+            DrawImage blocks, Center_X, Float(Center_Y-Tile_Rad*Cos(Rotation)), mt2-1
             SetScale 1,1
         EndSelect
       '  DrawImage blocks,192+t2x*32,24+t2y*32,mt2
       EndIf
     Case 3 '
-      If rotation>=180
+      If Rotation>=180
         selection_done = 0
       Else
-        rotation:+FLIPSPEED
-        size2# = 0.80+0.20*Sin(rotation)
-        size1# = 0.80+0.20*Sin(-rotation)
+        Rotation:+FLIPSPEED
+        size2# = 0.80+0.20*Sin(Rotation)
+        size1# = 0.80+0.20*Sin(-Rotation)
         Select THE_Axis
           Case 0 'x
             SetScale size1,size1
-            DrawImage blocks, Float(Center_X+Tile_Rad*Cos(rotation)), Center_Y, mt1-1
+            DrawImage blocks, Float(Center_X+Tile_Rad*Cos(Rotation)), Center_Y, mt1-1
             SetScale size2,size2
-            DrawImage blocks, Float(Center_X-Tile_Rad*Cos(rotation)), Center_Y, mt2-1
+            DrawImage blocks, Float(Center_X-Tile_Rad*Cos(Rotation)), Center_Y, mt2-1
             SetScale 1,1
           Case 1 ' y
             SetScale size1,size1
-            DrawImage blocks, Center_X, Float(Center_Y+Tile_Rad*Cos(rotation)), mt1-1
+            DrawImage blocks, Center_X, Float(Center_Y+Tile_Rad*Cos(Rotation)), mt1-1
             SetScale size2,size2
-            DrawImage blocks, Center_X, Float(Center_Y-Tile_Rad*Cos(rotation)), mt2-1
+            DrawImage blocks, Center_X, Float(Center_Y-Tile_Rad*Cos(Rotation)), mt2-1
             SetScale 1,1
         EndSelect
       EndIf

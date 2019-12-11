@@ -17,7 +17,7 @@ Import sdl.SDLFreeAudio
 Import brl.ramstream
 Import brl.pngloader
 Import brl.wavloader
-Import brl.random
+Import brl.Random
 
 Import "color.bmx"
 
@@ -29,7 +29,7 @@ Incbin "shoot.wav"
 SetAudioDriver("FreeAudio SDL")
 
 Const WIDTH=640,HEIGHT=480
-Const DEPTH=32,HERTZ=60
+Const DEPTH=0,HERTZ=60
 
 Const GRAVITY#=.15,SPARKS_PER_FRAME=55
 

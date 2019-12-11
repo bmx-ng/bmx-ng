@@ -17,7 +17,7 @@ Incbin "media/light.png"
 Incbin "media/B-Max.png"
 
 'set the graphics mode
-Graphics 640, 480, 32
+Graphics 640, 480, 0
 
 'Hide the pointer
 HideMouse

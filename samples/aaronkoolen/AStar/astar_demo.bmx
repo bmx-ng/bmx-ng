@@ -9,7 +9,7 @@ Framework SDL.d3d9sdlmax2d
 ?Not win32
 Framework SDL.gl2sdlmax2d
 ?
-Import brl.random
+Import brl.Random
 Import brl.pngloader
 
 Import "astar_graph_walker.bmx"
@@ -142,7 +142,7 @@ Type AStarDemo
 	Method run()
 	
 ' Setup the graphics stuff
-		Graphics 1024,768,32
+		Graphics 1024,768,0
 		
 		nums = LoadAnimImage("nums.png",5,8,0,12)
 		Assert nums<> Null,"Can't load number graphic nums.png"

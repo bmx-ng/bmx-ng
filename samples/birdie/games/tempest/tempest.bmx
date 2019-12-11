@@ -7,7 +7,7 @@ Framework SDL.d3d9sdlmax2d
 ?Not win32
 Framework SDL.gl2sdlmax2d
 ?
-Import brl.random
+Import brl.Random
 
 Const CWidth#=640
 Const CHeight#=480
@@ -32,7 +32,7 @@ Function TForm(x#, y#, z#, x2d# Var, y2d# Var )
 EndFunction
 
 'Setup Graphics mode
-Graphics Int(CWidth),Int(CHeight),32
+Graphics Int(CWidth),Int(CHeight),0
 
 HideMouse
 

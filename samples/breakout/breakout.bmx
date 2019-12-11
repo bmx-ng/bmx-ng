@@ -7,9 +7,9 @@ Framework SDL.d3d9sdlmax2d
 Framework SDL.gl2sdlmax2d
 ?
 Import brl.pngloader
-Import brl.random
+Import brl.Random
 
-Const WIDTH = 640,HEIGHT = 480, DEPTH = 32
+Const WIDTH = 640,HEIGHT = 480, DEPTH = 0
 Const ShadowOn   = 1
 Const ShadowSize = 10
 
@@ -138,7 +138,7 @@ Type Tile
               Case 1
                 If ballcount=1
                   For c=0 Until 2
-                    BallList.AddLast(ball.Create(b.x,b.y))
+                    BallList.AddLast(ball.Create(Int(b.x),Int(b.y)))
                   Next
                 EndIf
                 state = 1
