@@ -1,15 +1,15 @@
-Strict
+SuperStrict
 
 ?win32
 Framework SDL.d3d9sdlmax2d
 ?Not win32
 Framework SDL.gl2sdlmax2d
 ?
-Import brl.random
+Import brl.Random
 
-Const WIDTH=640,HEIGHT=480,DEPTH=32
-Const Star_Count 	= 1000	       ' Stars Count
-Const MAX_SIZE		= 12	         ' Maximum starts
+Const WIDTH:Int=640,HEIGHT:Int=480,DEPTH:Int=0
+Const Star_Count:Int 	= 1000	       ' Stars Count
+Const MAX_SIZE:Int		= 12	         ' Maximum starts
 Const MAX_ROTSPD#	= 1.5	         ' How much rotation goin on
 
 Global Delta_X#,Delta_Y#, Delta_Ang#=0 ,tick#=0
@@ -24,8 +24,8 @@ Type Star Extends TEntity
 	Field size#
 	Field col#,alp#
 	Field rot#
-	Field tcol[3]
-	Field vtype
+	Field tcol:Int[3]
+	Field vtype:Int
 
 	Method Update()
 		Local cs# , sn#
@@ -85,7 +85,7 @@ Type Star Extends TEntity
 
 	Function CreateStar:Star()
 		Local s:Star = New Star
-		Local r =Rand(128)
+		Local r:Int =Rand(128)
 		s.x=Rnd(640)
 		s.y=Rnd(480)
 		s.s=Rnd(150,250)
@@ -112,14 +112,14 @@ Graphics WIDTH,HEIGHT,DEPTH
 HideMouse
 
 Local StarList:TList = New TList
-Local a
+Local a:Int
 
 Local px1#=30,py1#
 Local px2#=WIDTH-30,py2#
 Local bx#=WIDTH/2, by#=HEIGHT/2
 Local bdx#=Rnd(-8,4)
 Local bdy#=3
-Local sc1,sc2
+Local sc1:Int,sc2:Int
 
 
 For a= 0 To Star_Count-1

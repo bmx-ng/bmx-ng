@@ -65,7 +65,7 @@ AddPixmap ("redgem.png")
 ' Set up display...
 ' -----------------------------------------------------------------------------
 
-Graphics 640, 480
+Graphics 640, 480, 0
 SetClsColor 32, 96, 128
 SetMaskColor 255, 0, 255
 AutoMidHandle True
