@@ -65,6 +65,13 @@ Function FormatBBTags( Text$ Var,bbTag$,htmlTag$ )
 	Forever
 End Function
 
+Type TBlock
+
+	Field start:Int
+	Field finish:Int
+
+End Type
+
 Public
 
 Function BBToHtml2$( Text$,doc:TBBLinkResolver )
@@ -106,7 +113,7 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 		Else
 			q=q.Replace( "~n*","</td></tr><tr><td> " )
 			q=q.Replace( " | ","</td><td>" )
-			q="~n<table><tr><td>"+q+"</table>~n"
+			q="~n<table><tr><td>"+q+"</td></tr></table>~n"
 		EndIf
 		
 		Text=Text[..i]+q+Text[i2+2..]

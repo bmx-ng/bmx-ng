@@ -59,7 +59,13 @@ Function DocMods()
 
 	For Local modid$=EachIn EnumModules()
 
-		If Not modid.StartsWith( "brl." ) And Not modid.StartsWith( "pub." ) And Not modid.StartsWith("maxgui.") And Not modid.StartsWith("sdl.") Continue
+		If Not modid.StartsWith( "brl." ) ..
+			And Not modid.StartsWith( "pub." ) ..
+			And Not modid.StartsWith("maxgui.") ..
+			And Not modid.StartsWith("sdl.") .. 
+			And Not modid.StartsWith("audio.") ..
+			And Not modid.StartsWith( "crypto." ) ..
+			And Not modid.StartsWith("steam.") Continue
 
 		Local p$=ModuleSource( modid )
 		Try
@@ -313,30 +319,26 @@ Function docBmxFile( filePath$,docPath$ )
 	
 End Function
 
-Function BuildProtoId:String(proto:String, ignoreBrackets:Int = True)
+Function BuildProtoId:String(proto:String, ignoreOtherChars:Int = True)
 
 	' function-stripdir-path"
 	Local s:String
 	Local previousIdentChar:Int = False
 	For Local n:Int = EachIn proto.Trim()
-		' ignore brackets
-		If ignoreBrackets And n = Asc("(") Then
-			Continue
-		End If
 		If IsProtoIdentChar(n) Then
 			s :+ Chr(n)
 			previousIdentChar = True
 		Else
+			If ignoreOtherChars And n <> Asc(" ") Then
+				Continue
+			End If
+			
 			If previousIdentChar Then
 				s :+ "-"
 			End If
 			previousIdentChar = False
 		End If
 	Next
-	If s.EndsWith("-") Then
-		s = s[..s.Length-1]
-	End If
-
 	Return s.ToLower()
 End Function
 

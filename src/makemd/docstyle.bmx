@@ -8,6 +8,8 @@ Import "bbdoc.bmx"
 
 Import "docnode.bmx"
 
+Const DOC_API:Int = 1
+
 Global BmxDocDir$=BlitzMaxPath()+"/docs/md"
 
 Global NodeKinds$[]=[ "/","Module","Type", "Interface", "Struct", "Enum" ]
@@ -15,6 +17,60 @@ Global NodeKinds$[]=[ "/","Module","Type", "Interface", "Struct", "Enum" ]
 Global LeafKinds$[]=[ "Const","Field","Global","Method","Function","Keyword" ]
 
 Global AllKinds$[]=NodeKinds+LeafKinds
+
+Type TDocBlocks
+
+	Field blocks:TObjectList = New TObjectList
+	
+	Field currentBlock:TBlock
+
+	Method Emit(txt:String)
+		If Not currentBlock Or TSourceBlock(currentBlock) Then
+			currentBlock = New TBlock
+			blocks.AddLast(currentBlock)
+		End If
+		
+		currentBlock.sb.Append(txt)
+	End Method
+	
+	Method EmitSource(txt:String)
+		If Not TSourceBlock(currentBlock) Then
+			currentBlock = New TSourceBlock
+			blocks.AddLast(currentBlock)
+		End If
+
+		currentBlock.sb.Append(txt)
+	End Method
+	
+	Method Clear()
+		blocks.Clear()
+		currentBlock = Null
+	End Method
+	
+	Method Generate:String(doc:TBBLinkResolver)
+		Local sb:TStringBuilder = New TStringBuilder
+		
+		For Local block:TBlock = EachIn blocks
+			If Not TSourceBlock(block) Then
+				sb.Append(BBToHtml( block.sb.ToString(),doc ))
+			Else
+				sb.Append(block.sb)
+			End If
+		Next
+		
+		Return sb.ToString()
+	End Method
+End Type
+
+Type TBlock
+
+	Field sb:TStringBuilder = New TStringBuilder(4096)
+
+End Type
+
+Type TSourceBlock Extends TBlock
+
+End Type
 
 Type TDocStyle Extends TBBLinkResolver
 
@@ -29,7 +85,7 @@ Type TDocStyle Extends TBBLinkResolver
 	
 	'Field stream:TStream
 	Field indent:Int = 0
-	Field sb:TStringBuilder = New TStringBuilder(16384)
+	Field docBlocks:TDocBlocks = New TDocBlocks
 	
 	Global commands:TMap=New TMap
 
@@ -98,7 +154,11 @@ Type TDocStyle Extends TBBLinkResolver
 		Else If url.StartsWith( doc.path+"/" )
 
 			If doc.kind = "Module" Then
-				url = "../.." + url
+				If DOC_API = 1 Then
+					url = "../.." + url
+				Else
+					url = ".." + url
+				End If
 			Else If doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Or doc.kind = "Enum" Then
 				url = "../../.." + url
 			End If
@@ -125,9 +185,17 @@ Type TDocStyle Extends TBBLinkResolver
 		absDocDir=BmxDocDir+ExtractDir( docURL )
 
 		If doc.kind = "Type" Or doc.kind = "Interface" Or doc.kind = "Struct" Or doc.kind = "Enum" Then
-			relRootDir="../../.."
+			If DOC_API = 1 Then
+				relRootDir="../../.."
+			Else
+				relRootDir="../.."
+			End If
 		Else
-			relRootDir="../.."
+			If DOC_API = 1 Then
+				relRootDir="../.."
+			Else
+				relRootDir=".."
+			End If
 		End If
 
 		Local p$=ExtractDir( docURL )
@@ -193,12 +261,12 @@ Type TDocStyle Extends TBBLinkResolver
 		
 		
 		If node.kind <> "/" Then
-			generated=BBToHtml( sb.ToString(),Self )
+			generated = docBlocks.Generate(Self)
 
 			SaveText generated,outputPath,ETextStreamFormat.UTF8,False
 		End If
 
-		sb.SetLength(0)
+		docBlocks.Clear()
 
 		For Local t$=EachIn NodeKinds
 			EmitNodes t
@@ -220,7 +288,13 @@ Type TDocStyle Extends TBBLinkResolver
 	End Method
 	
 	Method Emit( t$ )
-		sb.Append(t).AppendNewLine()
+		docBlocks.Emit(t)
+		docBlocks.Emit("~n")
+	End Method
+
+	Method EmitSource( t$ )
+		docBlocks.EmitSource(t)
+		docBlocks.EmitSource("~n")
 	End Method
 	
 	Method ChildList:TList( kind$ )

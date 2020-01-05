@@ -185,8 +185,9 @@ Type TRstStyle Extends TDocStyle
 	End Method
 	
 	Method EmitExample(t:TDocNode)
-		If t.examples.length
-			Local showCount:Int = t.examples.length > 1
+
+		If t.examples.Count()
+			Local showCount:Int = t.examples.Count() > 1
 			
 			Local count:Int
 			For Local example:String = EachIn t.examples
@@ -196,8 +197,8 @@ Type TRstStyle Extends TDocStyle
 				If showCount Then
 					title :+ " " + count
 				End If
-				Emit title
-				Emit "```blitzmax"
+				EmitSource title
+				EmitSource "```blitzmax"
 
 				Local p:String = example.ToLower()
 
@@ -210,9 +211,9 @@ Type TRstStyle Extends TDocStyle
 
 				Local code$=LoadText(path).Trim()
 				For Local line:String = EachIn code.Split("~n")
-					Emit line
+					EmitSource line
 				Next
-				Emit "```"
+				EmitSource "```"
 			Next
 		EndIf	
 	End Method

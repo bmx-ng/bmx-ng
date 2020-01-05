@@ -2,6 +2,7 @@
 Strict
 
 Import BRL.Map
+Import brl.objectlist
 Import "parse.bmx"
 
 Type TDocNode
@@ -20,8 +21,7 @@ Type TDocNode
 	Field params:TList	'eg: [x - the x coord, y - the y coord]
 	
 	Field docDir$		'eg: ../mod/brl.mod/max2d.mod/doc
-	Field examples:String[]	'eg: LoadImage.bmx (path)
-	
+	Field examples:TObjectList = New TObjectList	'eg: LoadImage.bmx (path)
 	Field children:TList=New TList
 	Field op:String
 	
@@ -89,8 +89,14 @@ Type TDocNode
 	End Function
 	
 	Method AddExample(examplePath:String)
+	
+		Local ex:String = StripDir(examplePath)
 
-		examples :+ [StripDir(examplePath)]
+		If Not examples.Contains(ex) Then
+			examples.AddLast(ex)
+		Else
+			Print "DUP : " + ex
+		End If
 		
 		' check for extra examples
 		Local i:Int
@@ -98,7 +104,10 @@ Type TDocNode
 			i :+ 1
 			Local path:String = StripExt(examplePath) + "_" + i + ".bmx"
 			If FileType(path) = FILETYPE_FILE Then
-				examples :+ [StripDir(path)]
+				ex = StripDir(path)
+				If Not examples.Contains(ex) Then
+					examples.AddLast(ex)
+				End If
 				Continue
 			End If
 			Exit
@@ -131,23 +140,19 @@ Type TProto
 		Local s:String
 		Local previousIdentChar:Int = False
 		For Local n:Int = EachIn orig.Trim()
-			' ignore brackets
-			If n = Asc("(") Then
-				Continue
-			End If
 			If IsProtoIdentChar(n) Then
 				s :+ Chr(n)
 				previousIdentChar = True
 			Else
+				If n <> Asc(" ") Then
+					Continue
+				End If
 				If previousIdentChar Then
 					s :+ "-"
 				End If
 				previousIdentChar = False
 			End If
 		Next
-		If s.EndsWith("-") Then
-			s = s[..s.Length-1]
-		End If
 
 		protoId = s.ToLower()
 	End Method
