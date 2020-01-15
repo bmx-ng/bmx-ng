@@ -184,6 +184,7 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 		Select r
 		Case "<" r="&lt;"
 		Case ">" r="&gt;"
+		Case "q" r="~~q"
 		End Select
 		
 		Text=Text[..i]+r+Text[i+2..]
