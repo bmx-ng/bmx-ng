@@ -1,6 +1,8 @@
 
 Strict
 
+Import BRL.ObjectList
+
 Import "parse.bmx"
 
 'still pretty ugly - could probably be done in a few lines with Bah.RegEx!
@@ -70,6 +72,30 @@ Type TBlock
 	Field start:Int
 	Field finish:Int
 
+	Method New(start:Int, finish:Int)
+		Self.start = start
+		Self.finish = finish
+	End Method
+End Type
+
+Type TCodeBlocks
+	Field list:TObjectList = New TObjectList
+	
+	Method IsInCodeBlock:Int(index:Int Var)
+		For Local block:TBlock = EachIn list
+
+			If index < block.start Then
+				Exit
+			End If
+			
+			If index >= block.start And index <= block.finish Then
+				index = block.finish
+				Return True
+			End If
+		Next
+		
+		Return False
+	End Method
 End Type
 
 Public
@@ -77,15 +103,31 @@ Public
 Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 	Local i
 	
+	Local codeBlocks:TCodeBlocks = New TCodeBlocks
+	' calculate blocks
+	i = 0
+	Repeat
+		i = Text.Find("```", i)
+		If i = -1 Exit
+
+		Local i2:Int = Text.Find("```", i + 3)
+		If i2 = -1 Exit
+		
+		codeBlocks.list.AddLast(New TBlock(i, i2 + 3))
+		i = i2 + 3
+	Forever
+	
 	'headings
 	i=0
 	Local hl=1
 	Repeat
 		i=Text.Find( "~n+",i )
 		If i=-1 Exit
+		If codeBlocks.IsInCodeBlock(i) Continue
 		
 		Local i2=Text.Find( "~n",i+2 )
 		If i2=-1 Exit
+		If codeBlocks.IsInCodeBlock(i2) Continue
 		
 		Local q$=Text[i+2..i2]
 		q="<h"+hl+">"+q+"</h"+hl+">"
@@ -101,9 +143,11 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 	Repeat
 		i=Text.Find( "~n[",i )
 		If i=-1 Exit
+		If codeBlocks.IsInCodeBlock(i) Continue
 		
 		Local i2=Text.Find( "~n]",i+2 )
 		If i2=-1 Exit
+		If codeBlocks.IsInCodeBlock(i2) Continue
 		
 		Local q$=Text[i+2..i2]
 		
@@ -125,9 +169,11 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 	Repeat
 		i=Text.Find( "~n{",i )
 		If i=-1 Exit
+		If codeBlocks.IsInCodeBlock(i) Continue
 		
 		Local i2=Text.Find(  "~n}",i+2 )
 		If i2=-1 Exit
+		If codeBlocks.IsInCodeBlock(i2) Continue
 		
 		Local q$=Text[i+2..i2]
 		
@@ -142,6 +188,7 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 	Repeat
 		i = Text.Find("<img src=", i)
 		If i = -1 Exit
+		If codeBlocks.IsInCodeBlock(i) Continue
 
 		Local i2:Int = Text.Find(">", i)
 		
@@ -179,6 +226,7 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 	Repeat
 		i=Text.Find( "~~",i )
 		If i=-1 Or i=Text.length-1 Exit
+		If codeBlocks.IsInCodeBlock(i) Continue
 		
 		Local r$=Chr( Text[i+1] )
 		Select r
