@@ -89,7 +89,7 @@ Type TCodeBlocks
 			End If
 			
 			If index >= block.start And index <= block.finish Then
-				index = block.finish
+				index = block.finish + 1
 				Return True
 			End If
 		Next
