@@ -14,7 +14,12 @@ Type TRstStyle Extends TDocStyle
 			Emit "---"
 			Emit "id: " + doc.id.ToLower() 
 			Emit "title: " + doc.id
-			Emit "sidebar_label: " + doc.id
+			
+			Local label:String = doc.id
+			If doc.needsIntro Then
+				label = "Introduction to " + doc.id
+			End If
+			Emit "sidebar_label: " + label
 			Emit "---"
 			Emit ""
 		End If

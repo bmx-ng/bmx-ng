@@ -24,6 +24,7 @@ Type TDocNode
 	Field examples:TObjectList = New TObjectList	'eg: LoadImage.bmx (path)
 	Field children:TList=New TList
 	Field op:String
+	Field needsIntro:Int ' has Type children
 	
 	Function ForPath:TDocNode( path$ )
 
@@ -73,6 +74,9 @@ Type TDocNode
 			path=ExtractDir( path )
 			Local p:TDocNode=TDocNode( _pathMap.ValueForKey( path ) )
 			If p
+				If p.Kind = "Module" And (q.kind = "Type" Or q.kind = "Interface" Or q.kind = "Struct" Or q.kind = "Enum") Then
+					p.needsIntro = True
+				End If
 				p.children.AddLast q
 				Exit
 			EndIf

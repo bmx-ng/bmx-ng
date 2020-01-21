@@ -260,7 +260,7 @@ Function BBToHtml$( Text$,doc:TBBLinkResolver )
 		
 		out:+BBToHtml2( Text[i..i1],doc )
 		
-		out:+"~n```~n"+Text[i1+3..i2].Trim()+"~n````~n"
+		out:+"~n```~n"+Text[i1+3..i2].Trim()+"~n```~n"
 		
 		i=i2+3
 	Forever
