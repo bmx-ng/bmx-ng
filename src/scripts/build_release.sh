@@ -2,12 +2,27 @@
 
 # WINDOWS
 #
-# When using git bash on Windows, you can get wget from here : https://eternallybored.org/misc/wget/
+# When using git bash on Windows, you can download wget from here : https://eternallybored.org/misc/wget/
 # Copy wget.exe into C:\Program Files\Git\mingw64\bin
 #
-# Get 7za.exe from the 7-Zip extra archive at: https://www.7-zip.org/download.html
+# Download 7za.exe from the 7-Zip extra archive at: https://www.7-zip.org/download.html
 # Copy into C:\Program Files\Git\mingw64\bin
 #
+
+usage() {
+	echo "Usage: "`basename "$0"`" -b <version> [OPTIONS]"
+	echo "    -a <arch>    : Force architecture. e.g. x86, x64, arm"
+	echo "    -b <version> : Use build version. e.g. 0.105.3.35"
+	echo "    -c           : Don't clean dirs."
+	echo "    -s           : Build samples."
+	echo "    -z           : Clean 'zips' dir."
+	exit 0
+}
+
+
+if [[ $# -eq 0 ]] ; then
+	usage
+fi
 
 exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' 0 1 2 3
@@ -20,6 +35,7 @@ PLATFORM="linux"
 RELEASE_URL="https://github.com/bmx-ng/bmx-ng/releases/download/"
 CLEAN_DIRS="y"
 CLEAN_ZIPS=""
+BUILD_SAMPLES=""
 
 get_arch() {
 	ARCH=`uname -m`
@@ -27,8 +43,13 @@ get_arch() {
 
 expand_platform() {
 	case "$ARCH" in
-		x86_64) ARCH="x64";;
-		arm*)  PLATFORM="rpi"; ARCH="";;
+		x86_64)
+			ARCH="x64"
+			;;
+		arm*)
+			PLATFORM="rpi"
+			ARCH=""
+			;;
 	esac
 
 	if [ ! -z "$OPT_ARCH" ]; then
@@ -39,10 +60,17 @@ expand_platform() {
 init() {
 	get_arch
 	case "$OSTYPE" in
-		darwin*)  PLATFORM="macos" ;; 
-		linux*)   ;;
-		msys*)    PLATFORM="win32" ;;
-		*)        echo "Unknown platform: $OSTYPE"; exit 1;;
+		darwin*)
+			PLATFORM="macos"
+			;; 
+		linux*) ;;
+		msys*)
+			PLATFORM="win32"
+			;;
+		*)
+			echo "Unknown platform: $OSTYPE"
+			exit 1
+			;;
 	esac
 
 	expand_platform
@@ -56,7 +84,7 @@ clean_dirs() {
 	echo "-   CLEAN DIRS     -"
 	echo "--------------------"
 
-	echo "Removing relase dir"
+	echo "Removing release dir"
 	rm -rf release
 
 	echo "Removing tmp dir"
@@ -384,18 +412,23 @@ build_samples() {
 	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/tempest/tempest.bmx
 }
 
-#temp/BlitzMax/bin/bmk makemods
 
-while getopts ":a:cf" options; do
+while getopts ":a:b:cfs" options; do
 	case "${options}" in
 		a)
+			OPT_ARCH=${OPTARG}
+			;;
+		b)
 			BUILD_VERSION=${OPTARG}
 			;;
 		c)
 			CLEAN_DIRS=""
 			;;
-		f)
+		z)
 			CLEAN_ZIPS="y"
+			;;
+		s)
+			BUILD_SAMPLEs="y"
 			;;
 		:)
 			echo "Error: -${OPTARG} requires an argument."
@@ -414,4 +447,6 @@ check_base
 download
 prepare
 build_apps
-#build_samples
+if [ ! -z "$BUILD_SAMPLES" ]; then
+	build_samples
+fi
