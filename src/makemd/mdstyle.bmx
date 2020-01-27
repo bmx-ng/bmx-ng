@@ -17,7 +17,7 @@ Type TRstStyle Extends TDocStyle
 			
 			Local label:String = doc.id
 			If doc.needsIntro Then
-				label = "Introduction to " + doc.id
+				label = "Introduction"
 			End If
 			Emit "sidebar_label: " + label
 			Emit "---"
