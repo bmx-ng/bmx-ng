@@ -11,7 +11,7 @@
 
 usage() {
 	echo "Usage: "`basename "$0"`" -b <version> [OPTIONS]"
-	echo "    -a <arch>    : Force architecture. e.g. x86, x64, arm"
+	echo "    -a <arch>    : Force architecture. e.g. x86, x64, arm, x86x64 (win32 only)"
 	echo "    -b <version> : Use build version. e.g. 0.105.3.35"
 	echo "    -c           : Don't clean dirs."
 	echo "    -s           : Build samples."
@@ -36,6 +36,11 @@ RELEASE_URL="https://github.com/bmx-ng/bmx-ng/releases/download/"
 CLEAN_DIRS="y"
 CLEAN_ZIPS=""
 BUILD_SAMPLES=""
+MINGW_X86="i686-8.1.0-release-posix-sjlj-rt_v6-rev0.7z"
+MINGW_X86_URL="https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/8.1.0/threads-posix/sjlj/i686-8.1.0-release-posix-sjlj-rt_v6-rev0.7z"
+MINGW_X64="x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z"
+MINGW_X64_URL="https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z"
+
 
 get_arch() {
 	ARCH=`uname -m`
@@ -53,7 +58,11 @@ expand_platform() {
 	esac
 
 	if [ ! -z "$OPT_ARCH" ]; then
-		ARCH=$OPT_ARCH
+		if [[ "$OPT_ARCH" == *"x86"* ]]; then
+			ARCH=x86
+		else
+			ARCH=$OPT_ARCH
+		fi
 	fi
 }
 
@@ -87,7 +96,7 @@ clean_dirs() {
 	echo "Removing release dir"
 	rm -rf release
 
-	echo "Removing tmp dir"
+	echo "Removing temp dir"
 	rm -rf temp
 
 	if [ ! -z "$CLEAN_ZIPS" ]; then
@@ -116,6 +125,13 @@ make_dirs() {
 		mkdir -p temp
 	fi
 
+	case "$PLATFORM" in
+		win32)
+			if [ ! -d "mingw" ]; then
+				echo "Creating mingw dir"
+				mkdir -p mingw
+			fi
+	esac
 }
 
 check_base() {
@@ -129,17 +145,27 @@ check_base() {
 			exit 1
 		fi
 
+		DOWNLOAD_URL_ARCH=".${ARCH}"
+		ARCHIVE_ARCH="${ARCH}_"
+		case "$PLATFORM" in
+			win32)
+			if [[ "$OPT_ARCH" == "x86x64" ]]; then
+				DOWNLOAD_URL_ARCH=""
+				ARCHIVE_ARCH=""
+			fi
+		esac
+
 		SUFFIX=".tar.xz"
-		URL="${RELEASE_URL}v${BUILD_VERSION}.${PLATFORM}.${ARCH}/"
+		URL="${RELEASE_URL}v${BUILD_VERSION}.${PLATFORM}${DOWNLOAD_URL_ARCH}/"
 		ARCHIVE="BlitzMax_${PLATFORM}_"
 
 		case "$PLATFORM" in
 			win32)
-				ARCHIVE="${ARCHIVE}${ARCH}_"
+				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}"
 				SUFFIX=".7z"
 				;;
 			linux)
-				ARCHIVE="${ARCHIVE}${ARCH}_";;
+				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}";;
 			rpi) ;;
 		esac
 
@@ -174,6 +200,24 @@ download() {
 	echo "--------------------"
 	echo "-    DOWNLOAD      -"
 	echo "--------------------"
+
+	# mingw
+	case "$PLATFORM" in
+		win32)
+			if [[ "$OPT_ARCH" == *"x86"* ]]; then
+				if [ ! -f "mingw/$MINGW_X86" ]; then
+					echo "Downloading $MINGW_X86"
+					wget -nv -P mingw $MINGW_X86_URL
+				fi
+			fi
+
+			if [[ "$OPT_ARCH" == *"x64"* ]]; then
+				if [ ! -f "mingw/$MINGW_X64" ]; then
+					echo "Downloading $MINGW_X64"
+					wget -nv -P mingw $MINGW_X64_URL
+				fi
+			fi
+	esac
 
 	# base
 	if [ ! -f zips/bmx-ng.zip ]; then
@@ -265,6 +309,14 @@ download() {
 	else
 		echo "Using local audio.mod.zip"
 	fi
+
+	if [ ! -f zips/steam.mod.zip ]; then
+		echo "Downloading steam.mod.zip"
+		wget -nv -P zips https://github.com/bmx-ng/steam.mod/archive/master.zip && \
+			mv zips/master.zip zips/steam.mod.zip
+	else
+		echo "Using local steam.mod.zip"
+	fi
 }
 
 prepare() {
@@ -278,68 +330,124 @@ prepare() {
 
 	rm -rf release/.github
 
-	case "$PLATFORM" in
-		win32)
-			echo "Copying MinGW"
-			cp -R BlitzMax/MinGW32x64 release/BlitzMax
-			;;
-	esac
-
 	mkdir -p release/BlitzMax/mod release/BlitzMax/bin
+
+	# copy all to temp
+	echo "Copying sources for build (into temp)"
+	cp -R release/BlitzMax temp
 
 	# bcc
 	echo "Extracting bcc" 
 	unzip -q zips/bcc.zip -d release/BlitzMax/src && \
 		mv release/BlitzMax/src/bcc-master release/BlitzMax/src/bcc
 
+	unzip -q zips/bcc.zip -d temp/BlitzMax/src && \
+		mv temp/BlitzMax/src/bcc-master temp/BlitzMax/src/bcc
+
 	# bmk
 	echo "Extracting bmk" 
 	unzip -q zips/bmk.zip -d release/BlitzMax/src && \
 		mv release/BlitzMax/src/bmk-master release/BlitzMax/src/bmk
+
+	unzip -q zips/bmk.zip -d temp/BlitzMax/src && \
+		mv temp/BlitzMax/src/bmk-master temp/BlitzMax/src/bmk
 
 	# maxide
 	echo "Extracting maxide" 
 	unzip -q zips/maxide.zip -d release/BlitzMax/src && \
 		mv release/BlitzMax/src/maxide-master release/BlitzMax/src/maxide
 
+	unzip -q zips/maxide.zip -d temp/BlitzMax/src && \
+		mv temp/BlitzMax/src/maxide-master temp/BlitzMax/src/maxide
+
 	# pub.mod
 	echo "Extracting pub.mod" 
 	unzip -q zips/pub.mod.zip -d release/BlitzMax/mod && \
 		mv release/BlitzMax/mod/pub.mod-master release/BlitzMax/mod/pub.mod
+
+	unzip -q zips/pub.mod.zip -d temp/BlitzMax/mod && \
+		mv temp/BlitzMax/mod/pub.mod-master temp/BlitzMax/mod/pub.mod
 
 	# brl.mod
 	echo "Extracting brl.mod" 
 	unzip -q zips/brl.mod.zip -d release/BlitzMax/mod && \
 		mv release/BlitzMax/mod/brl.mod-master release/BlitzMax/mod/brl.mod
 
+	unzip -q zips/brl.mod.zip -d temp/BlitzMax/mod && \
+		mv temp/BlitzMax/mod/brl.mod-master temp/BlitzMax/mod/brl.mod
+
 	# sdl.mod
 	echo "Extracting sdl.mod" 
 	unzip -q zips/sdl.mod.zip -d release/BlitzMax/mod && \
 		mv release/BlitzMax/mod/sdl.mod-master release/BlitzMax/mod/sdl.mod
+
+	unzip -q zips/sdl.mod.zip -d temp/BlitzMax/mod && \
+		mv temp/BlitzMax/mod/sdl.mod-master temp/BlitzMax/mod/sdl.mod
 
 	# maxgui.mod
 	echo "Extracting maxgui.mod" 
 	unzip -q zips/maxgui.mod.zip -d release/BlitzMax/mod && \
 		mv release/BlitzMax/mod/maxgui.mod-master release/BlitzMax/mod/maxgui.mod
 
+	unzip -q zips/maxgui.mod.zip -d temp/BlitzMax/mod && \
+		mv temp/BlitzMax/mod/maxgui.mod-master temp/BlitzMax/mod/maxgui.mod
+
 	# mky.mod
 	echo "Extracting mky.mod" 
 	unzip -q zips/mky.mod.zip -d release/BlitzMax/mod && \
 		mv release/BlitzMax/mod/mky.mod-master release/BlitzMax/mod/mky.mod
+
+	unzip -q zips/mky.mod.zip -d temp/BlitzMax/mod && \
+		mv temp/BlitzMax/mod/mky.mod-master temp/BlitzMax/mod/mky.mod
 
 	# crypto.mod
 	echo "Extracting crypto.mod" 
 	unzip -q zips/crypto.mod.zip -d release/BlitzMax/mod && \
 		mv release/BlitzMax/mod/crypto.mod-master release/BlitzMax/mod/crypto.mod
 
+	unzip -q zips/crypto.mod.zip -d temp/BlitzMax/mod && \
+		mv temp/BlitzMax/mod/crypto.mod-master temp/BlitzMax/mod/crypto.mod
+
 	# audio.mod
 	echo "Extracting audio.mod" 
 	unzip -q zips/audio.mod.zip -d release/BlitzMax/mod && \
 		mv release/BlitzMax/mod/audio.mod-master release/BlitzMax/mod/audio.mod
 
-	# copy all to temp
-	echo "Copying sources for build (into temp)"
-	cp -R release/BlitzMax temp
+	unzip -q zips/audio.mod.zip -d temp/BlitzMax/mod && \
+		mv temp/BlitzMax/mod/audio.mod-master temp/BlitzMax/mod/audio.mod
+
+	# steam.mod
+	echo "Extracting steam.mod" 
+	unzip -q zips/steam.mod.zip -d release/BlitzMax/mod && \
+		mv release/BlitzMax/mod/steam.mod-master release/BlitzMax/mod/steam.mod
+
+	unzip -q zips/steam.mod.zip -d temp/BlitzMax/mod && \
+		mv temp/BlitzMax/mod/steam.mod-master temp/BlitzMax/mod/steam.mod
+
+	case "$PLATFORM" in
+		win32)
+			if [[ "$OPT_ARCH" == *"x86"* ]]; then
+				echo "Extracting x86 MinGW"
+				7za x mingw/${MINGW_X86}
+				mv mingw32 release/BlitzMax/MinGW32x86
+
+				echo "Extracting x86 MinGW (into temp)"
+				7za x mingw/${MINGW_X86}
+				mv mingw32 temp/BlitzMax/MinGW32x86
+			fi
+
+			if [[ "$OPT_ARCH" == *"x64"* ]]; then
+				echo "Extracting x64 MinGW"
+				7za x mingw/${MINGW_X64}
+				mv mingw64 release/BlitzMax/MinGW32x64
+
+				echo "Extracting x64 MinGW (into temp)"
+				7za x mingw/${MINGW_X64}
+				mv mingw64 temp/BlitzMax/MinGW32x64
+			fi
+			;;
+	esac
+
 }
 
 build_apps() {
@@ -450,3 +558,7 @@ build_apps
 if [ ! -z "$BUILD_SAMPLES" ]; then
 	build_samples
 fi
+
+echo "--------------------"
+echo "-     FINISHED     -"
+echo "--------------------"
