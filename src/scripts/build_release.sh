@@ -317,6 +317,22 @@ download() {
 	else
 		echo "Using local steam.mod.zip"
 	fi
+
+	if [ ! -f zips/text.mod.zip ]; then
+		echo "Downloading text.mod.zip"
+		wget -nv -P zips https://github.com/bmx-ng/text.mod/archive/master.zip && \
+			mv zips/master.zip zips/text.mod.zip
+	else
+		echo "Using local text.mod.zip"
+	fi
+
+	if [ ! -f zips/dbg.mod.zip ]; then
+		echo "Downloading dbg.mod.zip"
+		wget -nv -P zips https://github.com/bmx-ng/dbg.mod/archive/master.zip && \
+			mv zips/master.zip zips/dbg.mod.zip
+	else
+		echo "Using local dbg.mod.zip"
+	fi
 }
 
 prepare() {
@@ -424,6 +440,22 @@ prepare() {
 
 	unzip -q zips/steam.mod.zip -d temp/BlitzMax/mod && \
 		mv temp/BlitzMax/mod/steam.mod-master temp/BlitzMax/mod/steam.mod
+
+	# text.mod
+	echo "Extracting text.mod" 
+	unzip -q zips/text.mod.zip -d release/BlitzMax/mod && \
+		mv release/BlitzMax/mod/text.mod-master release/BlitzMax/mod/text.mod
+
+	unzip -q zips/text.mod.zip -d temp/BlitzMax/mod && \
+		mv temp/BlitzMax/mod/text.mod-master temp/BlitzMax/mod/text.mod
+
+	# dbg.mod
+	echo "Extracting dbg.mod" 
+	unzip -q zips/dbg.mod.zip -d release/BlitzMax/mod && \
+		mv release/BlitzMax/mod/dbg.mod-master release/BlitzMax/mod/dbg.mod
+
+	unzip -q zips/dbg.mod.zip -d temp/BlitzMax/mod && \
+		mv temp/BlitzMax/mod/dbg.mod-master temp/BlitzMax/mod/dbg.mod
 
 	case "$PLATFORM" in
 		win32)
