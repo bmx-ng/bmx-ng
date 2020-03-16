@@ -328,7 +328,8 @@ prepare() {
 	unzip -q zips/bmx-ng.zip -d release && \
 		mv release/bmx-ng-master release/BlitzMax
 
-	rm -rf release/.github
+	rm -rf release/BlitzMax/.github
+	rm -rf release/BlitzMax/.gitignore
 
 	mkdir -p release/BlitzMax/mod release/BlitzMax/bin
 
@@ -467,7 +468,6 @@ build_apps() {
 		cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
 		cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
 
-
 	G_OPTION=""
 	if [ ! -z "$ARCH" ]; then
 		G_OPTION="-g $ARCH"
@@ -482,7 +482,9 @@ build_apps() {
 	echo "Building latest bmk"
 	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/src/bmk/bmk.bmx && \
 		cp temp/BlitzMax/src/bmk/bmk release/BlitzMax/bin && \
-		cp temp/BlitzMax/src/bmk/*.bmk release/BlitzMax/bin
+		cp temp/BlitzMax/bin/core.bmk release/BlitzMax/bin && \
+		cp temp/BlitzMax/bin/custom.bmk release/BlitzMax/bin && \
+		cp temp/BlitzMax/bin/make.bmk release/BlitzMax/bin
 
 	# build latest docmods
 	echo "Building docmods"
