@@ -456,34 +456,47 @@ build_apps() {
 	echo "--------------------"
 
 	# initial bcc, built with current release
+	echo "Building Initial bcc"
 	BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bcc/bcc.bmx && \
 		cp temp/BlitzMax/src/bcc/bcc temp/BlitzMax/bin
 
 	# copy current bmk and resources
+	echo "Copying bmk"
 	cp BlitzMax/bin/bmk temp/BlitzMax/bin && \
 		cp BlitzMax/bin/core.bmk temp/BlitzMax/bin && \
 		cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
 		cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
 
+
+	G_OPTION=""
+	if [ ! -z "$ARCH" ]; then
+		G_OPTION="-g $ARCH"
+	fi
+
 	# re-build latest bcc with latest release
-	temp/BlitzMax/bin/bmk makeapp -a -r temp/BlitzMax/src/bcc/bcc.bmx && \
+	echo "Building latest bcc"
+	temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION temp/BlitzMax/src/bcc/bcc.bmx && \
 		cp temp/BlitzMax/src/bcc/bcc release/BlitzMax/bin
 
 	# build latest bmk
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bmk/bmk.bmx && \
+	echo "Building latest bmk"
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/src/bmk/bmk.bmx && \
 		cp temp/BlitzMax/src/bmk/bmk release/BlitzMax/bin && \
 		cp temp/BlitzMax/src/bmk/*.bmk release/BlitzMax/bin
 
 	# build latest docmods
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/docmods/docmods.bmx && \
+	echo "Building docmods"
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/src/docmods/docmods.bmx && \
 		cp temp/BlitzMax/src/docmods/docmods release/BlitzMax/bin
 
 	# build latest makedocs
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/makedocs/makedocs.bmx && \
+	echo "Building makedocs"
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/src/makedocs/makedocs.bmx && \
 		cp temp/BlitzMax/src/makedocs/makedocs release/BlitzMax/bin
 
 	# build maxide
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/maxide/maxide.bmx && \
+	echo "Building maxide"
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION -t gui temp/BlitzMax/src/maxide/maxide.bmx && \
 		cp temp/BlitzMax/src/maxide/maxide release/BlitzMax/MaxIDE
 }
 
