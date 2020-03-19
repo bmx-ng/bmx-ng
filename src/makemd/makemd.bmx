@@ -65,6 +65,7 @@ Function DocMods()
 			And Not modid.StartsWith("sdl.") .. 
 			And Not modid.StartsWith("audio.") ..
 			And Not modid.StartsWith( "crypto." ) ..
+			And Not modid.StartsWith( "text." ) ..
 			And Not modid.StartsWith("steam.") Continue
 
 		Local p$=ModuleSource( modid )
