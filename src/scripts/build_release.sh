@@ -13,13 +13,14 @@ usage() {
 	echo "Usage: "`basename "$0"`" -b <version> [OPTIONS]"
 	echo "    -a <arch>    : Force architecture. e.g. x86, x64, arm, x86x64 (win32 only)"
 	echo "    -b <version> : Use build version. e.g. 0.105.3.35"
+	echo "    -p <version> : Package for version. e.g. 0.105.3.35"
 	echo "    -c           : Don't clean dirs."
 	echo "    -s           : Build samples."
 	echo "    -z           : Clean 'zips' dir."
 	exit 0
 }
 
-
+	
 if [[ $# -eq 0 ]] ; then
 	usage
 fi
@@ -36,6 +37,7 @@ RELEASE_URL="https://github.com/bmx-ng/bmx-ng/releases/download/"
 CLEAN_DIRS="y"
 CLEAN_ZIPS=""
 BUILD_SAMPLES=""
+PACKAGE_VERSION=""
 MINGW_X86="i686-8.1.0-release-posix-sjlj-rt_v6-rev0.7z"
 MINGW_X86_URL="https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/8.1.0/threads-posix/sjlj/i686-8.1.0-release-posix-sjlj-rt_v6-rev0.7z"
 MINGW_X64="x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z"
@@ -534,6 +536,29 @@ build_apps() {
 		cp temp/BlitzMax/src/maxide/maxide release/BlitzMax/MaxIDE
 }
 
+package() {
+	echo "--------------------"
+	echo "-     PACKAGE      -"
+	echo "--------------------"
+
+	case "$PLATFORM" in
+		win32)
+			PACK_ARCH="_$OPT_ARCH"
+			if [[ "$OPT_ARCH" == "x86x64" ]]; then
+				PACK_ARCH=""
+			fi
+			ZIP="BlitzMax_win32${PACK_ARCH}_${PACKAGE_VERSION}.7z"
+			echo "Creating release zip : ${ZIP}"
+
+			cd release
+			7za a -mx9 -mmt4 ../${ZIP} BlitzMax/
+			cd ..
+			;;
+		linux)
+			;;
+	esac
+}
+
 build_samples() {
 	echo "--------------------"
 	echo "- BUILD - samples  -"
@@ -568,7 +593,7 @@ build_samples() {
 }
 
 
-while getopts ":a:b:cfs" options; do
+while getopts ":a:b:p:cfs" options; do
 	case "${options}" in
 		a)
 			OPT_ARCH=${OPTARG}
@@ -584,6 +609,9 @@ while getopts ":a:b:cfs" options; do
 			;;
 		s)
 			BUILD_SAMPLEs="y"
+			;;
+		p)
+			PACKAGE_VERSION=${OPTARG}
 			;;
 		:)
 			echo "Error: -${OPTARG} requires an argument."
@@ -602,6 +630,9 @@ check_base
 download
 prepare
 build_apps
+if [ ! -z "$PACKAGE_VERSION" ]; then
+	package
+fi
 if [ ! -z "$BUILD_SAMPLES" ]; then
 	build_samples
 fi
