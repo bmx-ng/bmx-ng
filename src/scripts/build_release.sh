@@ -555,6 +555,14 @@ package() {
 			cd ..
 			;;
 		linux)
+			ZIP="BlitzMax_linux_${OPT_ARCH}_${PACKAGE_VERSION}"
+			echo "Creating release zip : ${ZIP}"
+			
+			cd release
+			tar -cf ${ZIP}.tar BlitzMax
+			xz -z ${ZIP}.tar
+			mv ${ZIP}.tar.xz ..
+			cd ..
 			;;
 	esac
 }
