@@ -197,7 +197,7 @@ Type imageStrip
 
 End Type
 
-Graphics 800,600,32
+Graphics 800,600,0
 
 Global yaspect:Double = 3/5!
 Global rastaImage:TImage = LoadImage("rasta.png")
