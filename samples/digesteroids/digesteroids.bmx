@@ -441,7 +441,7 @@ End Function
 			Self.Player.LoadAssets()
 
 			' Load up the sounds.
-			If Self.LargeImpactSound = Null Then Self.LargeImpactSound = LoadSound("Sounds\ImpactLarge.wav")
+			If Self.LargeImpactSound = Null Then Self.LargeImpactSound = LoadSound("sounds\impactlarge.wav")
 
 			' Reset the game..
 			Self.ResetGame()
