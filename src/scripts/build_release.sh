@@ -15,6 +15,7 @@ usage() {
 	echo "    -b <version> : Use build version. e.g. 0.105.3.35"
 	echo "    -p <version> : Package for version. e.g. 0.105.3.35"
 	echo "    -c           : Don't clean dirs."
+	echo "    -m           : Build all modules."
 	echo "    -s           : Build samples."
 	echo "    -z           : Clean 'zips' dir."
 	exit 0
@@ -328,13 +329,14 @@ download() {
 		echo "Using local text.mod.zip"
 	fi
 
-	if [ ! -f zips/dbg.mod.zip ]; then
-		echo "Downloading dbg.mod.zip"
-		wget -nv -P zips https://github.com/bmx-ng/dbg.mod/archive/master.zip && \
-			mv zips/master.zip zips/dbg.mod.zip
+	if [ ! -f zips/random.mod.zip ]; then
+		echo "Downloading random.mod.zip"
+		wget -nv -P zips https://github.com/bmx-ng/random.mod/archive/master.zip && \
+			mv zips/master.zip zips/random.mod.zip
 	else
-		echo "Using local dbg.mod.zip"
+		echo "Using local random.mod.zip"
 	fi
+
 }
 
 prepare() {
@@ -451,13 +453,13 @@ prepare() {
 	unzip -q zips/text.mod.zip -d temp/BlitzMax/mod && \
 		mv temp/BlitzMax/mod/text.mod-master temp/BlitzMax/mod/text.mod
 
-	# dbg.mod
-	echo "Extracting dbg.mod" 
-	unzip -q zips/dbg.mod.zip -d release/BlitzMax/mod && \
-		mv release/BlitzMax/mod/dbg.mod-master release/BlitzMax/mod/dbg.mod
+	# random.mod
+	echo "Extracting random.mod" 
+	unzip -q zips/random.mod.zip -d release/BlitzMax/mod && \
+		mv release/BlitzMax/mod/random.mod-master release/BlitzMax/mod/random.mod
 
-	unzip -q zips/dbg.mod.zip -d temp/BlitzMax/mod && \
-		mv temp/BlitzMax/mod/dbg.mod-master temp/BlitzMax/mod/dbg.mod
+	unzip -q zips/random.mod.zip -d temp/BlitzMax/mod && \
+		mv temp/BlitzMax/mod/random.mod-master temp/BlitzMax/mod/random.mod
 
 	case "$PLATFORM" in
 		win32)
@@ -495,12 +497,16 @@ build_apps() {
 	BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bcc/bcc.bmx && \
 		cp temp/BlitzMax/src/bcc/bcc temp/BlitzMax/bin
 
-	# copy current bmk and resources
-	echo "Copying bmk"
-	cp BlitzMax/bin/bmk temp/BlitzMax/bin && \
-		cp BlitzMax/bin/core.bmk temp/BlitzMax/bin && \
-		cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
-		cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
+	# initial bmk, built with current release
+	echo "Building Initial bmk"
+	BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bmk/bmk.bmx && \
+		cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin
+
+	# copy bmk resources
+	echo "Copying bmk resources"
+	cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
+		cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
+		cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
 
 	G_OPTION=""
 	if [ ! -z "$ARCH" ]; then
@@ -514,7 +520,7 @@ build_apps() {
 
 	# build latest bmk
 	echo "Building latest bmk"
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/src/bmk/bmk.bmx && \
+	temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION temp/BlitzMax/src/bmk/bmk.bmx && \
 		cp temp/BlitzMax/src/bmk/bmk release/BlitzMax/bin && \
 		cp temp/BlitzMax/bin/core.bmk release/BlitzMax/bin && \
 		cp temp/BlitzMax/bin/custom.bmk release/BlitzMax/bin && \
@@ -567,6 +573,14 @@ package() {
 	esac
 }
 
+build_modules() {
+	echo "--------------------"
+	echo "- BUILD - modules  -"
+	echo "--------------------"
+
+	temp/BlitzMax/bin/bmk makemods -a
+}
+
 build_samples() {
 	echo "--------------------"
 	echo "- BUILD - samples  -"
@@ -601,7 +615,7 @@ build_samples() {
 }
 
 
-while getopts ":a:b:p:cfs" options; do
+while getopts ":a:b:p:cfms" options; do
 	case "${options}" in
 		a)
 			OPT_ARCH=${OPTARG}
@@ -614,6 +628,9 @@ while getopts ":a:b:p:cfs" options; do
 			;;
 		z)
 			CLEAN_ZIPS="y"
+			;;
+		m)
+			BUILD_MODULES="y"
 			;;
 		s)
 			BUILD_SAMPLEs="y"
@@ -638,6 +655,9 @@ check_base
 download
 prepare
 build_apps
+if [ ! -z "$BUILD_MODULES" ]; then
+	build_modules
+fi
 if [ ! -z "$PACKAGE_VERSION" ]; then
 	package
 fi
