@@ -16,7 +16,7 @@ Framework SDL.gl2sdlmax2d
 Import brl.pngloader
 Import brl.ramstream
 Import brl.oggloader
-Import brl.Random
+Import brl.RandomDefault
 Import sdl.sdlfreeaudio
 
 Incbin "circlefont.png"

@@ -7,7 +7,7 @@ Framework SDL.d3d9sdlmax2d
 Framework SDL.gl2sdlmax2d
 ?
 Import brl.pngloader
-Import brl.Random
+Import brl.RandomDefault
 
 Const WIDTH = 640,HEIGHT = 480, DEPTH = 0
 Const ShadowOn   = 1

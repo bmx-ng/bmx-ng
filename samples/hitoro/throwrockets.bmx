@@ -8,7 +8,7 @@ Framework SDL.gl2sdlmax2d
 Import brl.pngloader
 Import brl.ramstream
 Import brl.linkedlist
-Import brl.Random
+Import brl.RandomDefault
 
 Const PARTICLE_GRAVITY# = 0.05
 

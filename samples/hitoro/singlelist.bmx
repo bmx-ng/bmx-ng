@@ -6,7 +6,7 @@ Framework SDL.d3d9sdlmax2d
 Framework SDL.gl2sdlmax2d
 ?
 Import brl.linkedlist
-Import brl.Random
+Import brl.RandomDefault
 
 ' Adding objects to an object-specific list...
 

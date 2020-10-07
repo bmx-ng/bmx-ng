@@ -12,7 +12,7 @@ Framework SDL.d3d9sdlmax2d
 Framework SDL.gl2sdlmax2d
 ?
 Import brl.pngloader
-Import brl.random
+Import brl.RandomDefault
 
 Type rasterBar
 	Field angle:Double,angleadd:Double,color[],freq:Double

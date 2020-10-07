@@ -17,7 +17,7 @@ Import sdl.SDLFreeAudio
 Import brl.ramstream
 Import brl.pngloader
 Import brl.wavloader
-Import brl.Random
+Import brl.RandomDefault
 
 Import "color.bmx"
 

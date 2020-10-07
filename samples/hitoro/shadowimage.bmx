@@ -6,7 +6,7 @@ Framework SDL.d3d9sdlmax2d
 Framework SDL.gl2sdlmax2d
 ?
 Import brl.pngloader
-Import brl.Random
+Import brl.RandomDefault
 
 ' Rockets rotating and casting alpha-blended, pseudo light-sourced shadows on each other...
 

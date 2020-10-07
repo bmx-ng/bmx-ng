@@ -6,7 +6,7 @@ Framework SDL.d3d9sdlmax2d
 Framework SDL.gl2sdlmax2d
 ?
 
-Graphics 640,480
+Graphics 640,480, 0
 
 Local t:String="***** Some spinny text *****"
 Local w:Int=TextWidth(t)

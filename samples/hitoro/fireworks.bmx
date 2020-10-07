@@ -5,7 +5,7 @@ Framework SDL.d3d9sdlmax2d
 ?Not win32
 Framework SDL.gl2sdlmax2d
 ?
-Import brl.Random
+Import brl.RandomDefault
 
 ' Global variables tracking number of Firework objects and
 ' number of Particle objects. These are increased and decreased

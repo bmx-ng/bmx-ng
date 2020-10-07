@@ -8,7 +8,7 @@ Framework SDL.d3d9sdlmax2d
 Framework SDL.gl2sdlmax2d
 ?
 Import brl.pngloader
-Import brl.random
+Import brl.RandomDefault
 
 Global width:Int=800
 Global height:Int=600

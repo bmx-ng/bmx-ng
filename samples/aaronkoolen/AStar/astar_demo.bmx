@@ -9,7 +9,7 @@ Framework SDL.d3d9sdlmax2d
 ?Not win32
 Framework SDL.gl2sdlmax2d
 ?
-Import brl.Random
+Import brl.RandomDefault
 Import brl.pngloader
 
 Import "astar_graph_walker.bmx"

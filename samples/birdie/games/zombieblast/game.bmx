@@ -7,7 +7,7 @@ Framework SDL.gl2sdlmax2d
 ?
 Import brl.ramstream
 Import brl.pngloader
-Import brl.Random
+Import brl.RandomDefault
 
 '
 ' Game Demo Coded By David Bird (Birdie)

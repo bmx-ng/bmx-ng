@@ -5,7 +5,7 @@ Framework SDL.d3d9sdlmax2d
 ?Not win32
 Framework SDL.gl2sdlmax2d
 ?
-Import brl.Random
+Import brl.RandomDefault
 
 Const WIDTH:Int=640,HEIGHT:Int=480,DEPTH:Int=0
 Const Star_Count:Int 	= 1000	       ' Stars Count
