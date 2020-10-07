@@ -570,6 +570,16 @@ package() {
 			mv ${ZIP}.tar.xz ..
 			cd ..
 			;;
+		rpi)
+			ZIP="BlitzMax_rpi_${OPT_ARCH}_${PACKAGE_VERSION}"
+			echo "Creating release zip : ${ZIP}"
+			
+			cd release
+			tar -cf ${ZIP}.tar BlitzMax
+			xz -z ${ZIP}.tar
+			mv ${ZIP}.tar.xz ..
+			cd ..
+			;;
 	esac
 }
 
