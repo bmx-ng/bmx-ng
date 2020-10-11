@@ -55,8 +55,14 @@ expand_platform() {
 			ARCH="x64"
 			;;
 		arm*)
-			PLATFORM="rpi"
-			ARCH=""
+			case "$PLATFORM" in
+				macos)
+					;;
+				*)
+					PLATFORM="rpi"
+					ARCH=""
+					;;
+			esac
 			;;
 	esac
 
@@ -152,10 +158,11 @@ check_base() {
 		ARCHIVE_ARCH="${ARCH}_"
 		case "$PLATFORM" in
 			win32)
-			if [[ "$OPT_ARCH" == "x86x64" ]]; then
-				DOWNLOAD_URL_ARCH=""
-				ARCHIVE_ARCH=""
-			fi
+				if [[ "$OPT_ARCH" == "x86x64" ]]; then
+					DOWNLOAD_URL_ARCH=""
+					ARCHIVE_ARCH=""
+				fi
+				;;
 		esac
 
 		SUFFIX=".tar.xz"
@@ -170,6 +177,9 @@ check_base() {
 			linux)
 				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}";;
 			rpi) ;;
+			macos)
+				SUFFIX=".zip"
+				;;
 		esac
 
 		ARCHIVE="${ARCHIVE}${BUILD_VERSION}${SUFFIX}"
@@ -189,8 +199,18 @@ check_base() {
 			win32)
 				7za x ${ARCHIVE}
 				;;
+			macos)
+				unzip -q ${ARCHIVE}
+				;;
 			*)
 				tar -xJf ${ARCHIVE}
+				;;
+		esac
+		
+		case "$PLATFORM" in
+			macos)
+				echo "Running init scripts"
+				source BlitzMax/run_me_first.command
 				;;
 		esac
 	else
@@ -351,7 +371,7 @@ prepare() {
 	rm -rf release/BlitzMax/.github
 	rm -rf release/BlitzMax/.gitignore
 
-	mkdir -p release/BlitzMax/mod release/BlitzMax/bin
+	mkdir -p release/BlitzMax/mod release/BlitzMax/bin release/BlitzMax/lib
 
 	# copy all to temp
 	echo "Copying sources for build (into temp)"
@@ -485,6 +505,21 @@ prepare() {
 			;;
 	esac
 
+	case "$PLATFORM" in
+		macos)
+			echo "Copying bootstrap config"
+			cp release/BlitzMax/src/bootstrap/bootstrap.cfg release/BlitzMax/bin
+			cp temp/BlitzMax/src/bootstrap/bootstrap.cfg temp/BlitzMax/bin
+			
+			echo "Configuring bootstrap for $PLATFORM/$ARCH"
+			echo -e "t\tmacos\t"$ARCH"\n$(cat temp/BlitzMax/bin/bootstrap.cfg)" > temp/BlitzMax/bin/bootstrap.cfg
+			
+			echo "Copying scripts"
+			cp release/BlitzMax/src/macos/build_dist.sh release/BlitzMax
+			cp release/BlitzMax/src/macos/run_me_first.command release/BlitzMax
+			;;
+		esac
+	
 }
 
 build_apps() {
@@ -513,33 +548,49 @@ build_apps() {
 		G_OPTION="-g $ARCH"
 	fi
 
-	# re-build latest bcc with latest release
-	echo "Building latest bcc"
-	temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION temp/BlitzMax/src/bcc/bcc.bmx && \
-		cp temp/BlitzMax/src/bcc/bcc release/BlitzMax/bin
+	case "$PLATFORM" in
+		macos)
+			echo "Creating bootstrap"
+			temp/BlitzMax/bin/bmk makebootstrap -a -r
+			
+			echo "Copying bootstrap to release"
+			mv temp/BlitzMax/dist release/BlitzMax
 
-	# build latest bmk
-	echo "Building latest bmk"
-	temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION temp/BlitzMax/src/bmk/bmk.bmx && \
-		cp temp/BlitzMax/src/bmk/bmk release/BlitzMax/bin && \
-		cp temp/BlitzMax/bin/core.bmk release/BlitzMax/bin && \
-		cp temp/BlitzMax/bin/custom.bmk release/BlitzMax/bin && \
-		cp temp/BlitzMax/bin/make.bmk release/BlitzMax/bin
+			echo "Copying bmk resources"
+			cp temp/BlitzMax/bin/core.bmk release/BlitzMax/bin && \
+			cp temp/BlitzMax/bin/custom.bmk release/BlitzMax/bin && \
+			cp temp/BlitzMax/bin/make.bmk release/BlitzMax/bin
+			;;
+		*)
+			# re-build latest bcc with latest release
+			echo "Building latest bcc"
+			temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION temp/BlitzMax/src/bcc/bcc.bmx && \
+				cp temp/BlitzMax/src/bcc/bcc release/BlitzMax/bin
 
-	# build latest docmods
-	echo "Building docmods"
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/src/docmods/docmods.bmx && \
-		cp temp/BlitzMax/src/docmods/docmods release/BlitzMax/bin
+			# build latest bmk
+			echo "Building latest bmk"
+			temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION temp/BlitzMax/src/bmk/bmk.bmx && \
+				cp temp/BlitzMax/src/bmk/bmk release/BlitzMax/bin && \
+				cp temp/BlitzMax/bin/core.bmk release/BlitzMax/bin && \
+				cp temp/BlitzMax/bin/custom.bmk release/BlitzMax/bin && \
+				cp temp/BlitzMax/bin/make.bmk release/BlitzMax/bin
 
-	# build latest makedocs
-	echo "Building makedocs"
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/src/makedocs/makedocs.bmx && \
-		cp temp/BlitzMax/src/makedocs/makedocs release/BlitzMax/bin
+			# build latest docmods
+			echo "Building docmods"
+			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/src/docmods/docmods.bmx && \
+				cp temp/BlitzMax/src/docmods/docmods release/BlitzMax/bin
 
-	# build maxide
-	echo "Building maxide"
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION -t gui temp/BlitzMax/src/maxide/maxide.bmx && \
-		cp temp/BlitzMax/src/maxide/maxide release/BlitzMax/MaxIDE
+			# build latest makedocs
+			echo "Building makedocs"
+			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/src/makedocs/makedocs.bmx && \
+				cp temp/BlitzMax/src/makedocs/makedocs release/BlitzMax/bin
+
+			# build maxide
+			echo "Building maxide"
+			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION -t gui temp/BlitzMax/src/maxide/maxide.bmx && \
+				cp temp/BlitzMax/src/maxide/maxide release/BlitzMax/MaxIDE
+			;;
+	esac
 }
 
 package() {
@@ -578,6 +629,15 @@ package() {
 			tar -cf ${ZIP}.tar BlitzMax
 			xz -z ${ZIP}.tar
 			mv ${ZIP}.tar.xz ..
+			cd ..
+			;;
+		macos)
+			ZIP="BlitzMax_macos_${OPT_ARCH}_${PACKAGE_VERSION}"
+			echo "Creating release zip : ${ZIP}"
+			
+			cd release
+			zip -9 -r -q ${ZIP}.zip BlitzMax
+			mv ${ZIP}.zip ..
 			cd ..
 			;;
 	esac
@@ -656,7 +716,6 @@ while getopts ":a:b:p:cfms" options; do
 done
 
 init
-
 if [ ! -z "$CLEAN_DIRS" ]; then
 	clean_dirs
 fi
