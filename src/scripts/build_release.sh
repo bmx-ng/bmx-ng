@@ -648,7 +648,12 @@ build_modules() {
 	echo "- BUILD - modules  -"
 	echo "--------------------"
 
-	temp/BlitzMax/bin/bmk makemods -a
+	G_OPTION=""
+	if [ ! -z "$ARCH" ]; then
+		G_OPTION="-g $ARCH"
+	fi
+
+	temp/BlitzMax/bin/bmk makemods -a $G_OPTION
 }
 
 build_samples() {
@@ -656,32 +661,37 @@ build_samples() {
 	echo "- BUILD - samples  -"
 	echo "--------------------"
 
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/aaronkoolen/AStar/astar_demo.bmx
+	G_OPTION=""
+	if [ ! -z "$ARCH" ]; then
+		G_OPTION="-g $ARCH"
+	fi
 
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/birdie/games/tempest/tempest.bmx
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/birdie/games/tiledrop/tiledrop.bmx
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/birdie/games/zombieblast/game.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/aaronkoolen/AStar/astar_demo.bmx
 
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/breakout/breakout.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/birdie/games/tempest/tempest.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/birdie/games/tiledrop/tiledrop.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/birdie/games/zombieblast/game.bmx
 
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/digesteroids/digesteroids.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/breakout/breakout.bmx
 
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/firepaint/firepaint.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/digesteroids/digesteroids.bmx
 
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/flameduck/circlemania/cmania.bmx
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/flameduck/oldskool2/oldskool2.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/firepaint/firepaint.bmx
 
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/hitoro/fireworks.bmx
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/hitoro/shadowimage.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/flameduck/circlemania/cmania.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/flameduck/oldskool2/oldskool2.bmx
 
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/simonh/fireworks/fireworks.bmx
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/simonh/snow/snowfall.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/hitoro/fireworks.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/hitoro/shadowimage.bmx
 
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/spintext/spintext.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/simonh/fireworks/fireworks.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/simonh/snow/snowfall.bmx
 
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/starfieldpong/starfieldpong.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/spintext/spintext.bmx
 
-	temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/samples/tempest/tempest.bmx
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/starfieldpong/starfieldpong.bmx
+
+	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/tempest/tempest.bmx
 }
 
 
