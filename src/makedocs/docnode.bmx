@@ -19,6 +19,8 @@ Type TDocNode
 	Field docDir$		'eg: ../mod/brl.mod/max2d.mod/doc
 	Field example$	'eg: LoadImage.bmx (path)
 	
+	Field block:Int
+	
 	Field children:TList=New TList
 	
 	Function ForPath:TDocNode( path$ )
