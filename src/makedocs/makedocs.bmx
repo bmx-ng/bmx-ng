@@ -123,6 +123,8 @@ Function docBmxFile( filePath$,docPath$ )
 	
 	Local Text$=LoadText( filepath )
 	
+	Local blocks:Int = 0
+	
 	For Local line$=EachIn Text.Split( "~n" )
 
 		line=line.Trim()
@@ -137,6 +139,15 @@ Function docBmxFile( filePath$,docPath$ )
 			id:+":"
 			i:+1
 		EndIf
+		
+		Select id
+		Case "type", "interface", "struct"
+			blocks :+ 1
+			
+		Case "endtype", "endinterface", "endstruct"
+			blocks :- 1
+			
+		EndSelect
 		
 		If inrem
 		
@@ -262,6 +273,8 @@ Function docBmxFile( filePath$,docPath$ )
 				EndIf
 				
 				Local node:TDocNode=TDocNode.Create( id,path,kind, BuildProtoId(proto) )
+				
+				If(blocks) Then node.block = True
 				
 				node.proto=proto
 				node.bbdoc=bbdoc
