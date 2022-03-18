@@ -11,9 +11,12 @@
 
 usage() {
 	echo "Usage: "`basename "$0"`" -b <version> [OPTIONS]"
-	echo "    -a <arch>    : Force architecture. e.g. x86, x64, arm, x86x64 (win32 only)"
+	echo "    -a <arch>    : Force architecture. e.g. x86, x64, arm, arm64, x86x64 (win32 only)"
+	echo "    -r <arch>    : Source architecture. e.g. x86, x64, arm, arm64, x86x64 (win32 only)"
 	echo "    -b <version> : Use build version. e.g. 0.105.3.35"
 	echo "    -p <version> : Package for version. e.g. 0.105.3.35"
+	echo "    -l <platform>: Platform. win32, macos, linux, rpi"
+	echo "    -w <version> : Windows compiler version. e.g. mingw or llvm. Defaults to mingw"
 	echo "    -c           : Don't clean dirs."
 	echo "    -m           : Build all modules."
 	echo "    -s           : Build samples."
@@ -21,6 +24,10 @@ usage() {
 	exit 0
 }
 
+abort() {
+	echo "Aborting"
+	exit 0
+}
 	
 if [[ $# -eq 0 ]] ; then
 	usage
@@ -28,12 +35,14 @@ fi
 
 exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' 0 1 2 3
+trap abort SIGINT
 exec 1>release_build_`date +%Y%m%d%H%M%S`.log 2>&1
 
 OPT_ARCH=""
+SRC_ARCH=""
 BUILD_VERSION=""
 EXE=""
-PLATFORM="linux"
+PLATFORM=""
 RELEASE_URL="https://github.com/bmx-ng/bmx-ng/releases/download/"
 CLEAN_DIRS="y"
 CLEAN_ZIPS=""
@@ -43,10 +52,79 @@ MINGW_X86="i686-8.1.0-release-posix-sjlj-rt_v6-rev0.7z"
 MINGW_X86_URL="https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/8.1.0/threads-posix/sjlj/i686-8.1.0-release-posix-sjlj-rt_v6-rev0.7z"
 MINGW_X64="x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z"
 MINGW_X64_URL="https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z"
+LLVM_MINGW="llvm-mingw-20211002-ucrt-i686.zip"
+LLVM_MINGW_URL="https://github.com/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-20211002-ucrt-i686.zip"
+WIN_VER="mingw"
 
+PLATFORMS=("win32" "linux" "rpi" "macos")
+WIN_MINGW_ARCH=("x86" "x64" "x86x64")
+WIN_LLVM_ARCH=("x86" "x64" "arm" "arm64")
+MACOS_ARCH=("x64" "arm64")
+LINUX_ARCH=("x86" "x64" "arm64")
+RPI_ARCH=("arm" "arm64")
+WIN_VERS=("mingw" "llvm")
+
+MOD_LIST=("brl" "pub" "maxgui" "audio" "crypto" "image" "mky" "net" "random" "sdl" "steam" "text")
+SAMPLE_LIST=("aaronkoolen/AStar/astar_demo.bmx" "birdie/games/tempest/tempest.bmx" "birdie/games/tiledrop/tiledrop.bmx" "birdie/games/zombieblast/game.bmx" "breakout/breakout.bmx" "digesteroids/digesteroids.bmx" "firepaint/firepaint.bmx" "flameduck/circlemania/cmania.bmx" "flameduck/oldskool2/oldskool2.bmx" "hitoro/fireworks.bmx" "hitoro/shadowimage.bmx" "simonh/fireworks/fireworks.bmx" "simonh/snow/snowfall.bmx" "spintext/spintext.bmx" "starfieldpong/starfieldpong.bmx" "tempest/tempest.bmx")
 
 get_arch() {
 	ARCH=`uname -m`
+}
+
+validate_arch() {
+	VAL_ARCH=$1
+	TYPE=$2
+
+	case "$PLATFORM" in
+		win32)
+			if [[ ! " ${WIN_VERS[*]} " =~ " ${WIN_VER} " ]]; then
+				echo "Invalid compiler version: $WIN_VER"
+				exit 1
+			fi
+
+			case "$WIN_VER" in
+				mingw)
+					if [[ ! " ${WIN_MINGW_ARCH[*]} " =~ " ${VAL_ARCH} " ]]; then
+						echo "Invalid $TYPE arch for mingw: $VAL_ARCH"
+						exit 1
+					fi
+					;;
+				llvm)
+					if [[ ! " ${WIN_LLVM_ARCH[*]} " =~ " ${VAL_ARCH} " ]]; then
+						echo "Invalid $TYPE arch for llvm: $VAL_ARCH"
+						exit 1
+					fi
+					;;
+			esac
+			;;
+		macos)
+			if [[ ! " ${MACOS_ARCH[*]} " =~ " ${VAL_ARCH} " ]]; then
+				echo "Invalid $TYPE arch for macos: $VAL_ARCH"
+				exit 1
+			fi
+			;;
+		linux)
+			if [[ ! " ${LINUX_ARCH[*]} " =~ " ${VAL_ARCH} " ]]; then
+				echo "Invalid $TYPE arch for linux: $VAL_ARCH"
+				exit 1
+			fi
+			;;
+		rpi)
+			if [[ ! " ${RPI_ARCH[*]} " =~ " ${VAL_ARCH} " ]]; then
+				echo "Invalid $TYPE arch for rpi: $VAL_ARCH"
+				exit 1
+			fi
+			;;
+	esac
+}
+
+raspi_test() {
+	PI=$( cat /proc/device-tree/model )
+
+	if [[ $PI == Rasp* ]]; then
+		PLATFORM="rpi"
+		ARCH=""
+	fi
 }
 
 expand_platform() {
@@ -56,45 +134,65 @@ expand_platform() {
 			;;
 		arm*)
 			case "$PLATFORM" in
-				macos)
-					;;
-				*)
-					PLATFORM="rpi"
-					ARCH=""
+				linux)
+					raspi_test
 					;;
 			esac
 			;;
 	esac
 
 	if [ ! -z "$OPT_ARCH" ]; then
+		validate_arch $OPT_ARCH ""
+		
+
 		if [[ "$OPT_ARCH" == *"x86"* ]]; then
 			ARCH=x86
 		else
 			ARCH=$OPT_ARCH
 		fi
 	fi
+
+	if [ -z "$SRC_ARCH" ]; then
+		SRC_ARCH=$OPT_ARCH
+	else
+		validate_arch $SRC_ARCH "source"
+	fi
 }
 
 init() {
 	get_arch
-	case "$OSTYPE" in
-		darwin*)
-			PLATFORM="macos"
-			;; 
-		linux*) ;;
-		msys*)
-			PLATFORM="win32"
-			;;
-		*)
-			echo "Unknown platform: $OSTYPE"
+
+	if [ ! -z "$PLATFORM" ]; then
+		if [[ ! " ${PLATFORMS[*]} " =~ " ${PLATFORM} " ]]; then
+			echo "Unknown plaform: $PLATFORM"
 			exit 1
-			;;
-	esac
+		fi
+	fi
+
+	if [ -z "$PLATFORM" ]; then
+		case "$OSTYPE" in
+			darwin*)
+				PLATFORM="macos"
+				;; 
+			linux*)
+				PLATFORM="linux"
+				raspi_test
+				;;
+			msys*)
+				PLATFORM="win32"
+				;;
+			*)
+				echo "Unknown platform: $OSTYPE"
+				exit 1
+				;;
+		esac
+	fi
 
 	expand_platform
 
-	echo "Platform : " $PLATFORM
-	echo "Arch     : " $ARCH
+	echo "Platform    : " $PLATFORM
+	echo "System Arch : " $ARCH
+	echo "Source Arch : " $SRC_ARCH
 }
 
 clean_dirs() {
@@ -136,10 +234,21 @@ make_dirs() {
 
 	case "$PLATFORM" in
 		win32)
-			if [ ! -d "mingw" ]; then
-				echo "Creating mingw dir"
-				mkdir -p mingw
-			fi
+			case "$WIN_VER" in
+				mingw)
+					if [ ! -d "mingw" ]; then
+						echo "Creating mingw dir"
+						mkdir -p mingw
+					fi
+					;;
+				llvm)
+					if [ ! -d "llvm" ]; then
+						echo "Creating llvm dir"
+						mkdir -p llvm
+					fi
+					;;
+			esac
+			;;
 	esac
 }
 
@@ -154,8 +263,8 @@ check_base() {
 			exit 1
 		fi
 
-		DOWNLOAD_URL_ARCH=".${ARCH}"
-		ARCHIVE_ARCH="${ARCH}_"
+		DOWNLOAD_URL_ARCH=".${SRC_ARCH}"
+		ARCHIVE_ARCH="${SRC_ARCH}_"
 		case "$PLATFORM" in
 			win32)
 				if [[ "$OPT_ARCH" == "x86x64" ]]; then
@@ -175,9 +284,11 @@ check_base() {
 				SUFFIX=".7z"
 				;;
 			linux)
-				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}";;
+				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}"
+				;;
 			rpi) ;;
 			macos)
+				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}"
 				SUFFIX=".zip"
 				;;
 		esac
@@ -209,8 +320,10 @@ check_base() {
 		
 		case "$PLATFORM" in
 			macos)
+				CUR=`pwd`
 				echo "Running init scripts"
 				source BlitzMax/run_me_first.command
+				cd "$CUR"
 				;;
 		esac
 	else
@@ -227,19 +340,30 @@ download() {
 	# mingw
 	case "$PLATFORM" in
 		win32)
-			if [[ "$OPT_ARCH" == *"x86"* ]]; then
-				if [ ! -f "mingw/$MINGW_X86" ]; then
-					echo "Downloading $MINGW_X86"
-					wget -nv -P mingw $MINGW_X86_URL
-				fi
-			fi
+			case "$WIN_VER" in
+				mingw)
+					if [[ "$OPT_ARCH" == *"x86"* ]]; then
+						if [ ! -f "mingw/$MINGW_X86" ]; then
+							echo "Downloading $MINGW_X86"
+							wget -nv -P mingw $MINGW_X86_URL
+						fi
+					fi
 
-			if [[ "$OPT_ARCH" == *"x64"* ]]; then
-				if [ ! -f "mingw/$MINGW_X64" ]; then
-					echo "Downloading $MINGW_X64"
-					wget -nv -P mingw $MINGW_X64_URL
-				fi
-			fi
+					if [[ "$OPT_ARCH" == *"x64"* ]]; then
+						if [ ! -f "mingw/$MINGW_X64" ]; then
+							echo "Downloading $MINGW_X64"
+							wget -nv -P mingw $MINGW_X64_URL
+						fi
+					fi
+					;;
+				llvm)
+					if [ ! -f "llvm/$LLVM_MINGW" ]; then
+						echo "Downloading $LLVM_MINGW"
+						wget -nv -P llvm $MLLVM_MINGW_URL
+					fi
+					;;
+			esac
+			;;
 	esac
 
 	# base
@@ -277,86 +401,16 @@ download() {
 	fi
 
 	# modules
-	if [ ! -f zips/pub.mod.zip ]; then
-		echo "Downloading pub.mod.zip"
-		wget -nv -P zips https://github.com/bmx-ng/pub.mod/archive/master.zip && \
-			mv zips/master.zip zips/pub.mod.zip
-	else
-		echo "Using local pub.mod.zip"
-	fi
-
-	if [ ! -f zips/brl.mod.zip ]; then
-		echo "Downloading brl.mod.zip"
-		wget -nv -P zips https://github.com/bmx-ng/brl.mod/archive/master.zip && \
-			mv zips/master.zip zips/brl.mod.zip
-	else
-		echo "Using local brl.mod.zip"
-	fi
-
-	if [ ! -f zips/sdl.mod.zip ]; then
-		echo "Downloading sdl.mod.zip"
-		wget -nv -P zips https://github.com/bmx-ng/sdl.mod/archive/master.zip && \
-			mv zips/master.zip zips/sdl.mod.zip
-	else
-		echo "Using local sdl.mod.zip"
-	fi
-
-	if [ ! -f zips/maxgui.mod.zip ]; then
-		echo "Downloading maxgui.mod.zip"
-		wget -nv -P zips https://github.com/bmx-ng/maxgui.mod/archive/master.zip && \
-			mv zips/master.zip zips/maxgui.mod.zip
-	else
-		echo "Using local maxgui.mod.zip"
-	fi
-
-	if [ ! -f zips/mky.mod.zip ]; then
-		echo "Downloading mky.mod.zip"
-		wget -nv -P zips https://github.com/bmx-ng/mky.mod/archive/master.zip && \
-			mv zips/master.zip zips/mky.mod.zip
-	else
-		echo "Using local mky.mod.zip"
-	fi
-
-	if [ ! -f zips/crypto.mod.zip ]; then
-		echo "Downloading crypto.mod.zip"
-		wget -nv -P zips https://github.com/bmx-ng/crypto.mod/archive/master.zip && \
-			mv zips/master.zip zips/crypto.mod.zip
-	else
-		echo "Using local crypto.mod.zip"
-	fi
-
-	if [ ! -f zips/audio.mod.zip ]; then
-		echo "Downloading audio.mod.zip"
-		wget -nv -P zips https://github.com/bmx-ng/audio.mod/archive/master.zip && \
-			mv zips/master.zip zips/audio.mod.zip
-	else
-		echo "Using local audio.mod.zip"
-	fi
-
-	if [ ! -f zips/steam.mod.zip ]; then
-		echo "Downloading steam.mod.zip"
-		wget -nv -P zips https://github.com/bmx-ng/steam.mod/archive/master.zip && \
-			mv zips/master.zip zips/steam.mod.zip
-	else
-		echo "Using local steam.mod.zip"
-	fi
-
-	if [ ! -f zips/text.mod.zip ]; then
-		echo "Downloading text.mod.zip"
-		wget -nv -P zips https://github.com/bmx-ng/text.mod/archive/master.zip && \
-			mv zips/master.zip zips/text.mod.zip
-	else
-		echo "Using local text.mod.zip"
-	fi
-
-	if [ ! -f zips/random.mod.zip ]; then
-		echo "Downloading random.mod.zip"
-		wget -nv -P zips https://github.com/bmx-ng/random.mod/archive/master.zip && \
-			mv zips/master.zip zips/random.mod.zip
-	else
-		echo "Using local random.mod.zip"
-	fi
-
+	for mod in "${MOD_LIST[@]}"
+	do
+		if [ ! -f zips/${mod}.mod.zip ]; then
+			echo "Downloading ${mod}.mod.zip"
+			wget -nv -P zips https://github.com/bmx-ng/${mod}.mod/archive/master.zip && \
+				mv zips/master.zip zips/${mod}.mod.zip
+		else
+			echo "Using local ${mod}.mod.zip"
+		fi
+	done
 }
 
 prepare() {
@@ -401,107 +455,62 @@ prepare() {
 	unzip -q zips/maxide.zip -d temp/BlitzMax/src && \
 		mv temp/BlitzMax/src/maxide-master temp/BlitzMax/src/maxide
 
-	# pub.mod
-	echo "Extracting pub.mod" 
-	unzip -q zips/pub.mod.zip -d release/BlitzMax/mod && \
-		mv release/BlitzMax/mod/pub.mod-master release/BlitzMax/mod/pub.mod
+	# modules
+	for mod in "${MOD_LIST[@]}"
+	do
+		echo "Extracting ${mod}.mod"
+		case "$PLATFORM" in
+			macos)
+				ditto -x -k --sequesterRsrc --rsrc zips/${mod}.mod.zip release/BlitzMax/mod && \
+					mv release/BlitzMax/mod/${mod}.mod-master release/BlitzMax/mod/${mod}.mod
 
-	unzip -q zips/pub.mod.zip -d temp/BlitzMax/mod && \
-		mv temp/BlitzMax/mod/pub.mod-master temp/BlitzMax/mod/pub.mod
+				ditto -x -k --sequesterRsrc --rsrc zips/${mod}.mod.zip temp/BlitzMax/mod && \
+					mv temp/BlitzMax/mod/${mod}.mod-master temp/BlitzMax/mod/${mod}.mod
+				;;
+			*)
+				unzip -q zips/${mod}.mod.zip -d release/BlitzMax/mod && \
+					mv release/BlitzMax/mod/${mod}.mod-master release/BlitzMax/mod/${mod}.mod
 
-	# brl.mod
-	echo "Extracting brl.mod" 
-	unzip -q zips/brl.mod.zip -d release/BlitzMax/mod && \
-		mv release/BlitzMax/mod/brl.mod-master release/BlitzMax/mod/brl.mod
-
-	unzip -q zips/brl.mod.zip -d temp/BlitzMax/mod && \
-		mv temp/BlitzMax/mod/brl.mod-master temp/BlitzMax/mod/brl.mod
-
-	# sdl.mod
-	echo "Extracting sdl.mod" 
-	unzip -q zips/sdl.mod.zip -d release/BlitzMax/mod && \
-		mv release/BlitzMax/mod/sdl.mod-master release/BlitzMax/mod/sdl.mod
-
-	unzip -q zips/sdl.mod.zip -d temp/BlitzMax/mod && \
-		mv temp/BlitzMax/mod/sdl.mod-master temp/BlitzMax/mod/sdl.mod
-
-	# maxgui.mod
-	echo "Extracting maxgui.mod" 
-	unzip -q zips/maxgui.mod.zip -d release/BlitzMax/mod && \
-		mv release/BlitzMax/mod/maxgui.mod-master release/BlitzMax/mod/maxgui.mod
-
-	unzip -q zips/maxgui.mod.zip -d temp/BlitzMax/mod && \
-		mv temp/BlitzMax/mod/maxgui.mod-master temp/BlitzMax/mod/maxgui.mod
-
-	# mky.mod
-	echo "Extracting mky.mod" 
-	unzip -q zips/mky.mod.zip -d release/BlitzMax/mod && \
-		mv release/BlitzMax/mod/mky.mod-master release/BlitzMax/mod/mky.mod
-
-	unzip -q zips/mky.mod.zip -d temp/BlitzMax/mod && \
-		mv temp/BlitzMax/mod/mky.mod-master temp/BlitzMax/mod/mky.mod
-
-	# crypto.mod
-	echo "Extracting crypto.mod" 
-	unzip -q zips/crypto.mod.zip -d release/BlitzMax/mod && \
-		mv release/BlitzMax/mod/crypto.mod-master release/BlitzMax/mod/crypto.mod
-
-	unzip -q zips/crypto.mod.zip -d temp/BlitzMax/mod && \
-		mv temp/BlitzMax/mod/crypto.mod-master temp/BlitzMax/mod/crypto.mod
-
-	# audio.mod
-	echo "Extracting audio.mod" 
-	unzip -q zips/audio.mod.zip -d release/BlitzMax/mod && \
-		mv release/BlitzMax/mod/audio.mod-master release/BlitzMax/mod/audio.mod
-
-	unzip -q zips/audio.mod.zip -d temp/BlitzMax/mod && \
-		mv temp/BlitzMax/mod/audio.mod-master temp/BlitzMax/mod/audio.mod
-
-	# steam.mod
-	echo "Extracting steam.mod" 
-	unzip -q zips/steam.mod.zip -d release/BlitzMax/mod && \
-		mv release/BlitzMax/mod/steam.mod-master release/BlitzMax/mod/steam.mod
-
-	unzip -q zips/steam.mod.zip -d temp/BlitzMax/mod && \
-		mv temp/BlitzMax/mod/steam.mod-master temp/BlitzMax/mod/steam.mod
-
-	# text.mod
-	echo "Extracting text.mod" 
-	unzip -q zips/text.mod.zip -d release/BlitzMax/mod && \
-		mv release/BlitzMax/mod/text.mod-master release/BlitzMax/mod/text.mod
-
-	unzip -q zips/text.mod.zip -d temp/BlitzMax/mod && \
-		mv temp/BlitzMax/mod/text.mod-master temp/BlitzMax/mod/text.mod
-
-	# random.mod
-	echo "Extracting random.mod" 
-	unzip -q zips/random.mod.zip -d release/BlitzMax/mod && \
-		mv release/BlitzMax/mod/random.mod-master release/BlitzMax/mod/random.mod
-
-	unzip -q zips/random.mod.zip -d temp/BlitzMax/mod && \
-		mv temp/BlitzMax/mod/random.mod-master temp/BlitzMax/mod/random.mod
+				unzip -q zips/archive.mod.zip -d temp/BlitzMax/mod && \
+					mv temp/BlitzMax/mod/${mod}.mod-master temp/BlitzMax/mod/${mod}.mod
+				;;
+		esac
+	done
 
 	case "$PLATFORM" in
 		win32)
-			if [[ "$OPT_ARCH" == *"x86"* ]]; then
-				echo "Extracting x86 MinGW"
-				7za x mingw/${MINGW_X86}
-				mv mingw32 release/BlitzMax/MinGW32x86
+			case "$WIN_VER" in
+				mingw)
+					if [[ "$OPT_ARCH" == *"x86"* ]]; then
+						echo "Extracting x86 MinGW"
+						7za x mingw/${MINGW_X86}
+						mv mingw32 release/BlitzMax/MinGW32x86
 
-				echo "Extracting x86 MinGW (into temp)"
-				7za x mingw/${MINGW_X86}
-				mv mingw32 temp/BlitzMax/MinGW32x86
-			fi
+						echo "Extracting x86 MinGW (into temp)"
+						7za x mingw/${MINGW_X86}
+						mv mingw32 temp/BlitzMax/MinGW32x86
+					fi
 
-			if [[ "$OPT_ARCH" == *"x64"* ]]; then
-				echo "Extracting x64 MinGW"
-				7za x mingw/${MINGW_X64}
-				mv mingw64 release/BlitzMax/MinGW32x64
+					if [[ "$OPT_ARCH" == *"x64"* ]]; then
+						echo "Extracting x64 MinGW"
+						7za x mingw/${MINGW_X64}
+						mv mingw64 release/BlitzMax/MinGW32x64
 
-				echo "Extracting x64 MinGW (into temp)"
-				7za x mingw/${MINGW_X64}
-				mv mingw64 temp/BlitzMax/MinGW32x64
-			fi
+						echo "Extracting x64 MinGW (into temp)"
+						7za x mingw/${MINGW_X64}
+						mv mingw64 temp/BlitzMax/MinGW32x64
+					fi
+					;;
+				llvm)
+					echo "Extracting llvm-mingw"
+					7za x llvm/${LLVM_MINGW}
+					mv llvm release/BlitzMax/llvm-mingw
+
+					echo "Extracting llvm-mingw (into temp)"
+					7za x llvm/${LLVM_MINGW}
+					mv llvm temp/BlitzMax/llvm-mingw
+					;;
+			esac
 			;;
 	esac
 
@@ -666,39 +675,20 @@ build_samples() {
 		G_OPTION="-g $ARCH"
 	fi
 
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/aaronkoolen/AStar/astar_demo.bmx
-
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/birdie/games/tempest/tempest.bmx
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/birdie/games/tiledrop/tiledrop.bmx
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/birdie/games/zombieblast/game.bmx
-
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/breakout/breakout.bmx
-
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/digesteroids/digesteroids.bmx
-
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/firepaint/firepaint.bmx
-
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/flameduck/circlemania/cmania.bmx
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/flameduck/oldskool2/oldskool2.bmx
-
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/hitoro/fireworks.bmx
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/hitoro/shadowimage.bmx
-
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/simonh/fireworks/fireworks.bmx
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/simonh/snow/snowfall.bmx
-
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/spintext/spintext.bmx
-
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/starfieldpong/starfieldpong.bmx
-
-	temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/tempest/tempest.bmx
+	for sample in "${SAMPLE_LIST[@]}"
+	do
+		temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/samples/${sample}
+	done
 }
 
 
-while getopts ":a:b:p:cfms" options; do
+while getopts ":a:b:p:w:r:l:cfmsz" options; do
 	case "${options}" in
 		a)
 			OPT_ARCH=${OPTARG}
+			;;
+		r)
+			SRC_ARCH=${OPTARG}
 			;;
 		b)
 			BUILD_VERSION=${OPTARG}
@@ -717,6 +707,12 @@ while getopts ":a:b:p:cfms" options; do
 			;;
 		p)
 			PACKAGE_VERSION=${OPTARG}
+			;;
+		w)
+			WIN_VER=${OPTARG}
+			;;
+		l)
+			PLATFORM=${OPTARG}
 			;;
 		:)
 			echo "Error: -${OPTARG} requires an argument."
