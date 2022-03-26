@@ -36,7 +36,12 @@ fi
 exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' 0 1 2 3
 trap abort SIGINT
-exec 1>release_build_`date +%Y%m%d%H%M%S`.log 2>&1
+
+test x$1 = x$'\x00' && shift || { set -o pipefail ; ( exec 2>&1 ; $0 $'\x00' "$@" ) | tee release_build_`date +%Y%m%d%H%M%S`.log ; exit $? ; }
+
+echo ""
+echo "Script arguments : $@"
+echo ""
 
 OPT_ARCH=""
 SRC_ARCH=""
