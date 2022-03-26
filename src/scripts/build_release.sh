@@ -476,7 +476,7 @@ prepare() {
 				unzip -q zips/${mod}.mod.zip -d release/BlitzMax/mod && \
 					mv release/BlitzMax/mod/${mod}.mod-master release/BlitzMax/mod/${mod}.mod
 
-				unzip -q zips/archive.mod.zip -d temp/BlitzMax/mod && \
+				unzip -q zips/${mod}.mod.zip -d temp/BlitzMax/mod && \
 					mv temp/BlitzMax/mod/${mod}.mod-master temp/BlitzMax/mod/${mod}.mod
 				;;
 		esac
