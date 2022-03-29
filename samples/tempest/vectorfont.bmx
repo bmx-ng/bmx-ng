@@ -35,7 +35,7 @@ Function Test()
 	DrawString("pqrstuvwxyz{|}~~" ,400-sc*40,325+sc*15,sc)
 	Flip
 	
-	Delay 16+sc*5
+	Delay Int(16+sc*5)
 	Wend
 
 End Function
@@ -82,7 +82,7 @@ Function DrawDigit(d,xd,yd,sc#)
 End Function
 
 
-Function DrawString(st$,xd,yd,sc#)
+Function DrawString(st$,xd:Float,yd:Float,sc#)
 	Local s,d,ln,t
 	
 	ln = Len(st$)

@@ -6,11 +6,7 @@ End Rem
 
 Strict
 
-?win32
-Framework SDL.d3d9sdlmax2d
-?Not win32
-Framework SDL.gl2sdlmax2d
-?
+Framework SDL.SDLRenderMax2d
 Import brl.pngloader
 Import brl.RandomDefault
 
@@ -34,7 +30,7 @@ Type rasterBar
 		For Local i:Int = 0 To 736
 			Local temp:Int = i+xstart
 			If temp > 0 Or temp < 799
-				DrawImage rastaImage, temp, ycenter + Sin((i+angle)*freq)*scale
+				DrawImage rastaImage, temp, Float(ycenter + Sin((i+angle)*freq)*scale)
 			End If
 		Next
 	End Method
@@ -73,8 +69,8 @@ Type circleBob
 		x:+Cos(velocity.angle)*velocity.length
 		y:+Sin(velocity.angle)*velocity.length*yaspect
 		life:-1
-		SetAlpha life/40!
-		DrawImage cmBob, x, y
+		SetAlpha life/40
+		DrawImage cmBob, Float(x), Float(y)
 	End Method
 
 	Method isDead:Int()
@@ -222,7 +218,7 @@ While Not KeyHit(KEY_ESCAPE)
 	Local xpos:Int = 124 * Sin(angle)
 
 	For Local i:rasterBar = EachIn myRBList
-		i.drawRasterBar(xpos+32 , 28!, 28!)
+		i.drawRasterBar(xpos+32 , 28, 28)
 	Next
 
 	SetBlend ALPHABLEND

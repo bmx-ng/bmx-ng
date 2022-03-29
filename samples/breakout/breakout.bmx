@@ -1,11 +1,7 @@
 
 Strict
 
-?win32
-Framework SDL.d3d9sdlmax2d
-?Not win32
-Framework SDL.gl2sdlmax2d
-?
+Framework SDL.SDLRenderMax2d
 Import brl.pngloader
 Import brl.RandomDefault
 
@@ -102,7 +98,7 @@ Type Tile
           size=size*0.9
         Else
           size = 1
-          SetScale 0.95+(0.05*Cos(gTime)),0.95+(0.05*Sin(gTime))
+          SetScale Float(0.95+(0.05*Cos(gTime))),Float(0.95+(0.05*Sin(gTime)))
         EndIf
       Case 1
         SetRotation rot
@@ -110,15 +106,15 @@ Type Tile
     EndSelect
     Select typ
       Case 0
-        DrawImage tiles_img,x+offx,y+offy+(2*Sin(gtime)),0
+        DrawImage tiles_img,Float(x+offx),Float(y+offy+(2*Sin(gtime))),0
       Case 1
-        DrawImage tiles_img,x+offx,y+offy+(2*Sin(gtime)),1
+        DrawImage tiles_img,Float(x+offx),Float(y+offy+(2*Sin(gtime))),1
       Case 2
-        DrawImage tiles_img,x+offx,y+offy+(2*Sin(gtime)),2
+        DrawImage tiles_img,Float(x+offx),Float(y+offy+(2*Sin(gtime))),2
       Case 3
-        DrawImage tiles_img,x+offx,y+offy+(2*Sin(gtime)),3
+        DrawImage tiles_img,Float(x+offx),Float(y+offy+(2*Sin(gtime))),3
       Case 4
-        DrawImage tiles_img,x+offx,y+offy+(2*Sin(gtime)),4
+        DrawImage tiles_img,Float(x+offx),Float(y+offy+(2*Sin(gtime))),4
     EndSelect
 
     SetScale 1,1

@@ -8,11 +8,7 @@ EndRem
 
 Strict
 
-?win32
-Framework SDL.d3d9sdlmax2d
-?Not win32
-Framework SDL.gl2sdlmax2d
-?
+Framework SDL.SDLRenderMax2d
 Import sdl.SDLFreeAudio
 Import brl.ramstream
 Import brl.pngloader

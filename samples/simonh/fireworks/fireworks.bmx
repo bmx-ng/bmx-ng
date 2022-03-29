@@ -96,7 +96,7 @@ While Not KeyHit(KEY_ESCAPE)
 
 			sp.alpha=sp.alpha-0.01
 
-			SetColor sp.r#,sp.g#,sp.b#
+			SetColor Int(sp.r),Int(sp.g),Int(sp.b)
 			SetBlend LIGHTBLEND
 			SetAlpha sp.alpha
 			SetScale 20/sp.z,20/sp.z

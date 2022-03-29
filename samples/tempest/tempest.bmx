@@ -20,11 +20,7 @@
 
 Strict
 
-?win32
-Framework SDL.d3d9sdlmax2d
-?Not win32
-Framework SDL.gl2sdlmax2d
-?
+Framework SDL.SDLRenderMax2d
 Import sdl.sdlfreeaudio
 Import brl.wavloader
 Import brl.ramstream
@@ -36,7 +32,7 @@ Import "sfx.bmx"
 SetAudioDriver("FreeAudio SDL")
 
 'Setup Graphics mode
-Graphics CWidth,CHeight,0    ',0 windowed  ',32 'fullscreen
+Graphics Int(CWidth),Int(CHeight),0    ',0 windowed  ',32 'fullscreen
 HideMouse
 SeedRnd(MilliSecs())
 
@@ -526,7 +522,7 @@ Type Player
 			For Local i = 0 To 7
 				Local rv = Rand(0,360)
 				Local sr = Rnd(4,40)*(60-deathcount)/60
-				DrawRect (x[2]+x[3])/2+Cos(rv)*sr,(y[2]+y[3])/2+Sin(rv)*sr,2,2
+				DrawRect Float((x[2]+x[3])/2+Cos(rv)*sr),Float((y[2]+y[3])/2+Sin(rv)*sr),2,2
 			Next		
 		EndIf
 		
@@ -1354,7 +1350,7 @@ Type Egg
 					EndIf
 				Case 4,5,6,7'spinner
 					If theLevel.hasspikes
-						spinner.Create( e_Index ,Rand(2.0,4.0))
+						spinner.Create( e_Index ,Rand(2,4))
 					Else
 						typ = -1
 					EndIf
@@ -1796,7 +1792,7 @@ Type Tanker Extends Baddies
 						e:+1
 					EndIf
 				EndIf				
-				Local c:flipper = flipper.Create(e,1,height)
+				Local c:flipper = flipper.Create(e,1,Int(height))
 				c.dir = -dir
 				If stillborn Then c.dietime = 8
 				dir = -dir
@@ -1823,7 +1819,7 @@ Type Tanker Extends Baddies
 						e:+1
 					EndIf
 				EndIf				
-				Local c:fuseball= fuseball.Create(e,0,height)
+				Local c:fuseball= fuseball.Create(e,0,Int(height))
 				c.dir = -dir
 				If stillborn Then c.dietime = 8				
 				dir = -dir
@@ -1850,7 +1846,7 @@ Type Tanker Extends Baddies
 						e:+1
 					EndIf
 				EndIf				
-				Local c:pulsar = pulsar.Create(e,0,height)
+				Local c:pulsar = pulsar.Create(e,0,Int(height))
 				c.dir = -dir
 				If stillborn Then c.dietime = 8								
 				dir = -dir
@@ -1873,7 +1869,7 @@ Type Tanker Extends Baddies
 				ReleaseCargo(True) ' it's cargo will die too
 				zz1 = theLevel.position + theLevel.depth - height
 				TForm(OnEdge.xx,OnEdge.yy,zz1,xx,yy)
-				Explosion.Create(xx,yy,height)				
+				Explosion.Create(Int(xx),Int(yy),Int(height))
 				BADDIE_LIST.Remove(Self)
 				enemiesleft:-1
 				Return		
@@ -1881,7 +1877,7 @@ Type Tanker Extends Baddies
 		EndIf
 		height:+2
 		If height < 380
-			If Rand(0,100) > 98 And hasbullets Then bullets.Create(e_index,height);hasbullets:-1
+			If Rand(0,100) > 98 And hasbullets Then bullets.Create(e_index,Int(height));hasbullets:-1
 		EndIf
 		If height > theLevel.depth-15
 			ReleaseCargo(False)
@@ -1898,7 +1894,7 @@ Type Tanker Extends Baddies
 				ReleaseCargo(False)
 				zz1 = theLevel.position + theLevel.depth - height
 				TForm(OnEdge.xx,OnEdge.yy,zz1,xx,yy)
-				Explosion.Create(xx,yy,height)	
+				Explosion.Create(Int(xx),Int(yy),Int(height))
 				PlaySound(tankershotsfx)			
 				BADDIE_LIST.Remove(Self)
 				enemiesleft:-1
@@ -1972,9 +1968,9 @@ Type Flipper Extends Baddies
 			TForm(OnEdge.p1.x,OnEdge.p1.y,zz2,x[0],y[0])
 			TForm(OnEdge.p2.x,OnEdge.p2.y,zz2,x[1],y[1])
 			If dir = -1 'pivot around p1 of dest edge  (current edge+1)
-				TFormR(x[1],y[1],-angle+totangle, x[0],y[0])	
+				TFormR(x[1],y[1],Int(-angle+totangle), x[0],y[0])	
 			Else
-				TFormR(x[0],y[0],-(totangle-angle), x[1],y[1])				
+				TFormR(x[0],y[0],Int(-(totangle-angle)), x[1],y[1])				
 			EndIf			
 		Case 3,7 'delaying
 			zz1 = theLevel.position+theLevel.depth
@@ -2034,7 +2030,7 @@ Type Flipper Extends Baddies
 				Local xx#,yy#,zz1#
 				zz1 = theLevel.position + theLevel.depth - height
 				TForm(OnEdge.xx,OnEdge.yy,zz1,xx,yy)
-				Explosion.Create(xx,yy,height)
+				Explosion.Create(Int(xx),Int(yy),Int(height))
 				BADDIE_LIST.Remove(Self)
 				enemiesleft:-1				
 				MainPlayer.Score = MainPlayer.Score+150
@@ -2060,7 +2056,7 @@ Type Flipper Extends Baddies
 					typ = 3
 				EndIf
 			EndIf
-			If Rand(0,100) > 98 And hasbullets Then bullets.Create(e_index,height);hasbullets:-1
+			If Rand(0,100) > 98 And hasbullets Then bullets.Create(e_index,Int(height));hasbullets:-1
 			dir = FindShortDir(e_Index, MainPlayer.e_Index)
 		Case 1,2 ' flipping
 			angle = angle + flipflipspeed
@@ -2130,7 +2126,7 @@ Type Flipper Extends Baddies
 				OnEdge = theLevel.edges[e_Index]
 				totangle = theLevel.edges[e_Index].angle'-8	
 				
-				If Rand(0,100) > 98 And hasbullets Then bullets.Create(e_index,height);hasbullets:-1
+				If Rand(0,100) > 98 And hasbullets Then bullets.Create(e_index,Int(height));hasbullets:-1
 
 				If dir = -1
 					Local ind = e_index-1
@@ -2161,9 +2157,9 @@ Type Flipper Extends Baddies
 					TForm(OnEdge.p1.x,OnEdge.p1.y,zz1,x[0],y[0])
 					TForm(OnEdge.p2.x,OnEdge.p2.y,zz1,x[1],y[1])
 					If dir = -1 'pivot around p1 of dest edge  (current edge+1)
-						TFormR(x[1],y[1],-angle+totangle, x[0],y[0])	
+						TFormR(x[1],y[1],Int(-angle+totangle), x[0],y[0])	
 					Else
-						TFormR(x[0],y[0],-(totangle-angle), x[1],y[1])				
+						TFormR(x[0],y[0],Int(-(totangle-angle)), x[1],y[1])				
 					EndIf
 					xx = (x[0]+x[1])/2
 					yy = (y[0]+y[1])/2
@@ -2172,7 +2168,7 @@ Type Flipper Extends Baddies
 					TForm(OnEdge.xx,OnEdge.yy,zz1,xx,yy)		
 				EndIf
 				PlaySound(flippershotsfx)
-				Explosion.Create(xx,yy,height)
+				Explosion.Create(Int(xx),Int(yy),Int(height))
 				BADDIE_LIST.Remove(Self)
 				MainPlayer.Score = MainPlayer.Score+150
 				enemiesleft:-1
@@ -2253,9 +2249,9 @@ Type Pulsar Extends Baddies
 			TForm(OnEdge.p1.x,OnEdge.p1.y,zz2,x[0],y[0])
 			TForm(OnEdge.p2.x,OnEdge.p2.y,zz2,x[1],y[1])
 			If dir = -1 'pivot around p1 of dest edge  (current edge+1)
-				TFormR(x[1],y[1],-angle+totangle, x[0],y[0])	
+				TFormR(x[1],y[1],Int(-angle+totangle), x[0],y[0])	
 			Else
-				TFormR(x[0],y[0],-(totangle-angle), x[1],y[1])				
+				TFormR(x[0],y[0],Int(-(totangle-angle)), x[1],y[1])				
 			EndIf			
 		Case 3,5,7 'delaying
 			zz1 = theLevel.position+theLevel.depth
@@ -2316,7 +2312,7 @@ Type Pulsar Extends Baddies
 				Local xx#,yy#,zz1#
 				zz1 = theLevel.position + theLevel.depth - height
 				TForm(OnEdge.xx,OnEdge.yy,zz1,xx,yy)
-				Explosion.Create(xx,yy,height)
+				Explosion.Create(Int(xx),Int(yy),Int(height))
 				BADDIE_LIST.Remove(Self)
 				enemiesleft:-1				
 				MainPlayer.Score = MainPlayer.Score+200
@@ -2467,9 +2463,9 @@ Type Pulsar Extends Baddies
 					TForm(OnEdge.p1.x,OnEdge.p1.y,zz1,x[0],y[0])
 					TForm(OnEdge.p2.x,OnEdge.p2.y,zz1,x[1],y[1])
 					If dir = -1 'pivot around p1 of dest edge  (current edge+1)
-						TFormR(x[1],y[1],-angle+totangle, x[0],y[0])	
+						TFormR(x[1],y[1],Int(-angle+totangle), x[0],y[0])	
 					Else
-						TFormR(x[0],y[0],-(totangle-angle), x[1],y[1])				
+						TFormR(x[0],y[0],Int(-(totangle-angle)), x[1],y[1])				
 					EndIf
 					xx = (x[0]+x[1])/2
 					yy = (y[0]+y[1])/2
@@ -2477,7 +2473,7 @@ Type Pulsar Extends Baddies
 					zz1 = theLevel.position + theLevel.depth - height
 					TForm(OnEdge.xx,OnEdge.yy,zz1,xx,yy)		
 				EndIf
-				Explosion.Create(xx,yy,height)
+				Explosion.Create(Int(xx),Int(yy),Int(height))
 				PlaySound(pulsarshotsfx)			
 				BADDIE_LIST.Remove(Self)
 				MainPlayer.Score = MainPlayer.Score+200
@@ -2603,7 +2599,7 @@ Type Fuseball Extends Baddies
 				zz1 = theLevel.position + theLevel.depth - height
 				TForm(OnEdge.xx,OnEdge.yy,zz1,xx,yy)
 				Local sc = Int((theLevel.depth-height)/100+1)*250
-				fusepoint.Create(xx,yy,height,sc)
+				fusepoint.Create(Int(xx),Int(yy),Int(height),sc)
 				MainPlayer.Score = MainPlayer.Score+sc
 				BADDIE_LIST.Remove(Self)
 				enemiesleft:-1				
@@ -2696,7 +2692,7 @@ Type Fuseball Extends Baddies
 					zz1 = theLevel.position + theLevel.depth - height
 					TForm(OnEdge.xx,OnEdge.yy,zz1,xx,yy)
 					Local sc = Int((theLevel.depth-height)/100+1)*250
-					fusepoint.Create(xx,yy,height,sc)
+					fusepoint.Create(Int(xx),Int(yy),Int(height),sc)
 					MainPlayer.Score = MainPlayer.Score+sc
 					BADDIE_LIST.Remove(Self)
 					PlaySound(fuseballshotsfx)					
@@ -2901,7 +2897,7 @@ Type Spinner Extends Baddies
 						If growth > 100
 							If Rnd(0,140) > 88
 								act = 2
-								If Rnd(0,100) > 70 Then bullets.Create(e_index,height)
+								If Rnd(0,100) > 70 Then bullets.Create(e_index,Int(height))
 							EndIf
 						EndIf
 					EndIf
