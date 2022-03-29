@@ -546,10 +546,23 @@ build_apps() {
 	BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bcc/bcc.bmx && \
 		cp temp/BlitzMax/src/bcc/bcc temp/BlitzMax/bin
 
-	# initial bmk, built with current release
+
 	echo "Building Initial bmk"
-	BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bmk/bmk.bmx && \
+	if BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bmk/bmk.bmx; then
 		cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin
+	else
+		# initial bmk, built with new bcc and current bmk
+		echo ""
+		echo "Copying current bmk"
+		cp BlitzMax/bin/bmk temp/BlitzMax/bin && \
+			cp BlitzMax/bin/core.bmk temp/BlitzMax/bin && \
+			cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
+			cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
+
+		echo "Building Initial bmk"
+		temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bmk/bmk.bmx && \
+			cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin
+	fi
 
 	# copy bmk resources
 	echo "Copying bmk resources"
@@ -611,6 +624,9 @@ package() {
 	echo "--------------------"
 	echo "-     PACKAGE      -"
 	echo "--------------------"
+
+	echo "Cleanup"
+	rm -f release/BlitzMax/mod/image.mod/raw.mod/examples/gh2.rw2
 
 	case "$PLATFORM" in
 		win32)
