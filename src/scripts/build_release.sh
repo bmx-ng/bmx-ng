@@ -57,8 +57,9 @@ MINGW_X86="i686-8.1.0-release-posix-sjlj-rt_v6-rev0.7z"
 MINGW_X86_URL="https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/8.1.0/threads-posix/sjlj/i686-8.1.0-release-posix-sjlj-rt_v6-rev0.7z"
 MINGW_X64="x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z"
 MINGW_X64_URL="https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z"
-LLVM_MINGW="llvm-mingw-20211002-ucrt-i686.zip"
-LLVM_MINGW_URL="https://github.com/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-20211002-ucrt-i686.zip"
+LLVM_MINGW="llvm-mingw-20220323-ucrt-i686"
+LLVM_MINGW_ZIP="llvm-mingw-20220323-ucrt-i686.zip"
+LLVM_MINGW_URL="https://github.com/mstorsjo/llvm-mingw/releases/download/20220323/llvm-mingw-20220323-ucrt-i686.zip"
 WIN_VER="mingw"
 
 PLATFORMS=("win32" "linux" "rpi" "macos")
@@ -239,20 +240,15 @@ make_dirs() {
 
 	case "$PLATFORM" in
 		win32)
-			case "$WIN_VER" in
-				mingw)
-					if [ ! -d "mingw" ]; then
-						echo "Creating mingw dir"
-						mkdir -p mingw
-					fi
-					;;
-				llvm)
-					if [ ! -d "llvm" ]; then
-						echo "Creating llvm dir"
-						mkdir -p llvm
-					fi
-					;;
-			esac
+			if [ ! -d "mingw" ]; then
+				echo "Creating mingw dir"
+				mkdir -p mingw
+			fi
+
+			if [ ! -d "llvm" ]; then
+				echo "Creating llvm dir"
+				mkdir -p llvm
+			fi
 			;;
 	esac
 }
@@ -362,9 +358,14 @@ download() {
 					fi
 					;;
 				llvm)
-					if [ ! -f "llvm/$LLVM_MINGW" ]; then
-						echo "Downloading $LLVM_MINGW"
-						wget -nv -P llvm $MLLVM_MINGW_URL
+					if [ ! -f "mingw/$MINGW_X86" ]; then
+						echo "Downloading $MINGW_X86"
+						wget -nv -P mingw $MINGW_X86_URL
+					fi
+
+					if [ ! -f "llvm/$LLVM_MINGW_ZIP" ]; then
+						echo "Downloading $LLVM_MINGW_ZIP"
+						wget -nv -P llvm $LLVM_MINGW_URL
 					fi
 					;;
 			esac
@@ -508,12 +509,16 @@ prepare() {
 					;;
 				llvm)
 					echo "Extracting llvm-mingw"
-					7za x llvm/${LLVM_MINGW}
-					mv llvm release/BlitzMax/llvm-mingw
+					7za x llvm/${LLVM_MINGW_ZIP}
+					mv ${LLVM_MINGW} release/BlitzMax/llvm-mingw
 
 					echo "Extracting llvm-mingw (into temp)"
-					7za x llvm/${LLVM_MINGW}
-					mv llvm temp/BlitzMax/llvm-mingw
+					7za x llvm/${LLVM_MINGW_ZIP}
+					mv ${LLVM_MINGW} temp/BlitzMax/llvm-mingw
+
+					echo "Extracting x86 MinGW (into temp)"
+					7za x mingw/${MINGW_X86}
+					mv mingw32 temp/BlitzMax/MinGW32x86
 					;;
 			esac
 			;;
@@ -560,8 +565,13 @@ build_apps() {
 			cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
 
 		echo "Building Initial bmk"
-		temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bmk/bmk.bmx && \
+		if temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bmk/bmk.bmx; then
 			cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin
+		else
+			echo ""
+			echo "Failed to build bmk"
+			exit -1
+		fi
 	fi
 
 	# copy bmk resources
@@ -634,7 +644,7 @@ package() {
 			if [[ "$OPT_ARCH" == "x86x64" ]]; then
 				PACK_ARCH=""
 			fi
-			ZIP="BlitzMax_win32${PACK_ARCH}_${PACKAGE_VERSION}.7z"
+			ZIP="BlitzMax_win32${PACK_ARCH}_${WIN_VER}_${PACKAGE_VERSION}.7z"
 			echo "Creating release zip : ${ZIP}"
 
 			cd release
