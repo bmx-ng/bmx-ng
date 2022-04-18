@@ -3,7 +3,7 @@ Strict
 
 Framework SDL.SDLRenderMax2d
 Import brl.pngloader
-Import brl.RandomDefault
+Import brl.Random
 
 Const WIDTH = 640,HEIGHT = 480, DEPTH = 0
 Const ShadowOn   = 1

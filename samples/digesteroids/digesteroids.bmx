@@ -26,7 +26,7 @@ Framework SDL.gl2sdlmax2d
 Import brl.pngloader
 Import brl.wavloader
 Import brl.oggloader
-Import brl.RandomDefault
+Import brl.Random
 Import sdl.sdlfreeaudio
 
 ' Import various utilities.

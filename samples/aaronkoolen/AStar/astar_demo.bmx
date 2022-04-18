@@ -4,12 +4,8 @@ Strict
 ' The GUI is pretty crappy
 ' There are quite a few comments in the areas of importance. Sometimes this makes
 ' the code a little harder to read, but this was done for instructional purposes foremost
-?win32
-Framework SDL.d3d9sdlmax2d
-?Not win32
-Framework SDL.gl2sdlmax2d
-?
-Import brl.RandomDefault
+Framework SDL.SDLRenderMax2d
+Import brl.Random
 Import brl.pngloader
 
 Import "astar_graph_walker.bmx"

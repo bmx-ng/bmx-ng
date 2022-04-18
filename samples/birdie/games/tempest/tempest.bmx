@@ -7,7 +7,7 @@ Framework SDL.d3d9sdlmax2d
 ?Not win32
 Framework SDL.gl2sdlmax2d
 ?
-Import brl.RandomDefault
+Import brl.Random
 
 Const CWidth#=640
 Const CHeight#=480

@@ -5,7 +5,7 @@ Framework SDL.d3d9sdlmax2d
 ?Not win32
 Framework SDL.gl2sdlmax2d
 ?
-Import brl.RandomDefault
+Import brl.Random
 Import brl.ramstream
 Import brl.pngloader
 

@@ -8,7 +8,7 @@ Strict
 
 Framework SDL.SDLRenderMax2d
 Import brl.pngloader
-Import brl.RandomDefault
+Import brl.Random
 
 Type rasterBar
 	Field angle:Double,angleadd:Double,color[],freq:Double

@@ -12,7 +12,7 @@ Framework SDL.SDLRenderMax2d
 Import brl.pngloader
 Import brl.ramstream
 Import brl.oggloader
-Import brl.RandomDefault
+Import brl.Random
 Import sdl.sdlfreeaudio
 
 Incbin "circlefont.png"

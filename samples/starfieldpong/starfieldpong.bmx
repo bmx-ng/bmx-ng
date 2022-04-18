@@ -1,7 +1,7 @@
 SuperStrict
 
 Framework SDL.SDLRenderMax2d
-Import brl.RandomDefault
+Import brl.Random
 
 Const WIDTH:Int=640,HEIGHT:Int=480,DEPTH:Int=0
 Const Star_Count:Int 	= 1000	       ' Stars Count
