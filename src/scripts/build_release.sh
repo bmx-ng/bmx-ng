@@ -546,6 +546,11 @@ build_apps() {
 	echo "-   BUILD - apps   -"
 	echo "--------------------"
 
+	G_OPTION=""
+	if [ ! -z "$ARCH" ]; then
+		G_OPTION="-g $ARCH"
+	fi
+
 	# initial bcc, built with current release
 	echo "Building Initial bcc"
 	BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bcc/bcc.bmx && \
@@ -565,8 +570,23 @@ build_apps() {
 			cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
 
 		echo "Building Initial bmk"
-		if temp/BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bmk/bmk.bmx; then
-			cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin
+		if temp/BlitzMax/bin/bmk makeapp -r $G_OPTION -single temp/BlitzMax/src/bmk/bmk.bmx; then
+			retries=0
+			while [ $retries -lt 30 ]
+			do
+				cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin 2>/dev/null
+				if [ $? -eq 0 ]; then
+					break
+				else
+					echo "bmk is busy... Attempt $((retries + 1))"
+					sleep 1
+					retries=$((retries + 1))
+				fi
+			done
+			if [ $retries -eq 30 ]; then
+				echo "bmk still busy after 30 seconds. Exiting..."
+				exit -1
+			fi
 		else
 			echo ""
 			echo "Failed to build bmk"
@@ -579,11 +599,6 @@ build_apps() {
 	cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
 		cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
 		cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
-
-	G_OPTION=""
-	if [ ! -z "$ARCH" ]; then
-		G_OPTION="-g $ARCH"
-	fi
 
 	case "$PLATFORM" in
 		macos)
