@@ -14,9 +14,10 @@ usage() {
 	echo "    -a <arch>    : Force architecture. e.g. x86, x64, arm, arm64, x86x64 (win32 only)"
 	echo "    -r <arch>    : Source architecture. e.g. x86, x64, arm, arm64, x86x64 (win32 only)"
 	echo "    -b <version> : Use build version. e.g. 0.105.3.35"
-	echo "    -p <version> : Package for version. e.g. 0.105.3.35"
 	echo "    -l <platform>: Platform. win32, macos, linux, rpi"
 	echo "    -w <version> : Windows compiler version. e.g. mingw or llvm. Defaults to mingw"
+	echo "    -t           : Apply additional timestamp to version."
+	echo "    -p           : Create a release package."
 	echo "    -c           : Don't clean dirs."
 	echo "    -m           : Build all modules."
 	echo "    -s           : Build samples."
@@ -53,6 +54,7 @@ CLEAN_DIRS="y"
 CLEAN_ZIPS=""
 BUILD_SAMPLES=""
 PACKAGE_VERSION=""
+USE_TIMESTAMP=""
 MINGW_X86="i686-12.2.0-release-posix-dwarf-rt_v10-rev1.7z"
 MINGW_X86_URL="https://github.com/niXman/mingw-builds-binaries/releases/download/12.2.0-rt_v10-rev1/i686-12.2.0-release-posix-dwarf-rt_v10-rev1.7z"
 MINGW_X64="x86_64-12.2.0-release-posix-seh-rt_v10-rev1.7z"
@@ -66,11 +68,11 @@ PLATFORMS=("win32" "linux" "rpi" "macos")
 WIN_MINGW_ARCH=("x86" "x64" "x86x64")
 WIN_LLVM_ARCH=("x86" "x64" "arm" "arm64")
 MACOS_ARCH=("x64" "arm64")
-LINUX_ARCH=("x86" "x64" "arm64")
+LINUX_ARCH=("x86" "x64" "arm64" "riscv64")
 RPI_ARCH=("arm" "arm64")
 WIN_VERS=("mingw" "llvm")
 
-MOD_LIST=("brl" "pub" "maxgui" "audio" "crypto" "image" "mky" "net" "random" "sdl" "steam" "text")
+MOD_LIST=("brl" "pub" "maxgui" "audio" "crypto" "image" "mky" "net" "random" "sdl" "steam" "text" "math")
 SAMPLE_LIST=("aaronkoolen/AStar/astar_demo.bmx" "birdie/games/tempest/tempest.bmx" "birdie/games/tiledrop/tiledrop.bmx" "birdie/games/zombieblast/game.bmx" "breakout/breakout.bmx" "digesteroids/digesteroids.bmx" "firepaint/firepaint.bmx" "flameduck/circlemania/cmania.bmx" "flameduck/oldskool2/oldskool2.bmx" "hitoro/fireworks.bmx" "hitoro/shadowimage.bmx" "simonh/fireworks/fireworks.bmx" "simonh/snow/snowfall.bmx" "spintext/spintext.bmx" "starfieldpong/starfieldpong.bmx" "tempest/tempest.bmx")
 
 get_arch() {
@@ -162,6 +164,11 @@ expand_platform() {
 		SRC_ARCH=$OPT_ARCH
 	else
 		validate_arch $SRC_ARCH "source"
+	fi
+
+	if [ -z "$OPT_ARCH" ]; then
+		echo "Arch not specified. Defaulting arch to : $ARCH"
+		OPT_ARCH=$ARCH
 	fi
 }
 
@@ -645,6 +652,25 @@ build_apps() {
 	esac
 }
 
+get_version() {
+  # Extracting the version from bcc's version.bmx file
+  bcc_version=$(grep 'Const BCC_VERSION:String' temp/BlitzMax/src/bcc/version.bmx | sed -n 's/.*Const BCC_VERSION:String = "\(.*\)".*/\1/p')
+
+  # Extracting the version from bmk's version.bmx file
+  bmk_version=$(grep 'Const BMK_VERSION:String' temp/BlitzMax/src/bmk/version.bmx | sed -n 's/.*Const BMK_VERSION:String = "\(.*\)".*/\1/p')
+
+  # Building the PACKAGE_VERSION variable
+  PACKAGE_VERSION="$bcc_version.$bmk_version"
+
+  # Append the timestamp
+  if [ ! -z "$USE_TIMESTAMP" ]; then
+    timestamp=$(date +%Y%m%d%H%M)
+    PACKAGE_VERSION="$PACKAGE_VERSION.$timestamp"
+  fi
+
+  echo "Building package version $PACKAGE_VERSION"
+}
+
 package() {
 	echo "--------------------"
 	echo "-     PACKAGE      -"
@@ -728,7 +754,7 @@ build_samples() {
 }
 
 
-while getopts ":a:b:p:w:r:l:cfmsz" options; do
+while getopts ":a:b:w:r:l:pcfmszt" options; do
 	case "${options}" in
 		a)
 			OPT_ARCH=${OPTARG}
@@ -752,7 +778,10 @@ while getopts ":a:b:p:w:r:l:cfmsz" options; do
 			BUILD_SAMPLEs="y"
 			;;
 		p)
-			PACKAGE_VERSION=${OPTARG}
+			PACKAGE_VERSION="y"
+			;;
+		t)
+			USE_TIMESTAMP="y"
 			;;
 		w)
 			WIN_VER=${OPTARG}
@@ -780,6 +809,7 @@ if [ ! -z "$BUILD_MODULES" ]; then
 	build_modules
 fi
 if [ ! -z "$PACKAGE_VERSION" ]; then
+	get_version
 	package
 fi
 if [ ! -z "$BUILD_SAMPLES" ]; then
