@@ -1,0 +1,13 @@
+# Use Ubuntu 22.10 as base image
+FROM ubuntu:22.10
+
+# Install necessary build tools
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    g++ \
+    mingw-w64 \
+    unzip \
+    wget \
+    p7zip-full \
+    && rm -rf /var/lib/apt/lists/*
