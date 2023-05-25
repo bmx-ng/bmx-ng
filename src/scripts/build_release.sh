@@ -8,6 +8,13 @@
 # Download 7za.exe from the 7-Zip extra archive at: https://www.7-zip.org/download.html
 # Copy into C:\Program Files\Git\mingw64\bin
 #
+# WINDOWS CROSS-COMPILE
+#
+# Requires p7zip.
+# On Linux, install with 'sudo apt install p7zip-full'
+# On macOS, install with 'brew install p7zip'
+# 
+#
 
 usage() {
 	echo "Usage: "`basename "$0"`" -b <version> [OPTIONS]"
@@ -48,7 +55,9 @@ OPT_ARCH=""
 SRC_ARCH=""
 BUILD_VERSION=""
 EXE=""
+OS_PLATFORM=""
 PLATFORM=""
+CROSS_COMPILE=""
 RELEASE_URL="https://github.com/bmx-ng/bmx-ng/releases/download/"
 CLEAN_DIRS="y"
 CLEAN_ZIPS=""
@@ -63,6 +72,10 @@ LLVM_MINGW="llvm-mingw-20220323-ucrt-i686"
 LLVM_MINGW_ZIP="llvm-mingw-20220323-ucrt-i686.zip"
 LLVM_MINGW_URL="https://github.com/mstorsjo/llvm-mingw/releases/download/20220323/llvm-mingw-20220323-ucrt-i686.zip"
 WIN_VER="mingw"
+
+CC_MINGW_ARCH="x86_64"
+CC_MINGW_VERSION_LINUX="10-posix"
+CC_MINGW_VERSION_MACOS="11.0.0"
 
 PLATFORMS=("win32" "linux" "rpi" "macos")
 WIN_MINGW_ARCH=("x86" "x64" "x86x64")
@@ -82,8 +95,9 @@ get_arch() {
 validate_arch() {
 	VAL_ARCH=$1
 	TYPE=$2
+	PLAT=$3
 
-	case "$PLATFORM" in
+	case "$PLAT" in
 		win32)
 			if [[ ! " ${WIN_VERS[*]} " =~ " ${WIN_VER} " ]]; then
 				echo "Invalid compiler version: $WIN_VER"
@@ -130,7 +144,7 @@ raspi_test() {
 	PI=$( cat /proc/device-tree/model )
 
 	if [[ $PI == Rasp* ]]; then
-		PLATFORM="rpi"
+		OS_PLATFORM="rpi"
 		ARCH=""
 	fi
 }
@@ -150,11 +164,12 @@ expand_platform() {
 	esac
 
 	if [ ! -z "$OPT_ARCH" ]; then
-		validate_arch $OPT_ARCH ""
+		validate_arch $OPT_ARCH "" $PLATFORM
 		
 
 		if [[ "$OPT_ARCH" == *"x86"* ]]; then
 			ARCH=x86
+			CC_MINGW_ARCH="i686"
 		else
 			ARCH=$OPT_ARCH
 		fi
@@ -163,10 +178,15 @@ expand_platform() {
 	if [ -z "$SRC_ARCH" ]; then
 		SRC_ARCH=$OPT_ARCH
 	else
-		validate_arch $SRC_ARCH "source"
+		validate_arch $SRC_ARCH "source" $OS_PLATFORM
 	fi
 
 	if [ -z "$OPT_ARCH" ]; then
+		if [ ! -z "$CROSS_COMPILE" ]; then
+			echo "Arch required for cross compile."
+			exit -1
+		fi
+
 		echo "Arch not specified. Defaulting arch to : $ARCH"
 		OPT_ARCH=$ARCH
 	fi
@@ -182,30 +202,47 @@ init() {
 		fi
 	fi
 
+	case "$OSTYPE" in
+		darwin*)
+			OS_PLATFORM="macos"
+			;; 
+		linux*)
+			OS_PLATFORM="linux"
+			raspi_test
+			;;
+		msys*)
+			OS_PLATFORM="win32"
+			;;
+		*)
+			echo "Unknown platform: $OSTYPE"
+			exit 1
+			;;
+	esac
+
 	if [ -z "$PLATFORM" ]; then
-		case "$OSTYPE" in
-			darwin*)
-				PLATFORM="macos"
-				;; 
-			linux*)
-				PLATFORM="linux"
-				raspi_test
-				;;
-			msys*)
-				PLATFORM="win32"
-				;;
-			*)
-				echo "Unknown platform: $OSTYPE"
-				exit 1
-				;;
-		esac
+		PLATFORM=$OS_PLATFORM
 	fi
+
+    if [ "$OS_PLATFORM" != "$PLATFORM" ];then
+		if [ "$PLATFORM" != "win32" ]; then
+			echo "Error: Cannot cross-compile to $PLATFORM on $OS_PLATFORM"
+			exit 1
+		else
+			CROSS_COMPILE="y"
+		fi
+    fi
 
 	expand_platform
 
-	echo "Platform    : " $PLATFORM
-	echo "System Arch : " $ARCH
-	echo "Source Arch : " $SRC_ARCH
+	echo "OS Platform     : " $OS_PLATFORM
+    echo -n "Target Platform :  $PLATFORM"
+    if [ ! -z "$CROSS_COMPILE" ]; then
+        echo " (cross-compile)"
+    else
+        echo ""
+    fi
+	echo "System Arch     : " $ARCH
+	echo "Source Arch     : " $SRC_ARCH
 }
 
 clean_dirs() {
@@ -273,7 +310,7 @@ check_base() {
 
 		DOWNLOAD_URL_ARCH=".${SRC_ARCH}"
 		ARCHIVE_ARCH="${SRC_ARCH}_"
-		case "$PLATFORM" in
+		case "$OS_PLATFORM" in
 			win32)
 				if [[ "$OPT_ARCH" == "x86x64" ]]; then
 					DOWNLOAD_URL_ARCH=""
@@ -283,10 +320,10 @@ check_base() {
 		esac
 
 		SUFFIX=".tar.xz"
-		URL="${RELEASE_URL}v${BUILD_VERSION}.${PLATFORM}${DOWNLOAD_URL_ARCH}/"
-		ARCHIVE="BlitzMax_${PLATFORM}_"
+		URL="${RELEASE_URL}v${BUILD_VERSION}.${OS_PLATFORM}${DOWNLOAD_URL_ARCH}/"
+		ARCHIVE="BlitzMax_${OS_PLATFORM}_"
 
-		case "$PLATFORM" in
+		case "$OS_PLATFORM" in
 			win32)
 				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}"
 				SUFFIX=".7z"
@@ -314,7 +351,7 @@ check_base() {
 
 		echo "Extracting ${ARCHIVE}"
 
-		case "$PLATFORM" in
+		case "$OS_PLATFORM" in
 			win32)
 				7za x ${ARCHIVE}
 				;;
@@ -322,11 +359,11 @@ check_base() {
 				unzip -q ${ARCHIVE}
 				;;
 			*)
-				tar -xJf ${ARCHIVE}
+				tar -xJf ${ARCHIVE} --no-same-owner
 				;;
 		esac
 		
-		case "$PLATFORM" in
+		case "$OS_PLATFORM" in
 			macos)
 				CUR=`pwd`
 				echo "Running init scripts"
@@ -564,10 +601,10 @@ build_apps() {
 		cp temp/BlitzMax/src/bcc/bcc temp/BlitzMax/bin
 
 
-	echo "Building Initial bmk"
-	if BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bmk/bmk.bmx; then
-		cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin
-	else
+#ß	echo "Building Initial bmk"
+#	if BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bmk/bmk.bmx; then
+#		cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin
+#	else
 		# initial bmk, built with new bcc and current bmk
 		echo ""
 		echo "Copying current bmk"
@@ -577,10 +614,18 @@ build_apps() {
 			cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
 
 		echo "Building Initial bmk"
-		if temp/BlitzMax/bin/bmk makeapp -r $G_OPTION -single temp/BlitzMax/src/bmk/bmk.bmx; then
+
+		if [ ! -z "$CROSS_COMPILE" ];then
+			OPTION=""
+		else
+			OPTION="$G_OPTION"
+		fi
+
+		if temp/BlitzMax/bin/bmk makeapp -r $OPTION -single temp/BlitzMax/src/bmk/bmk.bmx; then
 			retries=0
 			while [ $retries -lt 30 ]
 			do
+				rm temp/BlitzMax/bin/bmk && \
 				cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin 2>/dev/null
 				if [ $? -eq 0 ]; then
 					break
@@ -599,13 +644,49 @@ build_apps() {
 			echo "Failed to build bmk"
 			exit -1
 		fi
-	fi
+#	fi
 
 	# copy bmk resources
 	echo "Copying bmk resources"
 	cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
 		cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
 		cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
+
+	if [ ! -z "$CROSS_COMPILE" ];then
+		C_OPTION="-l $PLATFORM -single"
+		C_EXT=".exe"
+
+		echo "Applying cross-platform configuration"
+		case "$OS_PLATFORM" in
+			macos)
+				echo "
+
+				addoption path_to_ar \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-ar\"
+				addoption path_to_ld \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-ld\"
+				addoption path_to_gcc \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-gcc\"
+				addoption path_to_gpp \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-g++\"
+
+				addoption path_to_mingw_lib \"/opt/homebrew/Cellar/mingw-w64/$CC_MINGW_VERSION_MACOS/toolchain-$CC_MINGW_ARCH/$CC_MINGW_ARCH-w64-mingw32/lib\"
+				addoption path_to_mingw_lib2 \"/opt/homebrew/Cellar/mingw-w64/$CC_MINGW_VERSION_MACOS/toolchain-$CC_MINGW_ARCH/$CC_MINGW_ARCH-w64-mingw32/lib\"
+
+				" >> temp/BlitzMax/bin/custom.bmk
+
+				;;
+			linux)
+				echo "
+
+				addoption path_to_ar \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-ar\"
+				addoption path_to_ld \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-ld\"
+				addoption path_to_gcc \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-gcc\"
+				addoption path_to_gpp \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-g++\"
+
+				addoption path_to_mingw_lib \"/usr/lib/gcc/$CC_MINGW_ARCH-w64-mingw32/$CC_MINGW_VERSION_LINUX\"
+				addoption path_to_mingw_lib2 \"/usr/$CC_MINGW_ARCH-w64-mingw32/lib\"
+
+				" >> temp/BlitzMax/bin/custom.bmk
+				;;
+		esac
+	fi
 
 	case "$PLATFORM" in
 		macos)
@@ -616,38 +697,38 @@ build_apps() {
 			mv temp/BlitzMax/dist release/BlitzMax
 
 			echo "Copying bmk resources"
-			cp temp/BlitzMax/bin/core.bmk release/BlitzMax/bin && \
-			cp temp/BlitzMax/bin/custom.bmk release/BlitzMax/bin && \
-			cp temp/BlitzMax/bin/make.bmk release/BlitzMax/bin
+			cp temp/BlitzMax/src/bmk/core.bmk release/BlitzMax/bin && \
+			cp temp/BlitzMax/src/bmk/custom.bmk release/BlitzMax/bin && \
+			cp temp/BlitzMax/src/bmk/make.bmk release/BlitzMax/bin
 			;;
 		*)
 			# re-build latest bcc with latest release
 			echo "Building latest bcc"
-			temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION temp/BlitzMax/src/bcc/bcc.bmx && \
-				cp temp/BlitzMax/src/bcc/bcc release/BlitzMax/bin
+			temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION $C_OPTION temp/BlitzMax/src/bcc/bcc.bmx && \
+				cp temp/BlitzMax/src/bcc/bcc$C_EXT release/BlitzMax/bin
 
 			# build latest bmk
 			echo "Building latest bmk"
-			temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION temp/BlitzMax/src/bmk/bmk.bmx && \
-				cp temp/BlitzMax/src/bmk/bmk release/BlitzMax/bin && \
-				cp temp/BlitzMax/bin/core.bmk release/BlitzMax/bin && \
-				cp temp/BlitzMax/bin/custom.bmk release/BlitzMax/bin && \
-				cp temp/BlitzMax/bin/make.bmk release/BlitzMax/bin
+			temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION $C_OPTION temp/BlitzMax/src/bmk/bmk.bmx && \
+				cp temp/BlitzMax/src/bmk/bmk$C_EXT release/BlitzMax/bin && \
+				cp temp/BlitzMax/src/bmk/core.bmk release/BlitzMax/bin && \
+				cp temp/BlitzMax/src/bmk/custom.bmk release/BlitzMax/bin && \
+				cp temp/BlitzMax/src/bmk/make.bmk release/BlitzMax/bin
 
 			# build latest docmods
 			echo "Building docmods"
-			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/src/docmods/docmods.bmx && \
-				cp temp/BlitzMax/src/docmods/docmods release/BlitzMax/bin
+			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION $C_OPTION temp/BlitzMax/src/docmods/docmods.bmx && \
+				cp temp/BlitzMax/src/docmods/docmods$C_EXT release/BlitzMax/bin
 
 			# build latest makedocs
 			echo "Building makedocs"
-			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION temp/BlitzMax/src/makedocs/makedocs.bmx && \
-				cp temp/BlitzMax/src/makedocs/makedocs release/BlitzMax/bin
+			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION $C_OPTION temp/BlitzMax/src/makedocs/makedocs.bmx && \
+				cp temp/BlitzMax/src/makedocs/makedocs$C_EXT release/BlitzMax/bin
 
 			# build maxide
 			echo "Building maxide"
-			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION -t gui temp/BlitzMax/src/maxide/maxide.bmx && \
-				cp temp/BlitzMax/src/maxide/maxide release/BlitzMax/MaxIDE
+			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION $C_OPTION -t gui temp/BlitzMax/src/maxide/maxide.bmx && \
+				cp temp/BlitzMax/src/maxide/maxide$C_EXT release/BlitzMax/MaxIDE$C_EXT
 			;;
 	esac
 }
@@ -685,11 +766,15 @@ package() {
 			if [[ "$OPT_ARCH" == "x86x64" ]]; then
 				PACK_ARCH=""
 			fi
+			ZIP_THREADS=""
+			if [[ -z "$CROSS_COMPILE" ]]; then
+				ZIP_THREADS="-mmt4"
+			fi
 			ZIP="BlitzMax_win32${PACK_ARCH}_${WIN_VER}_${PACKAGE_VERSION}.7z"
 			echo "Creating release zip : ${ZIP}"
 
 			cd release
-			7za a -mx9 -mmt4 ../${ZIP} BlitzMax/
+			7za a -mx9 ${ZIP_THREADS} ../${ZIP} BlitzMax/
 			cd ..
 			;;
 		linux)
@@ -697,7 +782,7 @@ package() {
 			echo "Creating release zip : ${ZIP}"
 			
 			cd release
-			tar -cf ${ZIP}.tar BlitzMax
+			tar -cf ${ZIP}.tar BlitzMax --no-same-owner
 			xz -z ${ZIP}.tar
 			mv ${ZIP}.tar.xz ..
 			cd ..
