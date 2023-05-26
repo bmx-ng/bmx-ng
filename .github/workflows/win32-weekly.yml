@@ -40,7 +40,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             tag_name: ${{ steps.custom_tag.outputs.tag }}
-            release_name: "[weekly] BlitzMax Win32 (mingw) v${{ steps.custom_tag.outputs.tag }}"
+            release_name: "[weekly] BlitzMax Win32 (mingw) v${{ env.VERSION_TAG }}"
             body: |
                 BlitzMax, Windows edition, with both x86 and x64 MinGW-w64 distributions.
 
