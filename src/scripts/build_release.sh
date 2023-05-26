@@ -72,6 +72,7 @@ LLVM_MINGW="llvm-mingw-20220323-ucrt-i686"
 LLVM_MINGW_ZIP="llvm-mingw-20220323-ucrt-i686.zip"
 LLVM_MINGW_URL="https://github.com/mstorsjo/llvm-mingw/releases/download/20220323/llvm-mingw-20220323-ucrt-i686.zip"
 WIN_VER="mingw"
+TAG_FILENAME="version-tag.txt"
 
 CC_MINGW_ARCH="x86_64"
 CC_MINGW_VERSION_LINUX="10-posix"
@@ -752,6 +753,11 @@ get_version() {
   echo "Building package version $PACKAGE_VERSION"
 }
 
+write_version_tag() {
+  echo "Writing version tag"
+  echo "$PACKAGE_VERSION" > ${TAG_FILENAME}
+}
+
 package() {
 	echo "--------------------"
 	echo "-     PACKAGE      -"
@@ -895,6 +901,7 @@ if [ ! -z "$BUILD_MODULES" ]; then
 fi
 if [ ! -z "$PACKAGE_VERSION" ]; then
 	get_version
+	write_version_tag
 	package
 fi
 if [ ! -z "$BUILD_SAMPLES" ]; then
