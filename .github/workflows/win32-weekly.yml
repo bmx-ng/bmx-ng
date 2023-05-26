@@ -33,14 +33,11 @@ jobs:
           run: |
             echo "tag=v${{ env.VERSION_TAG }}.win32.mingw" >> $GITHUB_OUTPUT
 
-        - name: Create Release
-          id: create_release
-          uses: actions/create-release@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        - name: Create Release and Upload Asset
+          uses: softprops/action-gh-release@v1
           with:
             tag_name: ${{ steps.custom_tag.outputs.tag }}
-            release_name: "[weekly] BlitzMax Win32 (mingw) v${{ env.VERSION_TAG }}"
+            name: "[weekly] BlitzMax Win32 (mingw) v${{ env.VERSION_TAG }}"
             body: |
                 BlitzMax, Windows edition, with both x86 and x64 MinGW-w64 distributions.
 
@@ -51,17 +48,7 @@ jobs:
                 See the [Getting Started Guide](https://blitzmax.org/docs/en/setup/win32/) at the BlitzMax website.
 
                 *Note: This is a weekly build, and may contain bugs. Use at your own risk.*
-            draft: false
             prerelease: true
-  
-        - name: Upload Release Asset
-          id: upload-release-asset 
-          uses: actions/upload-release-asset@v1
+            files: ./build/${{ env.PACKAGE_NAME }}
           env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }} 
-            asset_path: ./build/${{ env.PACKAGE_NAME }}
-            asset_name: ${{ env.PACKAGE_NAME }}
-            asset_content_type: ${{ env.PACKAGE_MIME_TYPE }}
-  
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
