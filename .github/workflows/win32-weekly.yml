@@ -40,7 +40,17 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             tag_name: ${{ steps.custom_tag.outputs.tag }}
-            release_name: Release ${{ steps.custom_tag.outputs.tag }}
+            release_name: "[weekly] BlitzMax Win32 (mingw) v${{ steps.custom_tag.outputs.tag }}"
+            body: |
+                BlitzMax, Windows edition, with both x86 and x64 MinGW-w64 distributions.
+
+                Includes SDL backend, mojo2, Crypto, Audio, Image, Math, Net, Random, Text and Steam.
+                
+                ### Installation notes
+                
+                See the [Getting Started Guide](https://blitzmax.org/docs/en/setup/win32/) at the BlitzMax website.
+
+                *Note: This is a weekly build, and may contain bugs. Use at your own risk.*
             draft: false
             prerelease: true
   
