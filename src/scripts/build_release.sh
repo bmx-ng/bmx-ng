@@ -73,6 +73,8 @@ LLVM_MINGW_ZIP="llvm-mingw-20220323-ucrt-i686.zip"
 LLVM_MINGW_URL="https://github.com/mstorsjo/llvm-mingw/releases/download/20220323/llvm-mingw-20220323-ucrt-i686.zip"
 WIN_VER="mingw"
 TAG_FILENAME="version-tag.txt"
+PACKAGE_FILENAME="package-name.txt"
+PACKAGE_MIME_FILENAME="package-mime.txt"
 
 CC_MINGW_ARCH="x86_64"
 CC_MINGW_VERSION_LINUX="10-posix"
@@ -598,54 +600,52 @@ build_apps() {
 
 	# initial bcc, built with current release
 	echo "Building Initial bcc"
-	BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bcc/bcc.bmx && \
-		cp temp/BlitzMax/src/bcc/bcc temp/BlitzMax/bin
+	if ! BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bcc/bcc.bmx; then
+		echo "Failed to build initial bcc"
+		exit 1
+	fi
+	cp temp/BlitzMax/src/bcc/bcc temp/BlitzMax/bin
 
 
-#ß	echo "Building Initial bmk"
-#	if BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bmk/bmk.bmx; then
-#		cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin
-#	else
-		# initial bmk, built with new bcc and current bmk
-		echo ""
-		echo "Copying current bmk"
-		cp BlitzMax/bin/bmk temp/BlitzMax/bin && \
-			cp BlitzMax/bin/core.bmk temp/BlitzMax/bin && \
-			cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
-			cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
+	# initial bmk, built with new bcc and current bmk
+	echo ""
+	echo "Copying current bmk"
+	cp BlitzMax/bin/bmk temp/BlitzMax/bin && \
+		cp BlitzMax/bin/core.bmk temp/BlitzMax/bin && \
+		cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
+		cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
 
-		echo "Building Initial bmk"
+	echo "Building Initial bmk"
 
-		if [ ! -z "$CROSS_COMPILE" ];then
-			OPTION=""
-		else
-			OPTION="$G_OPTION"
-		fi
+	if [ ! -z "$CROSS_COMPILE" ];then
+		OPTION=""
+	else
+		OPTION="$G_OPTION"
+	fi
 
-		if temp/BlitzMax/bin/bmk makeapp -r $OPTION -single temp/BlitzMax/src/bmk/bmk.bmx; then
-			retries=0
-			while [ $retries -lt 30 ]
-			do
-				rm temp/BlitzMax/bin/bmk && \
-				cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin 2>/dev/null
-				if [ $? -eq 0 ]; then
-					break
-				else
-					echo "bmk is busy... Attempt $((retries + 1))"
-					sleep 1
-					retries=$((retries + 1))
-				fi
-			done
-			if [ $retries -eq 30 ]; then
-				echo "bmk still busy after 30 seconds. Exiting..."
-				exit -1
+	if temp/BlitzMax/bin/bmk makeapp -r $OPTION -single temp/BlitzMax/src/bmk/bmk.bmx; then
+		retries=0
+		while [ $retries -lt 30 ]
+		do
+			rm temp/BlitzMax/bin/bmk && \
+			cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin 2>/dev/null
+			if [ $? -eq 0 ]; then
+				break
+			else
+				echo "bmk is busy... Attempt $((retries + 1))"
+				sleep 1
+				retries=$((retries + 1))
 			fi
-		else
-			echo ""
-			echo "Failed to build bmk"
+		done
+		if [ $retries -eq 30 ]; then
+			echo "bmk still busy after 30 seconds. Exiting..."
 			exit -1
 		fi
-#	fi
+	else
+		echo ""
+		echo "Failed to build bmk"
+		exit -1
+	fi
 
 	# copy bmk resources
 	echo "Copying bmk resources"
@@ -692,7 +692,11 @@ build_apps() {
 	case "$PLATFORM" in
 		macos)
 			echo "Creating bootstrap"
-			temp/BlitzMax/bin/bmk makebootstrap -a -r
+			if ! temp/BlitzMax/bin/bmk makebootstrap -a -r; then
+				echo ""
+				echo "Failed to build bootstrap"
+				exit -1
+			fi
 			
 			echo "Copying bootstrap to release"
 			mv temp/BlitzMax/dist release/BlitzMax
@@ -705,31 +709,51 @@ build_apps() {
 		*)
 			# re-build latest bcc with latest release
 			echo "Building latest bcc"
-			temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION $C_OPTION temp/BlitzMax/src/bcc/bcc.bmx && \
-				cp temp/BlitzMax/src/bcc/bcc$C_EXT release/BlitzMax/bin
+			if ! temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION $C_OPTION temp/BlitzMax/src/bcc/bcc.bmx; then
+				echo ""
+				echo "Failed to build latest bcc"
+				exit -1
+			fi
+			cp temp/BlitzMax/src/bcc/bcc$C_EXT release/BlitzMax/bin
 
 			# build latest bmk
 			echo "Building latest bmk"
-			temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION $C_OPTION temp/BlitzMax/src/bmk/bmk.bmx && \
-				cp temp/BlitzMax/src/bmk/bmk$C_EXT release/BlitzMax/bin && \
-				cp temp/BlitzMax/src/bmk/core.bmk release/BlitzMax/bin && \
-				cp temp/BlitzMax/src/bmk/custom.bmk release/BlitzMax/bin && \
-				cp temp/BlitzMax/src/bmk/make.bmk release/BlitzMax/bin
+			if ! temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION $C_OPTION temp/BlitzMax/src/bmk/bmk.bmx; then
+				echo ""
+				echo "Failed to build latest bmk"
+				exit -1
+			fi
+			cp temp/BlitzMax/src/bmk/bmk$C_EXT release/BlitzMax/bin && \
+			cp temp/BlitzMax/src/bmk/core.bmk release/BlitzMax/bin && \
+			cp temp/BlitzMax/src/bmk/custom.bmk release/BlitzMax/bin && \
+			cp temp/BlitzMax/src/bmk/make.bmk release/BlitzMax/bin
 
 			# build latest docmods
 			echo "Building docmods"
-			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION $C_OPTION temp/BlitzMax/src/docmods/docmods.bmx && \
-				cp temp/BlitzMax/src/docmods/docmods$C_EXT release/BlitzMax/bin
+			if ! temp/BlitzMax/bin/bmk makeapp -r $G_OPTION $C_OPTION temp/BlitzMax/src/docmods/docmods.bmx; then
+				echo ""
+				echo "Failed to build docmods"
+				exit -1
+			fi
+			cp temp/BlitzMax/src/docmods/docmods$C_EXT release/BlitzMax/bin
 
 			# build latest makedocs
 			echo "Building makedocs"
-			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION $C_OPTION temp/BlitzMax/src/makedocs/makedocs.bmx && \
-				cp temp/BlitzMax/src/makedocs/makedocs$C_EXT release/BlitzMax/bin
+			if ! temp/BlitzMax/bin/bmk makeapp -r $G_OPTION $C_OPTION temp/BlitzMax/src/makedocs/makedocs.bmx; then
+				echo ""
+				echo "Failed to build makedocs"
+				exit -1
+			fi
+			cp temp/BlitzMax/src/makedocs/makedocs$C_EXT release/BlitzMax/bin
 
 			# build maxide
 			echo "Building maxide"
-			temp/BlitzMax/bin/bmk makeapp -r $G_OPTION $C_OPTION -t gui temp/BlitzMax/src/maxide/maxide.bmx && \
-				cp temp/BlitzMax/src/maxide/maxide$C_EXT release/BlitzMax/MaxIDE$C_EXT
+			if ! temp/BlitzMax/bin/bmk makeapp -r $G_OPTION $C_OPTION -t gui temp/BlitzMax/src/maxide/maxide.bmx; then
+				echo ""
+				echo "Failed to build maxide"
+				exit -1
+			fi
+			cp temp/BlitzMax/src/maxide/maxide$C_EXT release/BlitzMax/MaxIDE$C_EXT
 			;;
 	esac
 }
@@ -754,7 +778,7 @@ get_version() {
 }
 
 write_version_tag() {
-  echo "Writing version tag"
+  echo "Writing version tag to ${TAG_FILENAME}"
   echo "$PACKAGE_VERSION" > ${TAG_FILENAME}
 }
 
@@ -766,6 +790,9 @@ package() {
 	echo "Cleanup"
 	rm -f release/BlitzMax/mod/image.mod/raw.mod/examples/gh2.rw2
 
+	Z_SUFFIX=""
+	PACKAGE_MIME_TYPE=""
+
 	case "$PLATFORM" in
 		win32)
 			PACK_ARCH="_$OPT_ARCH"
@@ -776,16 +803,20 @@ package() {
 			if [[ -z "$CROSS_COMPILE" ]]; then
 				ZIP_THREADS="-mmt4"
 			fi
-			ZIP="BlitzMax_win32${PACK_ARCH}_${WIN_VER}_${PACKAGE_VERSION}.7z"
-			echo "Creating release zip : ${ZIP}"
+			ZIP="BlitzMax_win32${PACK_ARCH}_${WIN_VER}_${PACKAGE_VERSION}"
+			Z_SUFFIX=".7z"
+			PACKAGE_MIME_TYPE="application/x-7z-compressed"
+			echo "Creating release zip : ${ZIP}${Z_SUFFIX}"
 
 			cd release
-			7za a -mx9 ${ZIP_THREADS} ../${ZIP} BlitzMax/
+			7za a -mx9 ${ZIP_THREADS} ../${ZIP}${Z_SUFFIX} BlitzMax/
 			cd ..
 			;;
 		linux)
 			ZIP="BlitzMax_linux_${OPT_ARCH}_${PACKAGE_VERSION}"
-			echo "Creating release zip : ${ZIP}"
+			Z_SUFFIX=".tar.xz"
+			PACKAGE_MIME_TYPE="application/x-xz"
+			echo "Creating release zip : ${ZIP}${Z_SUFFIX}"
 			
 			cd release
 			tar -cf ${ZIP}.tar BlitzMax --no-same-owner
@@ -795,6 +826,8 @@ package() {
 			;;
 		rpi)
 			ZIP="BlitzMax_rpi_${OPT_ARCH}_${PACKAGE_VERSION}"
+			Z_SUFFIX=".tar.xz"
+			PACKAGE_MIME_TYPE="application/x-xz"
 			echo "Creating release zip : ${ZIP}"
 			
 			cd release
@@ -805,14 +838,21 @@ package() {
 			;;
 		macos)
 			ZIP="BlitzMax_macos_${OPT_ARCH}_${PACKAGE_VERSION}"
-			echo "Creating release zip : ${ZIP}"
+			Z_SUFFIX=".zip"
+			PACKAGE_MIME_TYPE="application/zip"
+			echo "Creating release zip : ${ZIP}${Z_SUFFIX}"
 			
 			cd release
-			zip -9 -r -q ${ZIP}.zip BlitzMax
-			mv ${ZIP}.zip ..
+			zip -9 -r -q ${ZIP}${Z_SUFFIX} BlitzMax
+			mv ${ZIP}${Z_SUFFIX} ..
 			cd ..
 			;;
 	esac
+
+	echo "Writing package filename to ${PACKAGE_FILENAME}"
+  	echo "${ZIP}${Z_SUFFIX}" > ${PACKAGE_FILENAME}
+	echo "Writing package mime type to ${PACKAGE_MIME_FILENAME}"
+  	echo "${PACKAGE_MIME_TYPE}" > ${PACKAGE_MIME_FILENAME}
 }
 
 build_modules() {
