@@ -10,7 +10,7 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - name: Checkout code
-          uses: actions/checkout@v2
+          uses: actions/checkout@v3
   
         - name: Build Docker image
           run: |
@@ -31,8 +31,8 @@ jobs:
         - name: Set custom tag
           id: custom_tag
           run: |
-            echo "::set-output name=tag::v${{ env.VERSION_TAG }}.win32.mingw"
-  
+            echo "tag=v${{ env.VERSION_TAG }}.win32.mingw" >> $GITHUB_OUTPUT
+
         - name: Create Release
           id: create_release
           uses: actions/create-release@v1
