@@ -19,7 +19,8 @@ jobs:
         - name: Run build script in Docker
           run: |
             mkdir -p build
-            docker run -v $GITHUB_WORKSPACE/build:/build -w /build blitzmax_win32_cross_compile src/scripts/build_release.sh -l win32 -a x86x64 -b 0.129.3.45 -r x64 -p -t
+            cp src/scripts/build_release.sh build
+            docker run -v $GITHUB_WORKSPACE/build:/build -w /build blitzmax_win32_cross_compile ./build_release.sh -l win32 -a x86x64 -b 0.129.3.45 -r x64 -p -t
   
         - name: Set version as env variable
           run: echo "VERSION_TAG=$(cat version-tag.txt)" >> $GITHUB_ENV
