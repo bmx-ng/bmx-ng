@@ -1,4 +1,4 @@
-name: macOS Weekly
+name: macOS x64 Weekly
 
 on: 
   schedule:
