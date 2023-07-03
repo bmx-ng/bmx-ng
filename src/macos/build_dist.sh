@@ -1,10 +1,10 @@
 cd dist/bootstrap/src/bmk
-source bmk.console.release.macos.x64.build
+source bmk.console.release.macos.ARCH.build
 cd ../../../..
 mv dist/bootstrap/src/bmk/bmk bin
 
 cd dist/bootstrap/src/bcc
-source bcc.console.release.macos.x64.build
+source bcc.console.release.macos.ARCH.build
 cd ../../../..
 mv dist/bootstrap/src/bcc/bcc bin
 
