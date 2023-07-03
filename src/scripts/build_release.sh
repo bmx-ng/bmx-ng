@@ -583,6 +583,8 @@ prepare() {
 			echo "Copying scripts"
 			cp release/BlitzMax/src/macos/build_dist.sh release/BlitzMax
 			cp release/BlitzMax/src/macos/run_me_first.command release/BlitzMax
+			echo "Configuring script for $ARCH"
+			sed -i "" "s/ARCH/$ARCH/g" release/BlitzMax/build_dist.sh
 			;;
 		esac
 	
