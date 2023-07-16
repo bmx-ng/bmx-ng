@@ -1,0 +1,58 @@
+name: RaspberryPi Weekly
+
+on: 
+  schedule:
+    - cron: '55 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        - name: Install QEMU
+          uses: docker/setup-qemu-action@v2
+    
+        - name: Build Docker image
+          run: |
+            docker build --platform linux/arm/v7 -t blitzmax_rpi_cross_compile -f src/scripts/Dockerfile.rpi .
+  
+        - name: Run build script in Docker
+          run: |
+            mkdir -p build
+            cp src/scripts/build_release.sh build
+            docker run -v $GITHUB_WORKSPACE/build:/build -w /build blitzmax_rpi_cross_compile ./build_release.sh -b 0.138.3.54 -a arm -r arm -l rpi -p -t -o
+  
+        - name: Populate env variables
+          run: |
+            echo "VERSION_TAG=$(cat build/version-tag.txt)" >> $GITHUB_ENV
+            echo "PACKAGE_NAME=$(cat build/package-name.txt)" >> $GITHUB_ENV
+            echo "PACKAGE_MIME_TYPE=$(cat build/package-mime.txt)" >> $GITHUB_ENV
+
+        - name: Set custom tag
+          id: custom_tag
+          run: |
+            echo "tag=v${{ env.VERSION_TAG }}.rpi.arm" >> $GITHUB_OUTPUT
+
+        - name: Create Release and Upload Asset
+          uses: softprops/action-gh-release@v1
+          with:
+            tag_name: ${{ steps.custom_tag.outputs.tag }}
+            name: "[weekly] BlitzMax RaspberryPi arm v${{ env.VERSION_TAG }}"
+            body: |
+                BlitzMax, RaspberryPi edition, aimed at 32-bit ARM development, with MaxIDE.
+
+                Includes SDL backend, mojo2, Crypto, Audio, Image, Math, Net, Random, Text and Gtk MaxGUI.
+                
+                ### Installation notes
+                
+                See the [Getting Started Guide](https://blitzmax.org/docs/en/setup/rpi/) at the BlitzMax website.
+
+                *Note: This is a weekly build, and may contain bugs. Use at your own risk.*
+            prerelease: true
+            files: ./build/${{ env.PACKAGE_NAME }}
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  

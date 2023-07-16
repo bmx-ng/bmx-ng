@@ -24,6 +24,7 @@ usage() {
 	echo "    -l <platform>: Platform. win32, macos, linux, rpi"
 	echo "    -w <version> : Windows compiler version. e.g. mingw or llvm. Defaults to mingw"
 	echo "    -t           : Apply additional timestamp to version."
+	echo "    -o           : Build bootstrap."
 	echo "    -p           : Create a release package."
 	echo "    -c           : Don't clean dirs."
 	echo "    -m           : Build all modules."
@@ -62,6 +63,7 @@ RELEASE_URL="https://github.com/bmx-ng/bmx-ng/releases/download/"
 CLEAN_DIRS="y"
 CLEAN_ZIPS=""
 BUILD_SAMPLES=""
+BUILD_BOOTSTRAP=""
 PACKAGE_VERSION=""
 USE_TIMESTAMP=""
 MINGW_X86="i686-12.2.0-release-posix-dwarf-rt_v10-rev1.7z"
@@ -84,7 +86,7 @@ PLATFORMS=("win32" "linux" "rpi" "macos")
 WIN_MINGW_ARCH=("x86" "x64" "x86x64")
 WIN_LLVM_ARCH=("x86" "x64" "arm" "arm64")
 MACOS_ARCH=("x64" "arm64")
-LINUX_ARCH=("x86" "x64" "arm64" "riscv64")
+LINUX_ARCH=("x86" "x64" "arm" "arm64" "riscv64")
 RPI_ARCH=("arm" "arm64")
 WIN_VERS=("mingw" "llvm")
 
@@ -144,11 +146,15 @@ validate_arch() {
 }
 
 raspi_test() {
-	PI=$( cat /proc/device-tree/model )
+	PI=$(cat /proc/device-tree/model | tr -d '\0')
 
 	if [[ $PI == Rasp* ]]; then
 		OS_PLATFORM="rpi"
-		ARCH=""
+		if [[ $ARCH == "armv7l" ]]; then
+			ARCH="arm"
+		else
+			ARCH=""
+		fi
 	fi
 }
 
@@ -227,7 +233,7 @@ init() {
 	fi
 
     if [ "$OS_PLATFORM" != "$PLATFORM" ];then
-		if [ "$PLATFORM" != "win32" ]; then
+		if [ "$PLATFORM" != "win32" ] && [ "$PLATFORM" != "rpi" ]; then
 			echo "Error: Cannot cross-compile to $PLATFORM on $OS_PLATFORM"
 			exit 1
 		else
@@ -246,6 +252,9 @@ init() {
     fi
 	echo "System Arch     : " $ARCH
 	echo "Source Arch     : " $SRC_ARCH
+	if [ ! -z "$BUILD_BOOTSTRAP" ]; then
+		echo "Gen bootstrap   :  enabled"
+	fi
 }
 
 clean_dirs() {
@@ -313,20 +322,26 @@ check_base() {
 
 		DOWNLOAD_URL_ARCH=".${SRC_ARCH}"
 		ARCHIVE_ARCH="${SRC_ARCH}_"
-		case "$OS_PLATFORM" in
+		PLAT=$OS_PLATFORM
+		case "$PLAT" in
 			win32)
 				if [[ "$OPT_ARCH" == "x86x64" ]]; then
 					DOWNLOAD_URL_ARCH=""
 					ARCHIVE_ARCH=""
 				fi
 				;;
+			linux)
+				if [ ! -z "$CROSS_COMPILE" ] && [ "$OS_PLATFORM" == "linux" ] && [ "$SRC_ARCH" == "arm" ]; then
+					PLAT="rpi"
+				fi
+				;;
 		esac
 
 		SUFFIX=".tar.xz"
-		URL="${RELEASE_URL}v${BUILD_VERSION}.${OS_PLATFORM}${DOWNLOAD_URL_ARCH}/"
-		ARCHIVE="BlitzMax_${OS_PLATFORM}_"
+		URL="${RELEASE_URL}v${BUILD_VERSION}.${PLAT}${DOWNLOAD_URL_ARCH}/"
+		ARCHIVE="BlitzMax_${PLAT}_"
 
-		case "$OS_PLATFORM" in
+		case "$PLAT" in
 			win32)
 				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}"
 				SUFFIX=".7z"
@@ -334,7 +349,9 @@ check_base() {
 			linux)
 				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}"
 				;;
-			rpi) ;;
+			rpi) 
+				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}"
+				;;
 			macos)
 				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}"
 				SUFFIX=".zip"
@@ -600,95 +617,153 @@ build_apps() {
 		G_OPTION="-g $ARCH"
 	fi
 
-	# initial bcc, built with current release
-	echo "Building Initial bcc"
-	if ! BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bcc/bcc.bmx; then
-		echo "Failed to build initial bcc"
-		exit 1
+	# detect bootstrap
+	if [ -d BlitzMax/dist/bootstrap ]; then
+
+		PLAT=$PLATFORM
+		case "$PLATFORM" in
+			rpi) 
+				PLAT="raspberrypi"
+				;;
+		esac
+
+		BCC_BUILD="bcc.console.release.${PLAT}.${ARCH}.build"
+		BMK_BUILD="bmk.console.release.${PLAT}.${ARCH}.build"
+
+		if [ -f "BlitzMax/dist/bootstrap/src/bcc/$BCC_BUILD" ]; then
+			echo "Bootstrap detected"
+			USING_BOOTSTRAP="y"
+
+			CUR=`pwd`
+			cd BlitzMax/dist/bootstrap/src/bcc
+
+			echo "Building bootstrap bcc"
+			source "$BCC_BUILD"
+
+			cd "$CUR"
+
+			cp BlitzMax/dist/bootstrap/src/bcc/bcc temp/BlitzMax/bin
+
+			cd BlitzMax/dist/bootstrap/src/bmk
+
+			echo "Building bootstrap bmk"
+			source "$BMK_BUILD"
+
+			cd "$CUR"
+
+			cp BlitzMax/dist/bootstrap/src/bmk/bmk temp/BlitzMax/bin
+
+			# bootstrap bmk resources
+			echo ""
+			echo "Copying bootstrap bmk resources"
+			cp BlitzMax/bin/core.bmk temp/BlitzMax/bin && \
+				cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
+				cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
+		fi
 	fi
-	cp temp/BlitzMax/src/bcc/bcc temp/BlitzMax/bin
+
+	if [ -z "$USING_BOOTSTRAP" ]; then
+
+		# initial bcc, built with current release
+		echo "Building Initial bcc"
+		if ! BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bcc/bcc.bmx; then
+			echo "Failed to build initial bcc"
+			exit 1
+		fi
+		cp temp/BlitzMax/src/bcc/bcc temp/BlitzMax/bin
 
 
-	# initial bmk, built with new bcc and current bmk
-	echo ""
-	echo "Copying current bmk"
-	cp BlitzMax/bin/bmk temp/BlitzMax/bin && \
-		cp BlitzMax/bin/core.bmk temp/BlitzMax/bin && \
-		cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
-		cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
+		# initial bmk, built with new bcc and current bmk
+		echo ""
+		echo "Copying current bmk"
+		cp BlitzMax/bin/bmk temp/BlitzMax/bin && \
+			cp BlitzMax/bin/core.bmk temp/BlitzMax/bin && \
+			cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
+			cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
 
-	echo "Building Initial bmk"
+		echo "Building Initial bmk"
 
-	if [ ! -z "$CROSS_COMPILE" ];then
-		OPTION=""
-	else
-		OPTION="$G_OPTION"
-	fi
+		if [ ! -z "$CROSS_COMPILE" ];then
+			OPTION=""
+		else
+			OPTION="$G_OPTION"
+		fi
 
-	if temp/BlitzMax/bin/bmk makeapp -r $OPTION -single temp/BlitzMax/src/bmk/bmk.bmx; then
-		retries=0
-		while [ $retries -lt 30 ]
-		do
-			rm temp/BlitzMax/bin/bmk && \
-			cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin 2>/dev/null
-			if [ $? -eq 0 ]; then
-				break
-			else
-				echo "bmk is busy... Attempt $((retries + 1))"
-				sleep 1
-				retries=$((retries + 1))
+		if temp/BlitzMax/bin/bmk makeapp -r $OPTION -single temp/BlitzMax/src/bmk/bmk.bmx; then
+			retries=0
+			while [ $retries -lt 30 ]
+			do
+				rm temp/BlitzMax/bin/bmk && \
+				cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin 2>/dev/null
+				if [ $? -eq 0 ]; then
+					break
+				else
+					echo "bmk is busy... Attempt $((retries + 1))"
+					sleep 1
+					retries=$((retries + 1))
+				fi
+			done
+			if [ $retries -eq 30 ]; then
+				echo "bmk still busy after 30 seconds. Exiting..."
+				exit -1
 			fi
-		done
-		if [ $retries -eq 30 ]; then
-			echo "bmk still busy after 30 seconds. Exiting..."
+		else
+			echo ""
+			echo "Failed to build bmk"
 			exit -1
 		fi
-	else
-		echo ""
-		echo "Failed to build bmk"
-		exit -1
+
+		# copy bmk resources
+		echo "Copying bmk resources"
+		cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
+			cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
+			cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
 	fi
 
-	# copy bmk resources
-	echo "Copying bmk resources"
-	cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
-		cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
-		cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
-
 	if [ ! -z "$CROSS_COMPILE" ];then
-		C_OPTION="-l $PLATFORM -single"
-		C_EXT=".exe"
 
-		echo "Applying cross-platform configuration"
-		case "$OS_PLATFORM" in
-			macos)
-				echo "
+		case "$PLATFORM" in
+			win32)
+			
+				C_OPTION="-l $PLATFORM -single"
+				C_EXT=".exe"
 
-				addoption path_to_ar \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-ar\"
-				addoption path_to_ld \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-ld\"
-				addoption path_to_gcc \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-gcc\"
-				addoption path_to_gpp \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-g++\"
-				addoption path_to_windres \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-windres\"
+				echo "Applying cross-platform configuration"
+				case "$OS_PLATFORM" in
+					macos)
+						echo "
 
-				addoption path_to_mingw_lib \"/opt/homebrew/Cellar/mingw-w64/$CC_MINGW_VERSION_MACOS/toolchain-$CC_MINGW_ARCH/$CC_MINGW_ARCH-w64-mingw32/lib\"
-				addoption path_to_mingw_lib2 \"/opt/homebrew/Cellar/mingw-w64/$CC_MINGW_VERSION_MACOS/toolchain-$CC_MINGW_ARCH/$CC_MINGW_ARCH-w64-mingw32/lib\"
+						addoption path_to_ar \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-ar\"
+						addoption path_to_ld \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-ld\"
+						addoption path_to_gcc \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-gcc\"
+						addoption path_to_gpp \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-g++\"
+						addoption path_to_windres \"/opt/homebrew/bin/$CC_MINGW_ARCH-w64-mingw32-windres\"
 
-				" >> temp/BlitzMax/bin/custom.bmk
+						addoption path_to_mingw_lib \"/opt/homebrew/Cellar/mingw-w64/$CC_MINGW_VERSION_MACOS/toolchain-$CC_MINGW_ARCH/$CC_MINGW_ARCH-w64-mingw32/lib\"
+						addoption path_to_mingw_lib2 \"/opt/homebrew/Cellar/mingw-w64/$CC_MINGW_VERSION_MACOS/toolchain-$CC_MINGW_ARCH/$CC_MINGW_ARCH-w64-mingw32/lib\"
 
+						" >> temp/BlitzMax/bin/custom.bmk
+
+						;;
+					linux)
+						echo "
+
+						addoption path_to_ar \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-ar\"
+						addoption path_to_ld \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-ld\"
+						addoption path_to_gcc \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-gcc\"
+						addoption path_to_gpp \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-g++\"
+						addoption path_to_windres \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-windres\"
+
+						addoption path_to_mingw_lib \"/usr/lib/gcc/$CC_MINGW_ARCH-w64-mingw32/$CC_MINGW_VERSION_LINUX\"
+						addoption path_to_mingw_lib2 \"/usr/$CC_MINGW_ARCH-w64-mingw32/lib\"
+
+						" >> temp/BlitzMax/bin/custom.bmk
+						;;
+				esac
 				;;
-			linux)
-				echo "
-
-				addoption path_to_ar \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-ar\"
-				addoption path_to_ld \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-ld\"
-				addoption path_to_gcc \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-gcc\"
-				addoption path_to_gpp \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-g++\"
-				addoption path_to_windres \"/usr/bin/$CC_MINGW_ARCH-w64-mingw32-windres\"
-
-				addoption path_to_mingw_lib \"/usr/lib/gcc/$CC_MINGW_ARCH-w64-mingw32/$CC_MINGW_VERSION_LINUX\"
-				addoption path_to_mingw_lib2 \"/usr/$CC_MINGW_ARCH-w64-mingw32/lib\"
-
-				" >> temp/BlitzMax/bin/custom.bmk
+			rpi)
+				C_OPTION="-l raspberrypi -single"
+				C_EXT=""
 				;;
 		esac
 	fi
@@ -731,6 +806,30 @@ build_apps() {
 			cp temp/BlitzMax/src/bmk/core.bmk release/BlitzMax/bin && \
 			cp temp/BlitzMax/src/bmk/custom.bmk release/BlitzMax/bin && \
 			cp temp/BlitzMax/src/bmk/make.bmk release/BlitzMax/bin
+
+			# build bootstrap
+			if [ ! -z "$BUILD_BOOTSTRAP" ];then
+				echo "Configuring bootstrap"
+				cp temp/BlitzMax/src/bootstrap/bootstrap.cfg temp/BlitzMax/bin
+
+				PLAT=$PLATFORM
+
+				case "$PLATFORM" in
+					rpi) 
+						PLAT="raspberrypi"
+						;;
+				esac
+
+				echo -e "\nt\t${PLAT}\t${ARCH}\n" >> temp/BlitzMax/bin/bootstrap.cfg
+
+				echo "Building bootstrap"
+				if ! temp/BlitzMax/bin/bmk makebootstrap; then
+					echo ""
+					echo "Failed to build bootstrap"
+					exit -1
+				fi
+				mv temp/BlitzMax/dist release/BlitzMax
+			fi
 
 			# build latest docmods
 			echo "Building docmods"
@@ -889,7 +988,7 @@ build_samples() {
 }
 
 
-while getopts ":a:b:w:r:l:pcfmszt" options; do
+while getopts ":a:b:w:r:l:pcfmszto" options; do
 	case "${options}" in
 		a)
 			OPT_ARCH=${OPTARG}
@@ -923,6 +1022,9 @@ while getopts ":a:b:w:r:l:pcfmszt" options; do
 			;;
 		l)
 			PLATFORM=${OPTARG}
+			;;
+		o)
+			BUILD_BOOTSTRAP="y"
 			;;
 		:)
 			echo "Error: -${OPTARG} requires an argument."
