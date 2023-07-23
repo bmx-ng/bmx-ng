@@ -630,6 +630,25 @@ build_apps() {
 		BCC_BUILD="bcc.console.release.${PLAT}.${ARCH}.build"
 		BMK_BUILD="bmk.console.release.${PLAT}.${ARCH}.build"
 
+		# detect macos bootstrap build
+		case "$PLATFORM" in
+			macos)
+				# try the other arch
+				if [ ! -f "BlitzMax/dist/bootstrap/src/bcc/$BCC_BUILD" ]; then
+					case "$ARCH" in 
+						arm64)
+							BCC_BUILD="bcc.console.release.macos.x64.build"
+							BMK_BUILD="bmk.console.release.macos.x64.build"
+							;;
+						x64)
+							BCC_BUILD="bcc.console.release.macos.arm64.build"
+							BMK_BUILD="bmk.console.release.macos.arm64.build"
+							;;
+					esac
+				fi
+				;;
+		esac
+
 		if [ -f "BlitzMax/dist/bootstrap/src/bcc/$BCC_BUILD" ]; then
 			echo "Bootstrap detected"
 			USING_BOOTSTRAP="y"
