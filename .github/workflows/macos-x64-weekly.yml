@@ -17,7 +17,7 @@ jobs:
             mkdir -p build
             cp src/scripts/build_release.sh build
             cd build
-            ./build_release.sh -b 0.136.3.49 -p -t -r x64 -a x64
+            ./build_release.sh -b 0.138.3.54 -p -t -r x64 -a x64
             cd ..
   
         - name: Populate env variables
