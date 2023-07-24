@@ -44,7 +44,7 @@ jobs:
             body: |
                 BlitzMax, RaspberryPi edition, aimed at 32-bit ARM development, with MaxIDE.
 
-                Includes SDL backend, mojo2, Crypto, Audio, Image, Math, Net, Random, Text and Gtk MaxGUI.
+                Includes SDL backend, mojo2, Crypto, Audio, Archive, Image, Math, Net, Random, Text and Gtk MaxGUI.
                 
                 ### Installation notes
                 

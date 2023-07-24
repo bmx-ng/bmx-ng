@@ -39,7 +39,7 @@ jobs:
             body: |
                 BlitzMax, x64 macOS edition.
 
-                Includes SDL backend, mojo2, Crypto, Audio, Image, Math, Random, Net, Text, Steam.
+                Includes SDL backend, mojo2, Crypto, Audio, Archive, Image, Math, Random, Net, Text, Steam.
                 
                 ## Installing
                 
