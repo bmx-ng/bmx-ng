@@ -1,5 +1,5 @@
-# Use Ubuntu 22.10 as base image
-FROM ubuntu:22.10
+# Use Ubuntu 22.04 LTS as base image
+FROM ubuntu:22.04
 
 # Install necessary build tools
 RUN apt-get update && apt-get install -y \
