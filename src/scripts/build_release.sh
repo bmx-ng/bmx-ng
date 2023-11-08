@@ -331,8 +331,10 @@ check_base() {
 				fi
 				;;
 			linux)
-				if [ ! -z "$CROSS_COMPILE" ] && [ "$OS_PLATFORM" == "linux" ] && [ "$SRC_ARCH" == "arm" ]; then
-					PLAT="rpi"
+				if [ ! -z "$CROSS_COMPILE" ] && [ "$OS_PLATFORM" == "linux" ]; then
+					if [ "$SRC_ARCH" == "arm" ] || [ "$SRC_ARCH" == "arm64" ]; then
+						PLAT="rpi"
+					fi
 				fi
 				;;
 		esac
