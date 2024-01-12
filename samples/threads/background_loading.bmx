@@ -7,6 +7,7 @@ Framework SDL.gl2sdlmax2d
 ?
 Import brl.pngloader
 Import brl.map
+Import brl.threads
 
 ' -----------------------------------------------------------------------------
 ' MAKE SURE "Threaded Build" IS CHECKED IN THE Program -> Build Options menu!
