@@ -384,6 +384,8 @@ Type TBmxToker
 		kw "final",T_FINAL
 		kw "module",T_MODULE
 		kw "moduleinfo",T_MODULEINFO
+		kw "struct",T_TYPE
+		kw "endstruct",T_ENDTYPE
 	End Function	
 	
 	Function Create:TBmxToker( url:Object )
