@@ -1,10 +1,6 @@
 SuperStrict
 
-?win32
-Framework SDL.d3d9sdlmax2d
-?Not win32
-Framework SDL.gl2sdlmax2d
-?
+Framework SDL.SDLRenderMax2d
 Import brl.Random
 
 ' Global variables tracking number of Firework objects and

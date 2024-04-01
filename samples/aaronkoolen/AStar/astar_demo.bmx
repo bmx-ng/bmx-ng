@@ -1,4 +1,4 @@
-Strict
+SuperStrict
 '
 ' Simple demo program of an astar path finding algorithm
 ' The GUI is pretty crappy
@@ -21,10 +21,10 @@ End
 Private
 ' Small class that encapsulates a position on the map
 Type MapPos
-	Method isAtPos(otherX, otherY)
+	Method isAtPos:Int(otherX:Int, otherY:Int)
 		Return otherX = x And otherY = y
 	End Method
-	Field x,y
+	Field x:Int,y:Int
 End Type
 
 
@@ -34,7 +34,7 @@ Type Terrain
 		_weight = weight
 		_image = LoadImage(filename)
 	End Method
-	Field _colour_r,_color_g,_color_b
+	Field _colour_r:Int,_color_g:Int,_color_b:Int
 	Field _weight:Int
 	Field _image:TImage
 End Type
@@ -56,10 +56,10 @@ Type AStarDemo
 	Field nodeMap:AStarNode[mapWidth, mapHeight]
 	Field startPos:MapPos
 	Field endPos:MapPos
-	Field currentMap = 0
+	Field currentMap:Int = 0
 
 ' Terrain information
-	Const numTerrainTypes = 4
+	Const numTerrainTypes:Int= 4
 	Field terrainFilenames:String[] = [ "road.png", "mountain.png", "water.png", "tree.png" ]
 	Field terrainWeights:Int[] = [ 1, -1, 4, 2 ]
 	Field terrains:Terrain[numTerrainTypes]
@@ -69,14 +69,14 @@ Type AStarDemo
 
 ' Path finding stuff
 ' Distance
-	Const numDistanceFunctions = 4	
+	Const numDistanceFunctions:Int = 4	
 ' Is there a DATA like statement in Blitz?
 	Field distanceNames:String[] = [ 	"(D) Euclidean Sqr(dx*dx+dy*dy)", ..
 									 	"(D) Pseudo Euclidean dx*dx+dy*dy", ..
 										"(D) Manhatten dx+dy", ..
 										"(D) Diagonal Shortcut dx>dy ? 1.4*dy + (dx-dy) : 1.4*dx + (dy-dx)" ]
 
-	Field distanceFunction = AStarGraphWalker.distanceEuclidean	
+	Field distanceFunction:Int = AStarGraphWalker.distanceEuclidean	
 
 ' Whether we're allowed to chage the costs with the "Q" and "W" keys
 	Field costChangeAllowed:Int 	= 0
@@ -156,8 +156,8 @@ Type AStarDemo
 
 			Local m:Int = MouseDown(1)
 
-			Local blockX = MouseX() / blockWidth
-			Local blockY = MouseY() / blockHeight
+			Local blockX:Int = MouseX() / blockWidth
+			Local blockY:Int = MouseY() / blockHeight
 
 			If m
 				handleMouseDown(blockX, blockY)
@@ -189,7 +189,7 @@ Type AStarDemo
 
 	Method processIncreaseTerrainCost()
 		If KeyHit(KEY_W)
-			Local t
+			Local t:Int
 			For t = 0 To numTerrainTypes - 1
 				terrains[t]._weight = terrains[t]._weight * 5
 			Next
@@ -200,7 +200,7 @@ Type AStarDemo
 
 	Method processDecreaseTerrainCost()
 		If KeyHit(KEY_Q) And costChangeAllowed > 0
-			Local t
+			Local t:Int
 			For t = 0 To numTerrainTypes - 1
 				terrains[t]._weight = terrains[t]._weight / 5
 			Next
@@ -280,7 +280,7 @@ Type AStarDemo
 	End Method
 
 ' Use this to change a map block while editing, so that redraws are sped up
-	Method setMapBlock(blockX, blockY, block)
+	Method setMapBlock(blockX:Int, blockY:Int, block:Int)
 		map[blockX, blockY] = block
 	End Method
 
@@ -302,7 +302,7 @@ Type AStarDemo
 		If stream = Null
 			Return "Error saving map"
 		EndIf
-		Local x,y;
+		Local x:Int,y:Int;
 		For y = 0 To mapHeight - 1
 			For x = 0 To mapWidth - 1
 				WriteInt(stream,map[x,y])
@@ -321,7 +321,7 @@ Type AStarDemo
 		If stream = Null
 			Return
 		EndIf
-		Local x,y;
+		Local x:Int,y:Int;
 		For y = 0 To mapHeight - 1
 			For x = 0 To mapWidth - 1
 				map[x,y] = ReadInt(stream)
@@ -407,7 +407,7 @@ Type AStarDemo
 	End Method
 
 ' Are the block coordinates with in the map area?
-	Method blockInMapArea(blockX:Int, blockY:Int)
+	Method blockInMapArea:Int(blockX:Int, blockY:Int)
 		Return blockX >= 0 And blockY >= 0 And blockX < mapWidth And blockY < mapHeight 
 	End Method
 
@@ -426,7 +426,7 @@ Type AStarDemo
 ' Draw the information text in the editor
 	Method drawInfo()
 ' Clear 
-		Local y = mapButtonBlockY * blockHeight + blockHeight
+		Local y:Int = mapButtonBlockY * blockHeight + blockHeight
 		SetColor 0,0,0
 		DrawRect 0, y, blockAreaWidth, blockHeight*5
 
@@ -471,10 +471,10 @@ Type AStarDemo
 	End Method
 
 	Method drawMapButtons()
-		Local y = mapButtonBlockY * blockHeight
-		Local x = mapButtonBlockX * blockWidth
-		Local startX = x
-		Local t
+		Local y:Int = mapButtonBlockY * blockHeight
+		Local x:Int = mapButtonBlockX * blockWidth
+		Local startX:Int = x
+		Local t:Int
 		Local output:String
 		For t = 0 To 9
 			If t < 8 
@@ -503,11 +503,11 @@ Type AStarDemo
 	End Method
 
 	Method drawTerrains()
-		Local t
+		Local t:Int
 		For t = 0 To numTerrainTypes - 1
 			Local terrain:Terrain = terrains[t]
-			Local x = terrainLegendBlockX * blockWidth
-			Local y = (terrainLegendBlockY + t)* blockHeight
+			Local x:Int = terrainLegendBlockX * blockWidth
+			Local y:Int = (terrainLegendBlockY + t)* blockHeight
 
 			SetColor 0,0,0
 			DrawRect x, y, blockWidth * 5, blockHeight
@@ -527,7 +527,7 @@ Type AStarDemo
 	Method drawMap()
 		SetColor 0,0,0
 		DrawRect 0, 0, blockAreaWidth, blockAreaHeight
-		Local x,y;
+		Local x:Int,y:Int;
 		For y = 0 To mapHeight - 1
 			For x = 0 To mapWidth - 1
 				drawMapBlock(x,y)
@@ -549,7 +549,7 @@ Type AStarDemo
 		SetScale 1,1
 	End Method
 
-	Method drawOnMap(x:Int, y:Int, r,g,b, margin:Int)
+	Method drawOnMap(x:Int, y:Int, r:Int,g:Int,b:Int, margin:Int)
 		SetColor r,g,b
 		DrawRect x * blockWidth + margin, y * blockHeight + margin, blockWidth - margin * 2, blockHeight - margin * 2
 	End Method
@@ -567,7 +567,7 @@ Type AStarDemo
 		SetColor 255,255,255
 		SetMaskColor 255,0,255
 		SetScale 1,1
-		Local t
+		Local t:Int
 		For t = 0 To Len(s) - 1
 			DrawImage nums, x, y, Byte(s[t]) - 46
 			x:+5
@@ -589,7 +589,7 @@ Type AStarDemo
 '		nodeMap = Array:AStarNode[mapWidth, mapHeight]
 
 ' Initialise terrain types
-		Local t
+		Local t:Int
 		For t = 0 To numTerrainTypes - 1
 			Local newTerrain:Terrain = New Terrain
 			newTerrain.set(terrainWeights[t], terrainFilenames[t])
@@ -606,8 +606,8 @@ Type AStarDemo
 		
 ' Initialise the map
 		SeedRnd MilliSecs()
-		Local y
-		Local x
+		Local y:Int
+		Local x:Int
 		For y = 0 To mapHeight - 1
 			For x = 0 To mapWidth - 1
 				Local value:Int = 0'Rand(0,numTerrainTypes - 1)
@@ -623,7 +623,7 @@ Type AStarDemo
 
 ' This runs AStar with the current setup
 
-	Method runAStar()
+	Method runAStar:Int()
 
 ' The first thing you need to do before using the AStarGraphWalker is to create your nodes, and link them up
 ' with edges. What I do is first make an array of the nodes, this makes it easy to map nodes to map blocks if
@@ -665,10 +665,10 @@ Type AStarDemo
 				Local node:AStarNode = nodeMap[x,y]
 ' Now look around the map for neighbours and make nodes 
 ' Joining the current one with a neighbour
-				Local off = 0
+				Local off:Int = 0
 				While off < offsetCount
-					Local neighbourX = x + xOffset[off]
-					Local neighbourY = y + yOffset[off]		
+					Local neighbourX:Int = x + xOffset[off]
+					Local neighbourY:Int = y + yOffset[off]		
 ' Check that the neighbour position is within the map bounds and is actually
 ' not block 1 which I've designated as a block we can't go through at all so no point
 ' making a neighbour of it
@@ -767,7 +767,7 @@ Type WalkerCallback Extends AStarCallback
 			For y = 0 To _application.mapHeight - 1
 				For x = 0 To _application.mapWidth - 1
 					Local node:AStarNode = _application.nodeMap[x,y]
-					Local col_r=128,col_g=128,col_b=128
+					Local col_r:Int=128,col_g:Int=128,col_b:Int=128
 					Local do:Int = 0;
 					If node.inClosed() Or Not node.inOpen() Then 
 						Continue

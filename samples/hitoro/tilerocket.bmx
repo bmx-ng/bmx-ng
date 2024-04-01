@@ -1,10 +1,6 @@
 SuperStrict
 
-?win32
-Framework SDL.d3d9sdlmax2d
-?Not win32
-Framework SDL.gl2sdlmax2d
-?
+Framework SDL.SDLRenderMax2d
 Import brl.pngloader
 Import brl.Random
 
@@ -99,7 +95,7 @@ Repeat
 	Cls
 	
 	SetBlend SOLIDBLEND
-	TileImage sky
+	TileImage(sky, 0,0)
 
 	Local ang# = ATan2 (my - GH2, mx - GW2)
 

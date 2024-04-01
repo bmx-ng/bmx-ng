@@ -1,10 +1,6 @@
 SuperStrict
 
-?win32
-Framework SDL.d3d9sdlmax2d
-?Not win32
-Framework SDL.gl2sdlmax2d
-?
+Framework SDL.SDLRenderMax2d
 Import brl.pngloader
 Import brl.Random
 
@@ -60,7 +56,7 @@ Repeat
 
         SetScale scale, scale
 	SetRotation 0
-	TileImage grass
+	TileImage(grass,0,0)
 
 	For Local loop:Int = 0 To NUM - 1
 

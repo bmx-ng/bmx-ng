@@ -1,3 +1,4 @@
+SuperStrict
 ' Class for walking an astar graph
 ' It's up to you to make the graph yourself.
 
@@ -148,7 +149,7 @@ Type AStarGraphWalker
 ' False - Failed to find path to the end node
 ' True 	- Found a path to the end
 ' PRE: Must have called setParameters first
-	Method walk()
+	Method walk:Int()
 		Assert _parametersSet,"Must call setParameters() first"
 
 		_lastWalkSucceeded = False
@@ -206,12 +207,12 @@ Type AStarGraphWalker
 
 ' Returns an estimated distance between two nodes
 	Method _distanceTo:Float(startNode:AStarNode, endNode:AStarNode)
-		Local startX = startNode._x
-		Local startY = startNode._y
-		Local endX = endNode._x
-		Local endY = endNode._y
-		Local dx = Abs(endX - startX)
-		Local dy = Abs(endY - startY)
+		Local startX:Int = startNode._x
+		Local startY:Int = startNode._y
+		Local endX:Int = endNode._x
+		Local endY:Int = endNode._y
+		Local dx:Int = Abs(endX - startX)
+		Local dy:Int = Abs(endY - startY)
 'TODO: I had distanceFunction without the _ below and Blitz Didn't complain
 		Select _distanceFunction
 			Case distanceEuclidean
@@ -240,20 +241,20 @@ Type AStarGraphWalker
 ' Then distanceEuclidean is a good estimator of distance and distancePseudoEuclidean
 ' tends to override the edgecosts and the pathfinder sort of busts through them. 
 ' This can be a good thing as it could provide a simple way to make a unit "dumber"
-	Const distanceEuclidean = 0
-	Const distancePseudoEuclidean = 1
-	Const distanceManhatten = 2
-	Const distanceDiagonalShortcut = 3
+	Const distanceEuclidean:Int = 0
+	Const distancePseudoEuclidean:Int = 1
+	Const distanceManhatten:Int = 2
+	Const distanceDiagonalShortcut:Int = 3
 
-	Field _heuristicMultiplier = 1			' 0 should generate "optimal" path
+	Field _heuristicMultiplier:Int = 1			' 0 should generate "optimal" path
 	Field _start:AStarNode
 	Field _end:AStarNode
 	Field _distanceMode:Int = distanceEuclidean
 	Field _queue:PriorityQueue
-	Field _parametersSet = False
+	Field _parametersSet:Int = False
 	Field _finalPath:TList
 	Field _callback:AStarCallback = Null
-	Field _distanceFunction = distanceEuclidean
-	Field _lastWalkSucceeded = False
+	Field _distanceFunction:Int = distanceEuclidean
+	Field _lastWalkSucceeded:Int = False
 
 EndType

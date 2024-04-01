@@ -69,7 +69,7 @@ Type circleBob
 		x:+Cos(velocity.angle)*velocity.length
 		y:+Sin(velocity.angle)*velocity.length*yaspect
 		life:-1
-		SetAlpha life/40
+		SetAlpha life/40:Double
 		DrawImage cmBob, Float(x), Float(y)
 	End Method
 
@@ -195,7 +195,7 @@ End Type
 
 Graphics 800,600,0
 
-Global yaspect:Double = 3/5!
+Global yaspect:Double = 3/5.0
 Global rastaImage:TImage = LoadImage("rasta.png")
 Global logo:TImage = LoadImage("cmanialogo.png")
 Global cmBob:TImage = LoadImage("circlebob.png")
@@ -204,9 +204,9 @@ MidHandleImage logo
 Global maskEffect:imageStrip = imageStrip.LoadImages("anim")
 
 Local myRBList:TList = New TList
-rasterBar.addRasterBar(3!,2!, [255,0,0], myRBList)
-rasterBar.addRasterBar(5!,1.5!, [0,255,0], myRBList)
-rasterBar.addRasterBar(7!,1!, [0,0,255], myRBList)
+rasterBar.addRasterBar(3,2.0, [255,0,0], myRBList)
+rasterBar.addRasterBar(5,1.5, [0,255,0], myRBList)
+rasterBar.addRasterBar(7,1, [0,0,255], myRBList)
 
 Local angle:Double = 0
 Local effectRoot:root = root.Create(4, 200, 6, 6)
@@ -218,7 +218,7 @@ While Not KeyHit(KEY_ESCAPE)
 	Local xpos:Int = 124 * Sin(angle)
 
 	For Local i:rasterBar = EachIn myRBList
-		i.drawRasterBar(xpos+32 , 28, 28)
+		i.drawRasterBar(xpos+32 , 28, 28:Double)
 	Next
 
 	SetBlend ALPHABLEND
