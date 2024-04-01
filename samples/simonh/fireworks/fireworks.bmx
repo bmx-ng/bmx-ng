@@ -2,11 +2,7 @@
 
 SuperStrict
 
-?win32
-Framework SDL.d3d9sdlmax2d
-?Not win32
-Framework SDL.gl2sdlmax2d
-?
+Framework SDL.SDLRenderMax2D
 Import brl.pngloader
 Import brl.Random
 
@@ -96,7 +92,7 @@ While Not KeyHit(KEY_ESCAPE)
 
 			sp.alpha=sp.alpha-0.01
 
-			SetColor Int(sp.r),Int(sp.g),Int(sp.b)
+			SetColor int(sp.r),int(sp.g),int(sp.b)
 			SetBlend LIGHTBLEND
 			SetAlpha sp.alpha
 			SetScale 20/sp.z,20/sp.z

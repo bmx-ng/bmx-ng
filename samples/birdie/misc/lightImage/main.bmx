@@ -3,11 +3,7 @@
 '
 Strict
 
-?win32
-Framework SDL.d3d9sdlmax2d
-?Not win32
-Framework SDL.gl2sdlmax2d
-?
+Framework SDL.SDLRenderMax2D
 Import brl.pngloader
 Import brl.ramstream
 
