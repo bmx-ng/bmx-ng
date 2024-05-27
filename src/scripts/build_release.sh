@@ -663,7 +663,10 @@ build_apps() {
 
 			cd "$CUR"
 
-			cp BlitzMax/dist/bootstrap/src/bcc/bcc temp/BlitzMax/bin
+			if [ ! -s "BlitzMax/bin/bcc" ]; then
+				echo "bcc does not exist. Copying bootstrap bcc to bin"
+				cp BlitzMax/dist/bootstrap/src/bcc/bcc BlitzMax/bin/bcc
+			fi
 
 			cd BlitzMax/dist/bootstrap/src/bmk
 
@@ -672,74 +675,70 @@ build_apps() {
 
 			cd "$CUR"
 
-			cp BlitzMax/dist/bootstrap/src/bmk/bmk temp/BlitzMax/bin
-
-			# bootstrap bmk resources
-			echo ""
-			echo "Copying bootstrap bmk resources"
-			cp BlitzMax/bin/core.bmk temp/BlitzMax/bin && \
-				cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
-				cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
+			if [ ! -s "BlitzMax/bin/bmk" ]; then
+				echo "bmk does not exist. Copying bootstrap bmk to bin"
+				cp BlitzMax/dist/bootstrap/src/bmk/bmk BlitzMax/bin/bmk
+			fi
 		fi
 	fi
 
-	if [ -z "$USING_BOOTSTRAP" ]; then
+	# initial bcc, built with current release
+	echo ""
+	echo "Building Initial bcc (using current release)"
+	if ! BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bcc/bcc.bmx; then
+		echo "Failed to build initial bcc"
+		exit 1
+	fi
+	cp temp/BlitzMax/src/bcc/bcc temp/BlitzMax/bin
 
-		# initial bcc, built with current release
-		echo "Building Initial bcc"
-		if ! BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bcc/bcc.bmx; then
-			echo "Failed to build initial bcc"
-			exit 1
-		fi
-		cp temp/BlitzMax/src/bcc/bcc temp/BlitzMax/bin
 
+	# initial bmk, built with new bcc and current bmk
+	echo ""
+	echo "Copying current bmk"
+	cp BlitzMax/bin/bmk temp/BlitzMax/bin && \
+		cp BlitzMax/bin/core.bmk temp/BlitzMax/bin && \
+		cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
+		cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
 
-		# initial bmk, built with new bcc and current bmk
-		echo ""
-		echo "Copying current bmk"
-		cp BlitzMax/bin/bmk temp/BlitzMax/bin && \
-			cp BlitzMax/bin/core.bmk temp/BlitzMax/bin && \
-			cp BlitzMax/bin/custom.bmk temp/BlitzMax/bin && \
-			cp BlitzMax/bin/make.bmk temp/BlitzMax/bin
+	echo "Building Initial bmk"
 
-		echo "Building Initial bmk"
+	if [ ! -z "$CROSS_COMPILE" ];then
+		OPTION=""
+	else
+		OPTION="$G_OPTION"
+	fi
 
-		if [ ! -z "$CROSS_COMPILE" ];then
-			OPTION=""
-		else
-			OPTION="$G_OPTION"
-		fi
-
-		if temp/BlitzMax/bin/bmk makeapp -r $OPTION -single temp/BlitzMax/src/bmk/bmk.bmx; then
-			retries=0
-			while [ $retries -lt 30 ]
-			do
-				rm temp/BlitzMax/bin/bmk && \
-				cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin 2>/dev/null
-				if [ $? -eq 0 ]; then
-					break
-				else
-					echo "bmk is busy... Attempt $((retries + 1))"
-					sleep 1
-					retries=$((retries + 1))
-				fi
-			done
-			if [ $retries -eq 30 ]; then
-				echo "bmk still busy after 30 seconds. Exiting..."
-				exit -1
+	echo ""
+	echo "Building Initial bmk (using initial bcc and current bmk)"
+	if temp/BlitzMax/bin/bmk makeapp -r $OPTION -single temp/BlitzMax/src/bmk/bmk.bmx; then
+		retries=0
+		while [ $retries -lt 30 ]
+		do
+			rm temp/BlitzMax/bin/bmk && \
+			cp temp/BlitzMax/src/bmk/bmk temp/BlitzMax/bin 2>/dev/null
+			if [ $? -eq 0 ]; then
+				break
+			else
+				echo "bmk is busy... Attempt $((retries + 1))"
+				sleep 1
+				retries=$((retries + 1))
 			fi
-		else
-			echo ""
-			echo "Failed to build bmk"
+		done
+		if [ $retries -eq 30 ]; then
+			echo "bmk still busy after 30 seconds. Exiting..."
 			exit -1
 		fi
-
-		# copy bmk resources
-		echo "Copying bmk resources"
-		cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
-			cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
-			cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
+	else
+		echo ""
+		echo "Failed to build bmk"
+		exit -1
 	fi
+
+	# copy bmk resources
+	echo "Copying bmk resources"
+	cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
+		cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
+		cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
 
 	if [ ! -z "$CROSS_COMPILE" ];then
 
@@ -789,9 +788,17 @@ build_apps() {
 		esac
 	fi
 
+	echo ""
+	echo "Ready to build"
+	echo ""
+	echo "bcc version : $(temp/BlitzMax/bin/bcc -v)"
+	echo "bmk version : $(temp/BlitzMax/bin/bmk -v)"
+	echo ""
+
 	case "$PLATFORM" in
 		macos)
 			echo "Creating bootstrap"
+
 			if ! temp/BlitzMax/bin/bmk makebootstrap -a -r; then
 				echo ""
 				echo "Failed to build bootstrap"
