@@ -710,7 +710,7 @@ build_apps() {
 
 	echo ""
 	echo "Building Initial bmk (using initial bcc and current bmk)"
-	if temp/BlitzMax/bin/bmk makeapp -r $OPTION -single temp/BlitzMax/src/bmk/bmk.bmx; then
+	if temp/BlitzMax/bin/bmk makeapp -r -single temp/BlitzMax/src/bmk/bmk.bmx; then
 		retries=0
 		while [ $retries -lt 30 ]
 		do
