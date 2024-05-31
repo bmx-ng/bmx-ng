@@ -123,8 +123,11 @@ Function SyncDocs( docs:TDocs )
 			Local turl$=url+"#"+p.ident
 			TPrint "&nbsp;<a class=navsmall href="+turl+" target=main>"+p.ident+"</a><br>"
 			index.AddLast p.ident+":"+turl
-			Local i=p.proto.Find( " " )
-			If i<>-1 comms.AddLast p.proto[i+1..].Trim()+"|"+turl[5..]
+			
+			If p.kind <> T_METHOD
+				Local i=p.proto.Find( " " )
+				If i<>-1 comms.AddLast p.proto[i+1..].Trim()+"|"+turl[5..]
+			EndIf
 		Next
 		TPrint "</div>"
 
