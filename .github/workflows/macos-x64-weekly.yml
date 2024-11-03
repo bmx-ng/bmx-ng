@@ -7,17 +7,17 @@ on:
 
 jobs:
     build:
-      runs-on: macos-12
+      runs-on: macos-13
       steps:
         - name: Checkout code
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
   
         - name: Run build script
           run: |
             mkdir -p build
             cp src/scripts/build_release.sh build
             cd build
-            ./build_release.sh -b 0.138.3.54 -p -t -r x64 -a x64
+            ./build_release.sh -b 0.144.3.57.202411030218 -p -t -r x64 -a x64
             cd ..
   
         - name: Populate env variables

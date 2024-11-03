@@ -10,7 +10,7 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - name: Checkout code
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
   
         - name: Build Docker image
           run: |
@@ -20,7 +20,7 @@ jobs:
           run: |
             mkdir -p build
             cp src/scripts/build_release.sh build
-            docker run -v $GITHUB_WORKSPACE/build:/build -w /build blitzmax_win32_cross_compile ./build_release.sh -l win32 -a x86x64 -b 0.129.3.45 -r x64 -p -t
+            docker run -v $GITHUB_WORKSPACE/build:/build -w /build blitzmax_win32_cross_compile ./build_release.sh -l win32 -a x86x64 -b 0.136.3.51 -r x64 -p -t
   
         - name: Populate env variables
           run: |
