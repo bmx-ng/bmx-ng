@@ -17,7 +17,7 @@ jobs:
             mkdir -p build
             cp src/scripts/build_release.sh build
             cd build
-            ./build_release.sh -b 0.144.3.57.202411030220 -p -t -r x64 -a arm64
+            ./build_release.sh -b 0.144.3.57.202411030218 -p -t -r x64 -a arm64
             cd ..
   
         - name: Populate env variables
