@@ -32,7 +32,7 @@ jobs:
             echo "tag=v${{ env.VERSION_TAG }}.macos.arm64" >> $GITHUB_OUTPUT
 
         - name: Create Release and Upload Asset
-          uses: softprops/action-gh-release@v1
+          uses: softprops/action-gh-release@v2
           with:
             tag_name: ${{ steps.custom_tag.outputs.tag }}
             name: "[weekly] BlitzMax macOS arm64 v${{ env.VERSION_TAG }}"
