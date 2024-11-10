@@ -20,7 +20,7 @@ jobs:
           run: |
             mkdir -p build
             cp src/scripts/build_release.sh build
-            docker run -v $GITHUB_WORKSPACE/build:/build -w /build blitzmax_win32_cross_compile ./build_release.sh -l win32 -a x86x64 -b 0.136.3.51 -r x64 -p -t
+            docker run -v $GITHUB_WORKSPACE/build:/build -w /build blitzmax_win32_cross_compile ./build_release.sh -l win32 -a x86x64 -b 0.145.3.57.202411031313 -r x64 -p -t
   
         - name: Populate env variables
           run: |
@@ -34,7 +34,7 @@ jobs:
             echo "tag=v${{ env.VERSION_TAG }}.win32.mingw" >> $GITHUB_OUTPUT
 
         - name: Create Release and Upload Asset
-          uses: softprops/action-gh-release@v1
+          uses: softprops/action-gh-release@v2
           with:
             tag_name: ${{ steps.custom_tag.outputs.tag }}
             name: "[weekly] BlitzMax Win32 (mingw) v${{ env.VERSION_TAG }}"
