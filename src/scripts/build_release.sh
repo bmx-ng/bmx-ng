@@ -685,7 +685,7 @@ build_apps() {
 	# initial bcc, built with current release
 	echo ""
 	echo "Building Initial bcc (using current release)"
-	if ! BlitzMax/bin/bmk makeapp -r temp/BlitzMax/src/bcc/bcc.bmx; then
+	if ! BlitzMax/bin/bmk makeapp -r -single temp/BlitzMax/src/bcc/bcc.bmx; then
 		echo "Failed to build initial bcc"
 		exit 1
 	fi
@@ -739,6 +739,8 @@ build_apps() {
 	cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
 		cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
 		cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
+
+	C_OPTION="-single"
 
 	if [ ! -z "$CROSS_COMPILE" ];then
 
