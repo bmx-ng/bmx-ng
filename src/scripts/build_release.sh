@@ -824,6 +824,14 @@ build_apps() {
 				exit -1
 			fi
 			cp temp/BlitzMax/src/bcc/bcc$C_EXT release/BlitzMax/bin
+			# ensure to use newly built bcc from now on
+			cp temp/BlitzMax/src/bcc/bcc$C_EXT temp/BlitzMax/bin
+
+			# ensure to not reuse module precompilates of old bcc and intermediate-new bcc
+			echo ""
+			echo "Reset modules to rebuilt them with new bcc"
+			rm -rf temp/BlitzMax/mod
+			cp -R release/BlitzMax/mod temp/BlitzMax
 
 			# build latest bmk
 			echo "Building latest bmk"
@@ -836,6 +844,11 @@ build_apps() {
 			cp temp/BlitzMax/src/bmk/core.bmk release/BlitzMax/bin && \
 			cp temp/BlitzMax/src/bmk/custom.bmk release/BlitzMax/bin && \
 			cp temp/BlitzMax/src/bmk/make.bmk release/BlitzMax/bin
+			# ensure to use newly built bmk from now on
+			cp temp/BlitzMax/src/bmk/bmk$C_EXT temp/BlitzMax/bin && \
+			cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
+			cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
+			cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
 
 			# build bootstrap
 			if [ ! -z "$BUILD_BOOTSTRAP" ];then
