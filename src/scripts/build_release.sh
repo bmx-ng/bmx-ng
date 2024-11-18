@@ -824,10 +824,10 @@ build_apps() {
 				exit -1
 			fi
 			cp temp/BlitzMax/src/bcc/bcc$C_EXT release/BlitzMax/bin
-			# ensure to use newly built bcc from now on
+			# build using the latest bcc
 			cp temp/BlitzMax/src/bcc/bcc$C_EXT temp/BlitzMax/bin
 
-			# ensure to not reuse module precompilates of old bcc and intermediate-new bcc
+			# clean build with the latest modules
 			echo ""
 			echo "Reset modules to rebuilt them with new bcc"
 			rm -rf temp/BlitzMax/mod
@@ -844,7 +844,7 @@ build_apps() {
 			cp temp/BlitzMax/src/bmk/core.bmk release/BlitzMax/bin && \
 			cp temp/BlitzMax/src/bmk/custom.bmk release/BlitzMax/bin && \
 			cp temp/BlitzMax/src/bmk/make.bmk release/BlitzMax/bin
-			# ensure to use newly built bmk from now on
+			# build using the latest bmk
 			cp temp/BlitzMax/src/bmk/bmk$C_EXT temp/BlitzMax/bin && \
 			cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
 			cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
