@@ -845,10 +845,14 @@ build_apps() {
 			cp temp/BlitzMax/src/bmk/custom.bmk release/BlitzMax/bin && \
 			cp temp/BlitzMax/src/bmk/make.bmk release/BlitzMax/bin
 			# build using the latest bmk
-			cp temp/BlitzMax/src/bmk/bmk$C_EXT temp/BlitzMax/bin && \
-			cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
-			cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
-			cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
+			cp temp/BlitzMax/src/bmk/bmk$C_EXT temp/BlitzMax/bin
+			#do not copy the bmk-script files !
+			#(eg. custom.bmk in temp/BlitzMax/bin is customized for 
+			#cross-compiling and overriding it with the src one would
+			#remove these adjustments and thus gcc can't be found)
+			#cp temp/BlitzMax/src/bmk/core.bmk temp/BlitzMax/bin && \
+			#cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
+			#cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
 
 			# build bootstrap
 			if [ ! -z "$BUILD_BOOTSTRAP" ];then
