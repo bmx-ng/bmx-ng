@@ -1,9 +1,4 @@
-FROM arm32v7/debian:buster
-
-# Use archive.debian.org instead of deb.debian.org for old Buster repos
-RUN sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list && \
-    sed -i 's|security.debian.org|archive.debian.org/|g' /etc/apt/sources.list && \
-    sed -i '/deb.*updates/d' /etc/apt/sources.list
+FROM arm32v7/debian:bullseye
 
 # Install necessary build tools
 RUN apt-get update && apt-get install -y \
