@@ -244,7 +244,7 @@ Function docBmxFile( filePath$,docPath$ )
 
 				Select kind
 				Case "Type", "Interface", "Struct", "Enum"
-					If Not docPath Throw "No doc path"
+					If Not docPath Throw "No doc path for id=" + id
 					If typePath Throw "Type path already set"
 					typePath=docPath
 					docPath:+"/"+id
@@ -261,7 +261,7 @@ Function docBmxFile( filePath$,docPath$ )
 					Local i=bbdoc.FindLast( "/" )
 					bbdoc=bbdoc[i+1..]
 				Default
-					If Not docPath Throw "No doc path"
+					If Not docPath Throw "No doc path for kind=" + kind + " and id=" + id
 					path=docPath+"/"+id
 				End Select
 				
