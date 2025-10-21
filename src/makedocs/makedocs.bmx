@@ -242,7 +242,7 @@ Function docBmxFile( filePath$,docPath$ )
 				Local path$
 
 				Select kind
-				Case "Type", "Struct", "Inteface"
+				Case "Type", "Struct", "Interface"
 					If Not docPath Throw "No doc path"
 					If typePath Throw kind + " path already set"
 					typePath=docPath
