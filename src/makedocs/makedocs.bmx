@@ -73,7 +73,7 @@ Function DocMods()
 	                              "sdl.", "steam.", "text." ]
 
 	For Local modid$=EachIn EnumModules()
-		' only document shipped mods
+		' only document default shipped BlitzMax NG modules 
 		Local ignoreMod:Int = True
 
 		For Local shippedMod:String = EachIn shippedMods

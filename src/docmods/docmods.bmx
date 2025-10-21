@@ -38,7 +38,7 @@ Function ParseMods:TDocs()
 	Local mods:TList=EnumModules()
 	
 	For Local modid$=EachIn mods
-		'only document modules NOT shipped by default ("3rd party") 
+		' only document modules NOT shipped by default ("3rd party") 
 		Local ignoreMod:Int = False
 
 		For Local shippedMod:String = EachIn shippedMods
