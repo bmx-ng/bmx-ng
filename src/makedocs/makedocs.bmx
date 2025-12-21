@@ -65,10 +65,24 @@ Function Cleanup( dir$ )
 End Function
 
 Function DocMods()
+	Local shippedMods:String[] = [ ..
+	                              "brl.", "pub.", ..
+	                              "archive.", "audio.", "crypto.", ..
+	                              "image.", "math.", "maxgui.", ..
+	                              "mky.", "net.", "random.", ..
+	                              "sdl.", "steam.", "text." ]
 
 	For Local modid$=EachIn EnumModules()
+		' only document default shipped BlitzMax NG modules 
+		Local ignoreMod:Int = True
 
-		If Not modid.StartsWith( "brl." ) And Not modid.StartsWith( "pub." ) And Not modid.StartsWith("maxgui.") Continue
+		For Local shippedMod:String = EachIn shippedMods
+			If modid.StartsWith(shippedMod) 
+				ignoreMod = False
+				exit
+			EndIf
+		Next
+		If ignoreMod Then Continue
 
 		Local p$=ModuleSource( modid )
 		Try
