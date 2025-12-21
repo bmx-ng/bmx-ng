@@ -56,17 +56,23 @@ Function Cleanup( dir$ )
 End Function
 
 Function DocMods()
+	Local shippedMods:String[] = [ ..
+	                              "brl.", "pub.", ..
+	                              "archive.", "audio.", "crypto.", ..
+	                              "image.", "math.", "maxgui.", ..
+	                              "mky.", "net.", "random.", ..
+	                              "sdl.", "steam.", "text." ]
 
 	For Local modid$=EachIn EnumModules()
+		Local ignoreMod:Int = True
 
-		If Not modid.StartsWith( "brl." ) ..
-			And Not modid.StartsWith( "pub." ) ..
-			And Not modid.StartsWith("maxgui.") ..
-			And Not modid.StartsWith("sdl.") .. 
-			And Not modid.StartsWith("audio.") ..
-			And Not modid.StartsWith( "crypto." ) ..
-			And Not modid.StartsWith( "text." ) ..
-			And Not modid.StartsWith("steam.") Continue
+		For Local shippedMod:String = EachIn shippedMods
+			If modid.StartsWith(shippedMod) 
+				ignoreMod = False
+				exit
+			EndIf
+		Next
+		If ignoreMod Then Continue
 
 		Local p$=ModuleSource( modid )
 		Try
@@ -238,7 +244,7 @@ Function docBmxFile( filePath$,docPath$ )
 
 				Select kind
 				Case "Type", "Interface", "Struct", "Enum"
-					If Not docPath Throw "No doc path"
+					If Not docPath Throw "No doc path for id=" + id
 					If typePath Throw "Type path already set"
 					typePath=docPath
 					docPath:+"/"+id
@@ -255,7 +261,7 @@ Function docBmxFile( filePath$,docPath$ )
 					Local i=bbdoc.FindLast( "/" )
 					bbdoc=bbdoc[i+1..]
 				Default
-					If Not docPath Throw "No doc path"
+					If Not docPath Throw "No doc path for kind=" + kind + " and id=" + id
 					path=docPath+"/"+id
 				End Select
 				
