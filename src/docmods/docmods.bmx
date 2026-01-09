@@ -27,15 +27,28 @@ Else
 EndIf
 
 Function ParseMods:TDocs()
-
+	Local shippedMods:String[] = [ ..
+	                              "brl.", "pub.", ..
+	                              "archive.", "audio.", "crypto.", ..
+	                              "image.", "math.", "maxgui.", ..
+	                              "mky.", "net.", "random.", ..
+	                              "sdl.", "steam.", "text." ]
 	Local docs:TDocs=New TDocs
 	
 	Local mods:TList=EnumModules()
 	
 	For Local modid$=EachIn mods
+		' only document modules NOT shipped by default ("3rd party") 
+		Local ignoreMod:Int = False
 
-		If modid.StartsWith( "brl." ) Or modid.StartsWith( "pub." ) Or modid.StartsWith( "maxgui." ) Continue
-			
+		For Local shippedMod:String = EachIn shippedMods
+			If modid.StartsWith(shippedMod) 
+				ignoreMod = True
+				exit
+			EndIf
+		Next
+		If ignoreMod Then Continue
+
 		Local ident$=ModuleIdent( modid )
 		Local modDir$=ModulePath( modid )
 		Local bmxFile$=ModuleSource( modid )
