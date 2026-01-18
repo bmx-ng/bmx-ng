@@ -1,7 +1,7 @@
 
 Strict
 
-Import BRL.ObjectList
+Import Collections.ObjectList
 
 Import "parse.bmx"
 
@@ -80,6 +80,22 @@ End Type
 
 Type TCodeBlocks
 	Field list:TObjectList = New TObjectList
+
+	Method Build(text:String)
+		list.Clear()
+
+		Local i:Int = 0
+		Repeat
+			i = text.Find("```", i) ' open
+			If i = -1 Exit
+
+			Local i2:Int = text.Find("```", i + 3) ' close
+			If i2 = -1 Exit
+
+			list.AddLast(New TBlock(i, i2 + 3))
+			i = i2 + 3
+		Forever
+	End Method
 	
 	Method IsInCodeBlock:Int(index:Int Var)
 		For Local block:TBlock = EachIn list
@@ -88,7 +104,7 @@ Type TCodeBlocks
 				Exit
 			End If
 			
-			If index >= block.start And index <= block.finish Then
+			If index >= block.start And index < block.finish Then
 				index = block.finish + 1
 				Return True
 			End If
@@ -104,18 +120,19 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 	Local i
 	
 	Local codeBlocks:TCodeBlocks = New TCodeBlocks
+	codeBlocks.Build( Text )
 	' calculate blocks
-	i = 0
-	Repeat
-		i = Text.Find("```", i)
-		If i = -1 Exit
+' 	i = 0
+' 	Repeat
+' 		i = Text.Find("```", i) ' open
+' 		If i = -1 Exit
 
-		Local i2:Int = Text.Find("```", i + 3)
-		If i2 = -1 Exit
-		
-		codeBlocks.list.AddLast(New TBlock(i, i2 + 3))
-		i = i2 + 3
-	Forever
+' 		Local i2:Int = Text.Find("```", i + 3) ' close
+' 		If i2 = -1 Exit
+' print "Code block from " + i + " to " + (i2 + 3)
+' 		codeBlocks.list.AddLast(New TBlock(i, i2 + 3))
+' 		i = i2 + 3
+' 	Forever
 	
 	'headings
 	i=0
@@ -135,6 +152,9 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 		If hl=1 hl=2
 		
 		Text=Text[..i]+q+Text[i2..]
+
+		codeBlocks.Build( Text )
+
 		i:+q.length
 	Forever
 	
@@ -161,6 +181,9 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 		EndIf
 		
 		Text=Text[..i]+q+Text[i2+2..]
+
+		codeBlocks.Build( Text )
+
 		i:+q.length
 	Forever
 	
@@ -180,6 +203,9 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 		q="<blockquote>"+q+"</blockquote>"
 		
 		Text=Text[..i]+q+Text[i2+2..]
+
+		codeBlocks.Build( Text )
+
 		i:+q.length
 	Forever
 	
@@ -188,7 +214,12 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 	Repeat
 		i = Text.Find("<img src=", i)
 		If i = -1 Exit
-		If codeBlocks.IsInCodeBlock(i) Continue
+		Local idx:Int = i
+		If codeBlocks.IsInCodeBlock(idx) Then
+			print "Image in code block, skipping : index " + i
+			i = idx
+			Continue
+		End If
 
 		Local i2:Int = Text.Find(">", i)
 		
@@ -198,6 +229,9 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 		If s1 > 0 And s2 > 0 Then
 			Local q:String = "![](assets/"+ Text[s1 + 1..s2] + ")"
 			Text = Text[..i] + q + Text[i2 + 1..]
+
+			codeBlocks.Build( Text )
+
 			i :+ q.length
 		Else
 			Exit
@@ -221,6 +255,8 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 
 	FormatBBTags Text,"%","i"
 
+	codeBlocks.Build( Text )
+
 	'escapes
 	i=0
 	Repeat
@@ -236,6 +272,9 @@ Function BBToHtml2$( Text$,doc:TBBLinkResolver )
 		End Select
 		
 		Text=Text[..i]+r+Text[i+2..]
+
+		codeBlocks.Build( Text )
+		
 		i:+r.length
 	Forever
 	

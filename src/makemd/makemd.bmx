@@ -58,7 +58,7 @@ End Function
 Function DocMods()
 	Local shippedMods:String[] = [ ..
 	                              "brl.", "pub.", ..
-	                              "archive.", "audio.", "crypto.", ..
+	                              "archive.", "audio.", "collections.","crypto.", ..
 	                              "image.", "math.", "maxgui.", ..
 	                              "mky.", "net.", "random.", ..
 	                              "sdl.", "steam.", "text." ]
