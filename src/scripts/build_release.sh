@@ -323,8 +323,10 @@ check_base() {
 		DOWNLOAD_URL_ARCH=".${SRC_ARCH}"
 		ARCHIVE_ARCH="${SRC_ARCH}_"
 		PLAT=$OS_PLATFORM
+		PLAT_EXTRA=""
 		case "$PLAT" in
 			win32)
+				PLAT_EXTRA=".${WIN_VER}"
 				if [[ "$OPT_ARCH" == "x86x64" ]]; then
 					DOWNLOAD_URL_ARCH=""
 					ARCHIVE_ARCH=""
@@ -340,12 +342,13 @@ check_base() {
 		esac
 
 		SUFFIX=".tar.xz"
-		URL="${RELEASE_URL}v${BUILD_VERSION}.${PLAT}${DOWNLOAD_URL_ARCH}/"
+		URL="${RELEASE_URL}v${BUILD_VERSION}.${PLAT}${PLAT_EXTRA}${DOWNLOAD_URL_ARCH}/"
 		ARCHIVE="BlitzMax_${PLAT}_"
 
 		case "$PLAT" in
 			win32)
-				ARCHIVE="${ARCHIVE}${ARCHIVE_ARCH}"
+				VER="${WIN_VER}_"
+				ARCHIVE="${ARCHIVE}${VER}${ARCHIVE_ARCH}"
 				SUFFIX=".7z"
 				;;
 			linux)
