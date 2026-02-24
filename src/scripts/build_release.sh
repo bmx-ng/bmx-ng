@@ -23,13 +23,14 @@ usage() {
 	echo "    -b <version> : Use build version. e.g. 0.105.3.35"
 	echo "    -l <platform>: Platform. win32, macos, linux, rpi"
 	echo "    -w <version> : Windows compiler version. e.g. mingw or llvm. Defaults to mingw"
-	echo "    -t           : Apply additional timestamp to version."
+	echo "    -t           : Apply additional timestamp to version. This is mainly for weekly builds. Fully released versions should NOT use this."
 	echo "    -o           : Build bootstrap."
 	echo "    -p           : Create a release package."
 	echo "    -c           : Don't clean dirs."
 	echo "    -m           : Build all modules."
 	echo "    -s           : Build samples."
 	echo "    -z           : Clean 'zips' dir."
+	echo "    -y <file>    : Write build manifest YAML to <file>"
 	exit 0
 }
 
@@ -51,6 +52,12 @@ test x$1 = x$'\x00' && shift || { set -o pipefail ; ( exec 2>&1 ; $0 $'\x00' "$@
 echo ""
 echo "Script arguments : $@"
 echo ""
+
+ORIG_ARGV=("$@")
+SCRIPT_NAME="$(basename "$0")"
+SCRIPT_PATH="$0"
+# raw args
+SCRIPT_ARGS_RAW="$*"
 
 OPT_ARCH=""
 SRC_ARCH=""
@@ -77,6 +84,9 @@ WIN_VER="mingw"
 TAG_FILENAME="version-tag.txt"
 PACKAGE_FILENAME="package-name.txt"
 PACKAGE_MIME_FILENAME="package-mime.txt"
+MANIFEST_FILE=""
+WRITE_MANIFEST=""
+MANIFEST_TMP="temp-manifest.yml"
 
 CC_MINGW_ARCH="x86_64"
 CC_MINGW_VERSION_LINUX="10-posix"
@@ -401,11 +411,117 @@ check_base() {
 	fi
 }
 
+download_repo_zip() {
+	local name="$1"        # e.g. bmk
+	local repo="$2"        # e.g. bmx-ng/bmk
+	local ref="$3"         # e.g. master
+	local local_zip="$4"   # e.g. zips/bmk.zip
+
+	local sha zip_url zip_sha
+
+	sha="$(resolve_github_sha "$repo" "$ref")"
+	if [ -z "$sha" ]; then
+		echo "Error: failed to resolve ${repo}@${ref} to a commit SHA"
+		exit 1
+	fi
+
+	zip_url="https://github.com/${repo}/archive/${sha}.zip"
+
+	if [ ! -f "$local_zip" ]; then
+		echo "Downloading ${name}.zip (${repo}@${ref} -> ${sha})"
+		wget -nv -O "$local_zip" "$zip_url"
+	else
+		echo "Using local ${local_zip}"
+	fi
+
+	zip_sha="$(sha256_file "$local_zip")"
+
+	if [ -z "$zip_sha" ]; then
+		echo "Warning: could not compute sha256 for $local_zip"
+	fi
+
+	if [ -n "$WRITE_MANIFEST" ]; then
+		manifest_add_source "$MANIFEST_TMP" "$name" "$repo" "$ref" "$sha" "$zip_url" "$local_zip" "$zip_sha"
+	fi
+}
+
+# Unzips a GitHub archive and renames the single top-level extracted folder.
+# Example:
+#   unzip_and_rename zips/bmx-ng.zip release bmx-ng BlitzMax
+# This will unzip into release/, then move release/bmx-ng-* -> release/BlitzMax
+unzip_and_rename() {
+  local zip="$1"
+  local dest="$2"
+  local prefix="$3"   # e.g. "bmx-ng", "bcc", "brl.mod"
+  local target="$4"   # e.g. "BlitzMax", "bcc", "brl.mod"
+
+  # Ensure destination exists
+  mkdir -p "$dest"
+
+  # Unzip
+  unzip -q "$zip" -d "$dest"
+
+  # Find the extracted top-level folder (GitHub archives create exactly one)
+  local extracted
+  extracted="$(find "$dest" -maxdepth 1 -type d -name "${prefix}-*" | head -n 1)"
+
+  if [ -z "$extracted" ]; then
+    echo "Error: Could not find extracted folder matching ${dest}/${prefix}-* from $zip"
+    exit 1
+  fi
+
+  # Remove existing target if present (optional safety)
+  rm -rf "${dest}/${target}"
+
+  mv "$extracted" "${dest}/${target}"
+}
+
+ditto_and_rename() {
+  local zip="$1"
+  local dest="$2"
+  local prefix="$3"
+  local target="$4"
+
+  mkdir -p "$dest"
+  ditto -x -k --sequesterRsrc --rsrc "$zip" "$dest"
+
+  local extracted
+  extracted="$(find "$dest" -maxdepth 1 -type d -name "${prefix}-*" | head -n 1)"
+  if [ -z "$extracted" ]; then
+    echo "Error: Could not find extracted folder matching ${dest}/${prefix}-* from $zip"
+    exit 1
+  fi
+
+  rm -rf "${dest}/${target}"
+  mv "$extracted" "${dest}/${target}"
+}
+
+sha256_file() {
+	local file="$1"
+
+	if command -v sha256sum >/dev/null 2>&1; then
+		sha256sum "$file" | tr -d '\r' | awk '{print $1}'
+	elif command -v shasum >/dev/null 2>&1; then
+		shasum -a 256 "$file" | tr -d '\r' | awk '{print $1}'
+	else
+		echo ""
+		return 1
+	fi
+}
 
 download() {
 	echo "--------------------"
 	echo "-    DOWNLOAD      -"
 	echo "--------------------"
+
+	if [ -n "$WRITE_MANIFEST" ]; then
+		local created_utc
+		created_utc="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+		manifest_begin "$MANIFEST_TMP"
+		manifest_add_invocation "$MANIFEST_TMP" "${ORIG_ARGV[@]}"
+		manifest_add_build_header "$MANIFEST_TMP" "$created_utc"
+	fi
 
 	# mingw
 	case "$PLATFORM" in
@@ -442,50 +558,48 @@ download() {
 	esac
 
 	# base
-	if [ ! -f zips/bmx-ng.zip ]; then
-		echo "Downloading bmx-ng.zip"
-		wget -nv -P zips https://github.com/bmx-ng/bmx-ng/archive/master.zip && \
-			mv zips/master.zip zips/bmx-ng.zip
-	else
-		echo "Using local bmx-ng.zip"
-	fi
+	download_repo_zip "bmx-ng" "bmx-ng/bmx-ng" "master" "zips/bmx-ng.zip"
 
 	# apps
-	if [ ! -f zips/bcc.zip ]; then
-		echo "Downloading bcc.zip"
-		wget -nv -P zips https://github.com/bmx-ng/bcc/archive/master.zip && \
-			mv zips/master.zip zips/bcc.zip
-	else
-		echo "Using local bcc.zip"
-	fi
-
-	if [ ! -f zips/bmk.zip ]; then
-		echo "Downloading bmk.zip"
-		wget -nv -P zips https://github.com/bmx-ng/bmk/archive/master.zip && \
-			mv zips/master.zip zips/bmk.zip
-	else
-		echo "Using local bmk.zip"
-	fi
-
-	if [ ! -f zips/maxide.zip ]; then
-		echo "Downloading maxide.zip"
-		wget -nv -P zips https://github.com/bmx-ng/maxide/archive/master.zip && \
-			mv zips/master.zip zips/maxide.zip
-	else
-		echo "Using local maxide.zip"
-	fi
+	download_repo_zip "bcc" "bmx-ng/bcc" "master" "zips/bcc.zip"
+  	download_repo_zip "bmk" "bmx-ng/bmk" "master" "zips/bmk.zip"
+  	download_repo_zip "maxide" "bmx-ng/maxide" "master" "zips/maxide.zip"
 
 	# modules
 	for mod in "${MOD_LIST[@]}"
 	do
-		if [ ! -f zips/${mod}.mod.zip ]; then
-			echo "Downloading ${mod}.mod.zip"
-			wget -nv -P zips https://github.com/bmx-ng/${mod}.mod/archive/master.zip && \
-				mv zips/master.zip zips/${mod}.mod.zip
-		else
-			echo "Using local ${mod}.mod.zip"
-		fi
+		download_repo_zip "${mod}.mod" "bmx-ng/${mod}.mod" "master" "zips/${mod}.mod.zip"
 	done
+
+	if [ -n "$WRITE_MANIFEST" ]; then
+		case "$PLATFORM" in
+		win32)
+			case "$WIN_VER" in
+			mingw)
+				if [[ "$OPT_ARCH" == *"x86"* ]]; then
+				manifest_add_toolchain "$MANIFEST_TMP" "mingw-builds-binaries" "win32/mingw" "$MINGW_X86" "$MINGW_X86_URL"
+				fi
+				if [[ "$OPT_ARCH" == *"x64"* ]]; then
+				manifest_add_toolchain "$MANIFEST_TMP" "mingw-builds-binaries" "win32/mingw" "$MINGW_X64" "$MINGW_X64_URL"
+				fi
+				;;
+			llvm)
+				manifest_add_toolchain "$MANIFEST_TMP" "mingw-builds-binaries" "win32/llvm" "$MINGW_X86" "$MINGW_X86_URL"
+				manifest_add_toolchain "$MANIFEST_TMP" "llvm-mingw" "win32/llvm" "$LLVM_MINGW_ZIP" "$LLVM_MINGW_URL"
+				;;
+			esac
+			;;
+		esac
+	fi
+
+	if [ -n "$WRITE_MANIFEST" ]; then
+		# Default if user gave -y but empty (shouldn’t happen): use build-manifest.yml
+		if [ -z "$MANIFEST_FILE" ]; then
+			MANIFEST_FILE="build-manifest.yml"
+		fi
+		mv "$MANIFEST_TMP" "$MANIFEST_FILE"
+		echo "Wrote build manifest: $MANIFEST_FILE"
+	fi
 }
 
 prepare() {
@@ -494,8 +608,7 @@ prepare() {
 	echo "--------------------"
 
 	echo "Extracting bmx-ng"
-	unzip -q zips/bmx-ng.zip -d release && \
-		mv release/bmx-ng-master release/BlitzMax
+	unzip_and_rename "zips/bmx-ng.zip" "release" "bmx-ng" "BlitzMax"
 
 	rm -rf release/BlitzMax/.github
 	rm -rf release/BlitzMax/.gitignore
@@ -508,27 +621,18 @@ prepare() {
 
 	# bcc
 	echo "Extracting bcc" 
-	unzip -q zips/bcc.zip -d release/BlitzMax/src && \
-		mv release/BlitzMax/src/bcc-master release/BlitzMax/src/bcc
-
-	unzip -q zips/bcc.zip -d temp/BlitzMax/src && \
-		mv temp/BlitzMax/src/bcc-master temp/BlitzMax/src/bcc
+	unzip_and_rename "zips/bcc.zip" "release/BlitzMax/src" "bcc" "bcc"
+	unzip_and_rename "zips/bcc.zip" "temp/BlitzMax/src" "bcc" "bcc"
 
 	# bmk
-	echo "Extracting bmk" 
-	unzip -q zips/bmk.zip -d release/BlitzMax/src && \
-		mv release/BlitzMax/src/bmk-master release/BlitzMax/src/bmk
-
-	unzip -q zips/bmk.zip -d temp/BlitzMax/src && \
-		mv temp/BlitzMax/src/bmk-master temp/BlitzMax/src/bmk
+	echo "Extracting bmk"
+	unzip_and_rename "zips/bmk.zip"    "release/BlitzMax/src" "bmk"    "bmk"
+	unzip_and_rename "zips/bmk.zip"    "temp/BlitzMax/src"    "bmk"    "bmk"
 
 	# maxide
-	echo "Extracting maxide" 
-	unzip -q zips/maxide.zip -d release/BlitzMax/src && \
-		mv release/BlitzMax/src/maxide-master release/BlitzMax/src/maxide
-
-	unzip -q zips/maxide.zip -d temp/BlitzMax/src && \
-		mv temp/BlitzMax/src/maxide-master temp/BlitzMax/src/maxide
+	echo "Extracting maxide"
+	unzip_and_rename "zips/maxide.zip" "release/BlitzMax/src" "maxide" "maxide"
+	unzip_and_rename "zips/maxide.zip" "temp/BlitzMax/src"    "maxide" "maxide"
 
 	# modules
 	for mod in "${MOD_LIST[@]}"
@@ -536,18 +640,12 @@ prepare() {
 		echo "Extracting ${mod}.mod"
 		case "$PLATFORM" in
 			macos)
-				ditto -x -k --sequesterRsrc --rsrc zips/${mod}.mod.zip release/BlitzMax/mod && \
-					mv release/BlitzMax/mod/${mod}.mod-master release/BlitzMax/mod/${mod}.mod
-
-				ditto -x -k --sequesterRsrc --rsrc zips/${mod}.mod.zip temp/BlitzMax/mod && \
-					mv temp/BlitzMax/mod/${mod}.mod-master temp/BlitzMax/mod/${mod}.mod
+				ditto_and_rename "zips/${mod}.mod.zip" "release/BlitzMax/mod" "${mod}.mod" "${mod}.mod"
+				ditto_and_rename "zips/${mod}.mod.zip" "temp/BlitzMax/mod"    "${mod}.mod" "${mod}.mod"
 				;;
 			*)
-				unzip -q zips/${mod}.mod.zip -d release/BlitzMax/mod && \
-					mv release/BlitzMax/mod/${mod}.mod-master release/BlitzMax/mod/${mod}.mod
-
-				unzip -q zips/${mod}.mod.zip -d temp/BlitzMax/mod && \
-					mv temp/BlitzMax/mod/${mod}.mod-master temp/BlitzMax/mod/${mod}.mod
+				unzip_and_rename "zips/${mod}.mod.zip" "release/BlitzMax/mod" "${mod}.mod" "${mod}.mod"
+				unzip_and_rename "zips/${mod}.mod.zip" "temp/BlitzMax/mod"    "${mod}.mod" "${mod}.mod"
 				;;
 		esac
 	done
@@ -711,9 +809,25 @@ build_apps() {
 		OPTION="$G_OPTION"
 	fi
 
+	TARG_ARCH=""
+
+	# for windows native build, we need to ensure correct arch is set for initial bmk build
+	# otherwise it will use the default arch of the starting bmk, while the chosen compiler may be of a different arch
+	if [ ! -z "$CROSS_COMPILE" ];then
+		case "$PLATFORM" in
+			win32)
+				if [[ "$OPT_ARCH" == "x64" ]]; then
+					TARG_ARCH="-g x64"
+				elif [[ "$OPT_ARCH" == *"x86"* ]]; then
+					TARG_ARCH="-g x86"
+				fi
+				;;
+		esac
+	fi
+
 	echo ""
 	echo "Building Initial bmk (using initial bcc and current bmk)"
-	if temp/BlitzMax/bin/bmk makeapp -r -single temp/BlitzMax/src/bmk/bmk.bmx; then
+	if temp/BlitzMax/bin/bmk makeapp -r -single $TARG_ARCH temp/BlitzMax/src/bmk/bmk.bmx; then
 		retries=0
 		while [ $retries -lt 30 ]
 		do
@@ -913,22 +1027,26 @@ build_apps() {
 }
 
 get_version() {
-  # Extracting the version from bcc's version.bmx file
-  bcc_version=$(grep 'Const BCC_VERSION:String' temp/BlitzMax/src/bcc/version.bmx | sed -n 's/.*Const BCC_VERSION:String = "\(.*\)".*/\1/p')
+	# Extracting the version from bcc's version.bmx file
+	bcc_version=$(grep 'Const BCC_VERSION:String' temp/BlitzMax/src/bcc/version.bmx | sed -n 's/.*Const BCC_VERSION:String = "\(.*\)".*/\1/p')
 
-  # Extracting the version from bmk's version.bmx file
-  bmk_version=$(grep 'Const BMK_VERSION:String' temp/BlitzMax/src/bmk/version.bmx | sed -n 's/.*Const BMK_VERSION:String = "\(.*\)".*/\1/p')
+	# Extracting the version from bmk's version.bmx file
+	bmk_version=$(grep 'Const BMK_VERSION:String' temp/BlitzMax/src/bmk/version.bmx | sed -n 's/.*Const BMK_VERSION:String = "\(.*\)".*/\1/p')
 
-  # Building the PACKAGE_VERSION variable
-  PACKAGE_VERSION="$bcc_version.$bmk_version"
+	# Building the PACKAGE_VERSION variable
+	PACKAGE_VERSION="$bcc_version.$bmk_version"
 
-  # Append the timestamp
-  if [ ! -z "$USE_TIMESTAMP" ]; then
-    timestamp=$(date +%Y%m%d%H%M)
-    PACKAGE_VERSION="$PACKAGE_VERSION.$timestamp"
-  fi
+	# Append the timestamp
+	if [ ! -z "$USE_TIMESTAMP" ]; then
+		timestamp=$(date +%Y%m%d%H%M)
+		PACKAGE_VERSION="$PACKAGE_VERSION.$timestamp"
+	fi
 
-  echo "Building package version $PACKAGE_VERSION"
+	if [ -n "$WRITE_MANIFEST" ] && [ -n "$MANIFEST_FILE" ] && [ -f "$MANIFEST_FILE" ]; then
+		manifest_set_package_version "$MANIFEST_FILE" "$PACKAGE_VERSION"
+	fi
+
+	echo "Building package version $PACKAGE_VERSION"
 }
 
 write_version_tag() {
@@ -943,6 +1061,11 @@ package() {
 
 	echo "Cleanup"
 	rm -f release/BlitzMax/mod/image.mod/raw.mod/examples/gh2.rw2
+
+	if [ -n "$WRITE_MANIFEST" ] && [ -n "$MANIFEST_FILE" ] && [ -f "$MANIFEST_FILE" ]; then
+		echo "Copying manifest to release"
+		manifest_copy_to_release "$MANIFEST_FILE" "release/BlitzMax"
+	fi
 
 	Z_SUFFIX=""
 	PACKAGE_MIME_TYPE=""
@@ -1038,8 +1161,154 @@ build_samples() {
 	done
 }
 
+# Fetch JSON from GitHub API (uses GITHUB_TOKEN if available to avoid rate limits)
+github_api_get() {
+  local url="$1"
 
-while getopts ":a:b:w:r:l:pcfmszto" options; do
+  if command -v curl >/dev/null 2>&1; then
+    if [ -n "$GITHUB_TOKEN" ]; then
+      curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" "$url"
+    else
+      curl -fsSL "$url"
+    fi
+  else
+    # wget fallback
+    if [ -n "$GITHUB_TOKEN" ]; then
+      wget -qO- --header="Authorization: Bearer $GITHUB_TOKEN" --header="X-GitHub-Api-Version: 2022-11-28" "$url"
+    else
+      wget -qO- "$url"
+    fi
+  fi
+}
+
+# Resolve repo+ref (eg bmx-ng/bmk + master) to a 40-char commit SHA
+resolve_github_sha() {
+	local repo="$1"
+	local ref="$2"
+
+	local json
+	if ! json="$(github_api_get "https://api.github.com/repos/${repo}/commits/${ref}")"; then
+		echo ""
+		return 1
+	fi
+
+	# Grab the first "sha": "...." occurrence (the commit SHA of this object)
+	echo "$json" | sed -n 's/.*"sha":[[:space:]]*"\([0-9a-f]\{40\}\)".*/\1/p' | head -n 1
+}
+
+manifest_begin() {
+  local out="$1"
+
+  cat > "$out" <<EOF
+schema: 1
+product: BlitzMax NG
+package_version: ""
+EOF
+
+  echo "" >> "$out"
+}
+
+manifest_add_build_header() {
+  local out="$1"
+  local created_utc="$2"
+
+  cat >> "$out" <<EOF
+build:
+  created_utc: "$created_utc"
+  platform: "$PLATFORM"
+  arch: "$OPT_ARCH"
+  source_arch: "$SRC_ARCH"
+  host_os: "$OS_PLATFORM"
+  cross_compile: "$( [ -n "$CROSS_COMPILE" ] && echo true || echo false )"
+  win_compiler: "$WIN_VER"
+
+sources:
+EOF
+}
+
+manifest_add_invocation() {
+  local out="$1"
+  shift
+
+  echo "invocation:" >> "$out"
+  echo "  script: \"$SCRIPT_PATH\"" >> "$out"
+  echo "  command_line: \"$SCRIPT_ARGS_RAW\"" >> "$out"
+  echo "  argv:" >> "$out"
+
+  for arg in "$@"; do
+    # basic YAML escaping for quotes/backslashes
+    local esc="${arg//\\/\\\\}"
+    esc="${esc//\"/\\\"}"
+    echo "    - \"$esc\"" >> "$out"
+  done
+
+  echo "" >> "$out"
+}
+
+manifest_add_source() {
+	local out="$1"
+	local name="$2"
+	local repo="$3"
+	local ref="$4"
+	local sha="$5"
+	local zip_url="$6"
+	local local_zip="$7"
+	local zip_sha="$8"
+
+	cat >> "$out" <<EOF
+  - name: "$name"
+    repo: "$repo"
+    ref: "$ref"
+    commit: "$sha"
+    zip_url: "$zip_url"
+    local_zip: "$local_zip"
+    zip_sha256: "$zip_sha"
+EOF
+}
+
+manifest_add_toolchain() {
+	local out="$1"
+	local name="$2"
+	local used_for="$3"
+	local filename="$4"
+	local url="$5"
+
+	# Ensure toolchains section exists once
+	if ! grep -q "^toolchains:" "$out" 2>/dev/null; then
+		echo "" >> "$out"
+		echo "toolchains:" >> "$out"
+	fi
+
+	cat >> "$out" <<EOF
+  - name: "$name"
+    used_for: "$used_for"
+    filename: "$filename"
+    url: "$url"
+EOF
+}
+
+manifest_set_package_version() {
+	local out="$1"
+	local version="$2"
+
+	# Replace the first package_version line
+	# macOS sed needs -i "" ; GNU sed needs -i
+	if sed --version >/dev/null 2>&1; then
+		sed -i "s/^package_version: .*/package_version: \"${version}\"/" "$out"
+	else
+		sed -i "" "s/^package_version: .*/package_version: \"${version}\"/" "$out"
+	fi
+}
+
+manifest_copy_to_release() {
+	local tmp="$1"
+	local final="$2"
+
+	mv "$tmp" "$final"
+	echo "Wrote build manifest: $final"
+}
+
+while getopts ":a:b:w:r:l:pcfmsztoy:" options; do
 	case "${options}" in
 		a)
 			OPT_ARCH=${OPTARG}
@@ -1076,6 +1345,10 @@ while getopts ":a:b:w:r:l:pcfmszto" options; do
 			;;
 		o)
 			BUILD_BOOTSTRAP="y"
+			;;
+		y)
+			MANIFEST_FILE=${OPTARG}
+			WRITE_MANIFEST="y"
 			;;
 		:)
 			echo "Error: -${OPTARG} requires an argument."
