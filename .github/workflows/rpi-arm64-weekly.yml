@@ -23,7 +23,7 @@ jobs:
           run: |
             mkdir -p build
             cp src/scripts/build_release.sh build
-            docker run -v $GITHUB_WORKSPACE/build:/build -w /build blitzmax_rpi64_cross_compile ./build_release.sh -b 0.139.3.56 -a arm64 -r arm64 -l rpi -p -t -o
+            docker run -v $GITHUB_WORKSPACE/build:/build -w /build blitzmax_rpi64_cross_compile ./build_release.sh -b 0.139.3.56 -a arm64 -r arm64 -l rpi -p -t -o -y build-manifest.yml
   
         - name: Populate env variables
           run: |
