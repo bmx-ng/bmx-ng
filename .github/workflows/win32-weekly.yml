@@ -17,6 +17,8 @@ jobs:
             docker build --platform linux/amd64 -t blitzmax_win32_cross_compile -f src/scripts/Dockerfile.win32 .
   
         - name: Run build script in Docker
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
             mkdir -p build
             cp src/scripts/build_release.sh build
