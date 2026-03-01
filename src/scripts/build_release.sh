@@ -205,7 +205,7 @@ expand_platform() {
 	fi
 
 	if [ -z "$OPT_ARCH" ]; then
-		if [ ! -z "$CROSS_COMPILE" ]; then
+		if [ -n "$CROSS_COMPILE" ]; then
 			echo "Arch required for cross compile."
 			exit -1
 		fi
@@ -259,14 +259,14 @@ init() {
 
 	echo "OS Platform     : " $OS_PLATFORM
 	echo -n "Target Platform :  $PLATFORM"
-	if [ ! -z "$CROSS_COMPILE" ]; then
+	if [ -n "$CROSS_COMPILE" ]; then
 			echo " (cross-compile)"
 	else
 			echo ""
 	fi
 	echo "System Arch     : " $ARCH
 	echo "Source Arch     : " $SRC_ARCH
-	if [ ! -z "$BUILD_BOOTSTRAP" ]; then
+	if [ -n "$BUILD_BOOTSTRAP" ]; then
 		echo "Gen bootstrap   :  enabled"
 	fi
 }
@@ -282,7 +282,7 @@ clean_dirs() {
 	echo "Removing temp dir"
 	rm -rf temp
 
-	if [ ! -z "$CLEAN_ZIPS" ]; then
+	if [ -n "$CLEAN_ZIPS" ]; then
 		echo "Removing zips dir"
 		rm -rf zips
 	fi
@@ -347,7 +347,7 @@ check_base() {
 				fi
 				;;
 			linux)
-				if [ ! -z "$CROSS_COMPILE" ] && [ "$OS_PLATFORM" == "linux" ]; then
+				if [ -n "$CROSS_COMPILE" ] && [ "$OS_PLATFORM" == "linux" ]; then
 					if [ "$SRC_ARCH" == "arm" ] || [ "$SRC_ARCH" == "arm64" ]; then
 						PLAT="rpi"
 					fi
@@ -422,6 +422,7 @@ download_repo_zip() {
 	local local_zip="$4"   # e.g. zips/bmk.zip
 
 	local sha zip_url zip_sha
+	local attempt=0
 
 	sha="$(resolve_github_sha "$repo" "$ref")"
 	if [ -z "$sha" ]; then
@@ -429,11 +430,73 @@ download_repo_zip() {
 		exit 1
 	fi
 
-	zip_url="https://github.com/${repo}/archive/${sha}.zip"
+	# Use codeload for direct ZIP download
+	zip_url="https://codeload.github.com/${repo}/zip/${sha}"
 
 	if [ ! -f "$local_zip" ]; then
 		echo "Downloading ${name}.zip (${repo}@${ref} -> ${sha})"
-		wget -nv -O "$local_zip" "$zip_url"
+
+		while :; do
+			attempt=$((attempt + 1))
+			rm -f "$local_zip"  # remove any partial file from prior attempt
+
+			if command -v curl >/dev/null 2>&1; then
+				# curl: use -w to get HTTP status, -L redirects
+				http_code="$(
+					curl -sS -L \
+						-o "$local_zip" \
+						-w "%{http_code}" \
+						"$zip_url" || echo "000"
+				)"
+				ok=0
+				[ "$http_code" = "200" ] && ok=1
+
+				if [ "$ok" -ne 1 ]; then
+					[ "${GITHUB_DEBUG:-0}" = "1" ] && echo "Zip download HTTP $http_code (attempt $attempt/${GITHUB_RETRIES:-4}): $zip_url" >&2
+				fi
+			else
+				# wget: parse HTTP status from server response
+				tmp_err="$(mktemp)"
+				if wget -nv -S -O "$local_zip" "$zip_url" 2>"$tmp_err"; then
+					http_code="$(awk '/^  HTTP\//{code=$2} END{print code+0}' "$tmp_err")"
+					[ -z "$http_code" ] && http_code=200
+				else
+					http_code="$(awk '/^  HTTP\//{code=$2} END{print code+0}' "$tmp_err")"
+					[ -z "$http_code" ] && http_code=000
+					[ "${GITHUB_DEBUG:-0}" = "1" ] && { echo "wget error output:" >&2; tail -n +1 "$tmp_err" >&2; }
+				fi
+				rm -f "$tmp_err"
+			fi
+
+			# Sanity check: ensure it’s actually a ZIP (not an HTML error page)
+			# ZIP files start with "PK" (0x50 0x4B)
+			is_zip=0
+			if [ -f "$local_zip" ]; then
+				if head -c 2 "$local_zip" 2>/dev/null | LC_ALL=C grep -q '^PK'; then
+					is_zip=1
+				fi
+			fi
+
+			if [ "${is_zip}" -eq 1 ]; then
+				break
+			fi
+
+			rm -f "$local_zip"
+
+			# Decide retry
+			case "$http_code" in
+				429|500|502|503|504|000)
+					if [ "$attempt" -lt "${GITHUB_RETRIES:-4}" ]; then
+						[ "${GITHUB_DEBUG:-0}" = "1" ] && echo "Retrying zip download after backoff (HTTP $http_code)..." >&2
+						_backoff_sleep "$attempt"
+						continue
+					fi
+					;;
+			esac
+
+			echo "Error: failed to download ${name}.zip from $zip_url (HTTP $http_code)"
+			exit 1
+		done
 	else
 		echo "Using local ${local_zip}"
 	fi
@@ -720,7 +783,7 @@ build_apps() {
 	echo "--------------------"
 
 	G_OPTION=""
-	if [ ! -z "$ARCH" ]; then
+	if [ -n "$ARCH" ]; then
 		G_OPTION="-g $ARCH"
 	fi
 
@@ -807,7 +870,7 @@ build_apps() {
 
 	echo "Building Initial bmk"
 
-	if [ ! -z "$CROSS_COMPILE" ];then
+	if [ -n "$CROSS_COMPILE" ];then
 		OPTION=""
 	else
 		OPTION="$G_OPTION"
@@ -817,7 +880,7 @@ build_apps() {
 
 	# for windows native build, we need to ensure correct arch is set for initial bmk build
 	# otherwise it will use the default arch of the starting bmk, while the chosen compiler may be of a different arch
-	if [ ! -z "$CROSS_COMPILE" ];then
+	if [ -z "$CROSS_COMPILE" ];then
 		case "$PLATFORM" in
 			win32)
 				if [[ "$OPT_ARCH" == "x64" ]]; then
@@ -863,7 +926,7 @@ build_apps() {
 
 	C_OPTION="-single"
 
-	if [ ! -z "$CROSS_COMPILE" ];then
+	if [ -n "$CROSS_COMPILE" ];then
 
 		case "$PLATFORM" in
 			win32)
@@ -977,7 +1040,7 @@ build_apps() {
 			fi
 
 			# build bootstrap
-			if [ ! -z "$BUILD_BOOTSTRAP" ];then
+			if [ -n "$BUILD_BOOTSTRAP" ];then
 				echo "Configuring bootstrap"
 				cp temp/BlitzMax/src/bootstrap/bootstrap.cfg temp/BlitzMax/bin
 
@@ -1041,7 +1104,7 @@ get_version() {
 	PACKAGE_VERSION="$bcc_version.$bmk_version"
 
 	# Append the timestamp
-	if [ ! -z "$USE_TIMESTAMP" ]; then
+	if [ -n "$USE_TIMESTAMP" ]; then
 		timestamp=$(date +%Y%m%d%H%M)
 		PACKAGE_VERSION="$PACKAGE_VERSION.$timestamp"
 	fi
@@ -1142,7 +1205,7 @@ build_modules() {
 	echo "--------------------"
 
 	G_OPTION=""
-	if [ ! -z "$ARCH" ]; then
+	if [ -n "$ARCH" ]; then
 		G_OPTION="-g $ARCH"
 	fi
 
@@ -1155,7 +1218,7 @@ build_samples() {
 	echo "--------------------"
 
 	G_OPTION=""
-	if [ ! -z "$ARCH" ]; then
+	if [ -n "$ARCH" ]; then
 		G_OPTION="-g $ARCH"
 	fi
 
@@ -1513,7 +1576,7 @@ while getopts ":a:b:w:r:l:pcfmsztoy:" options; do
 done
 
 init
-if [ ! -z "$CLEAN_DIRS" ]; then
+if [ -n "$CLEAN_DIRS" ]; then
 	clean_dirs
 fi
 make_dirs
@@ -1521,15 +1584,15 @@ check_base
 download
 prepare
 build_apps
-if [ ! -z "$BUILD_MODULES" ]; then
+if [ -n "$BUILD_MODULES" ]; then
 	build_modules
 fi
-if [ ! -z "$PACKAGE_VERSION" ]; then
+if [ -n "$PACKAGE_VERSION" ]; then
 	get_version
 	write_version_tag
 	package
 fi
-if [ ! -z "$BUILD_SAMPLES" ]; then
+if [ -n "$BUILD_SAMPLES" ]; then
 	build_samples
 fi
 
