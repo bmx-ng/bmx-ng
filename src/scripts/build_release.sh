@@ -401,15 +401,6 @@ check_base() {
 				tar -xJf ${ARCHIVE} --no-same-owner
 				;;
 		esac
-		
-		case "$OS_PLATFORM" in
-			macos)
-				CUR=`pwd`
-				echo "Running init scripts"
-				source BlitzMax/run_me_first.command
-				cd "$CUR"
-				;;
-		esac
 	else
 		echo "Using local BlitzMax"
 	fi
