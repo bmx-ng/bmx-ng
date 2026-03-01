@@ -59,6 +59,10 @@ SCRIPT_PATH="$0"
 # raw args
 SCRIPT_ARGS_RAW="$*"
 
+: "${GITHUB_RETRIES:=4}"     # default retries
+: "${GITHUB_BACKOFF:=2}"     # base backoff seconds
+: "${GITHUB_DEBUG:=0}"       # 1 = verbose debug
+
 OPT_ARCH=""
 SRC_ARCH=""
 BUILD_VERSION=""
@@ -242,24 +246,24 @@ init() {
 		PLATFORM=$OS_PLATFORM
 	fi
 
-    if [ "$OS_PLATFORM" != "$PLATFORM" ];then
+	if [ "$OS_PLATFORM" != "$PLATFORM" ];then
 		if [ "$PLATFORM" != "win32" ] && [ "$PLATFORM" != "rpi" ]; then
 			echo "Error: Cannot cross-compile to $PLATFORM on $OS_PLATFORM"
 			exit 1
 		else
 			CROSS_COMPILE="y"
 		fi
-    fi
+	fi
 
 	expand_platform
 
 	echo "OS Platform     : " $OS_PLATFORM
-    echo -n "Target Platform :  $PLATFORM"
-    if [ ! -z "$CROSS_COMPILE" ]; then
-        echo " (cross-compile)"
-    else
-        echo ""
-    fi
+	echo -n "Target Platform :  $PLATFORM"
+	if [ ! -z "$CROSS_COMPILE" ]; then
+			echo " (cross-compile)"
+	else
+			echo ""
+	fi
 	echo "System Arch     : " $ARCH
 	echo "Source Arch     : " $SRC_ARCH
 	if [ ! -z "$BUILD_BOOTSTRAP" ]; then
@@ -450,50 +454,50 @@ download_repo_zip() {
 #   unzip_and_rename zips/bmx-ng.zip release bmx-ng BlitzMax
 # This will unzip into release/, then move release/bmx-ng-* -> release/BlitzMax
 unzip_and_rename() {
-  local zip="$1"
-  local dest="$2"
-  local prefix="$3"   # e.g. "bmx-ng", "bcc", "brl.mod"
-  local target="$4"   # e.g. "BlitzMax", "bcc", "brl.mod"
+	local zip="$1"
+	local dest="$2"
+	local prefix="$3"   # e.g. "bmx-ng", "bcc", "brl.mod"
+	local target="$4"   # e.g. "BlitzMax", "bcc", "brl.mod"
 
-  # Ensure destination exists
-  mkdir -p "$dest"
+	# Ensure destination exists
+	mkdir -p "$dest"
 
-  # Unzip
-  unzip -q "$zip" -d "$dest"
+	# Unzip
+	unzip -q "$zip" -d "$dest"
 
-  # Find the extracted top-level folder (GitHub archives create exactly one)
-  local extracted
-  extracted="$(find "$dest" -maxdepth 1 -type d -name "${prefix}-*" | head -n 1)"
+	# Find the extracted top-level folder (GitHub archives create exactly one)
+	local extracted
+	extracted="$(find "$dest" -maxdepth 1 -type d -name "${prefix}-*" | head -n 1)"
 
-  if [ -z "$extracted" ]; then
-    echo "Error: Could not find extracted folder matching ${dest}/${prefix}-* from $zip"
-    exit 1
-  fi
+	if [ -z "$extracted" ]; then
+		echo "Error: Could not find extracted folder matching ${dest}/${prefix}-* from $zip"
+		exit 1
+	fi
 
-  # Remove existing target if present (optional safety)
-  rm -rf "${dest}/${target}"
+	# Remove existing target if present (optional safety)
+	rm -rf "${dest}/${target}"
 
-  mv "$extracted" "${dest}/${target}"
+	mv "$extracted" "${dest}/${target}"
 }
 
 ditto_and_rename() {
-  local zip="$1"
-  local dest="$2"
-  local prefix="$3"
-  local target="$4"
+	local zip="$1"
+	local dest="$2"
+	local prefix="$3"
+	local target="$4"
 
-  mkdir -p "$dest"
-  ditto -x -k --sequesterRsrc --rsrc "$zip" "$dest"
+	mkdir -p "$dest"
+	ditto -x -k --sequesterRsrc --rsrc "$zip" "$dest"
 
-  local extracted
-  extracted="$(find "$dest" -maxdepth 1 -type d -name "${prefix}-*" | head -n 1)"
-  if [ -z "$extracted" ]; then
-    echo "Error: Could not find extracted folder matching ${dest}/${prefix}-* from $zip"
-    exit 1
-  fi
+	local extracted
+	extracted="$(find "$dest" -maxdepth 1 -type d -name "${prefix}-*" | head -n 1)"
+	if [ -z "$extracted" ]; then
+		echo "Error: Could not find extracted folder matching ${dest}/${prefix}-* from $zip"
+		exit 1
+	fi
 
-  rm -rf "${dest}/${target}"
-  mv "$extracted" "${dest}/${target}"
+	rm -rf "${dest}/${target}"
+	mv "$extracted" "${dest}/${target}"
 }
 
 sha256_file() {
@@ -562,8 +566,8 @@ download() {
 
 	# apps
 	download_repo_zip "bcc" "bmx-ng/bcc" "master" "zips/bcc.zip"
-  	download_repo_zip "bmk" "bmx-ng/bmk" "master" "zips/bmk.zip"
-  	download_repo_zip "maxide" "bmx-ng/maxide" "master" "zips/maxide.zip"
+	download_repo_zip "bmk" "bmx-ng/bmk" "master" "zips/bmk.zip"
+	download_repo_zip "maxide" "bmx-ng/maxide" "master" "zips/maxide.zip"
 
 	# modules
 	for mod in "${MOD_LIST[@]}"
@@ -1050,8 +1054,8 @@ get_version() {
 }
 
 write_version_tag() {
-  echo "Writing version tag to ${TAG_FILENAME}"
-  echo "$PACKAGE_VERSION" > ${TAG_FILENAME}
+	echo "Writing version tag to ${TAG_FILENAME}"
+	echo "$PACKAGE_VERSION" > ${TAG_FILENAME}
 }
 
 package() {
@@ -1127,9 +1131,9 @@ package() {
 	esac
 
 	echo "Writing package filename to ${PACKAGE_FILENAME}"
-  	echo "${ZIP}${Z_SUFFIX}" > ${PACKAGE_FILENAME}
+	echo "${ZIP}${Z_SUFFIX}" > ${PACKAGE_FILENAME}
 	echo "Writing package mime type to ${PACKAGE_MIME_FILENAME}"
-  	echo "${PACKAGE_MIME_TYPE}" > ${PACKAGE_MIME_FILENAME}
+	echo "${PACKAGE_MIME_TYPE}" > ${PACKAGE_MIME_FILENAME}
 }
 
 build_modules() {
@@ -1161,24 +1165,175 @@ build_samples() {
 	done
 }
 
+_backoff_sleep() {
+	local attempt="$1"
+	local base="${GITHUB_BACKOFF}"
+	sleep $(( base ** attempt ))
+}
+
+# Extract a JSON "message" field from GitHub error payloads
+_json_message() {
+	sed -n 's/.*"message"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1
+}
+
+# Extract a header value from a headers file
+_header_value() {
+	local key="$1" file="$2"
+	awk -v k="$key" '
+		BEGIN{IGNORECASE=1}
+		$0 ~ ("^" k ":") {
+			sub(/^[^:]*:[[:space:]]*/, "", $0)
+			sub(/\r$/, "", $0)
+			print $0
+			exit
+		}
+	' "$file"
+}
+
 # Fetch JSON from GitHub API (uses GITHUB_TOKEN if available to avoid rate limits)
 github_api_get() {
-  local url="$1"
+	local url="$1"
+	local attempt=0
 
-  if command -v curl >/dev/null 2>&1; then
-    if [ -n "$GITHUB_TOKEN" ]; then
-      curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" "$url"
-    else
-      curl -fsSL "$url"
-    fi
-  else
-    # wget fallback
-    if [ -n "$GITHUB_TOKEN" ]; then
-      wget -qO- --header="Authorization: Bearer $GITHUB_TOKEN" --header="X-GitHub-Api-Version: 2022-11-28" "$url"
-    else
-      wget -qO- "$url"
-    fi
-  fi
+	# Common headers
+	local headers=(
+		-H "Accept: application/vnd.github+json"
+		-H "X-GitHub-Api-Version: 2022-11-28"
+	)
+	# Auth header only if token is available
+	if [ -n "$GITHUB_TOKEN" ]; then
+		headers+=(-H "Authorization: Bearer $GITHUB_TOKEN")
+	fi
+
+	while :; do
+		attempt=$((attempt + 1))
+
+		if command -v curl >/dev/null 2>&1; then
+			local body_file headers_file http_code
+			body_file="$(mktemp)"
+			headers_file="$(mktemp)"
+
+			http_code="$(
+				curl -sS -L \
+					"${headers[@]}" \
+					-D "$headers_file" \
+					-o "$body_file" \
+					-w "%{http_code}" \
+					"$url" || echo "000"
+			)"
+
+			# Pull some useful headers
+			local rl_remaining rl_reset retry_after req_id
+			rl_remaining="$(_header_value "X-RateLimit-Remaining" "$headers_file")"
+			rl_reset="$(_header_value "X-RateLimit-Reset" "$headers_file")"
+			retry_after="$(_header_value "Retry-After" "$headers_file")"
+			req_id="$(_header_value "X-GitHub-Request-Id" "$headers_file")"
+
+			if [ "$GITHUB_DEBUG" = "1" ]; then
+				echo "GitHub API GET (attempt $attempt/$GITHUB_RETRIES): HTTP $http_code  url=$url" >&2
+				[ -n "$req_id" ] && echo "  X-GitHub-Request-Id: $req_id" >&2
+				[ -n "$rl_remaining" ] && echo "  X-RateLimit-Remaining: $rl_remaining" >&2
+				[ -n "$rl_reset" ] && echo "  X-RateLimit-Reset: $rl_reset" >&2
+				[ -n "$retry_after" ] && echo "  Retry-After: $retry_after" >&2
+			fi
+
+			# success!
+			if [ "$http_code" = "200" ]; then
+				cat "$body_file"
+				rm -f "$body_file" "$headers_file"
+				return 0
+			fi
+
+			# On errors, log a short body message (helps with 403/404/rate-limit)
+			if [ "$GITHUB_DEBUG" = "1" ]; then
+				local msg
+				msg="$(head -c 1200 "$body_file" | _json_message)"
+				echo "  Error message: ${msg:-<none>}" >&2
+				echo "  Body (first 400 bytes):" >&2
+				head -c 400 "$body_file" >&2 || true
+				echo >&2
+			fi
+
+			rm -f "$body_file" "$headers_file"
+
+			# Decide retry behaviour based on status
+			case "$http_code" in
+				429|500|502|503|504|000)
+					# Respect Retry-After if present (best for 429 / abuse limits)
+					if [ -n "$retry_after" ] && [ "$retry_after" -ge 1 ] 2>/dev/null; then
+						if [ "$attempt" -lt "$GITHUB_RETRIES" ]; then
+							[ "$GITHUB_DEBUG" = "1" ] && echo "  Sleeping Retry-After: $retry_after" >&2
+							sleep "$retry_after"
+							continue
+						fi
+					fi
+
+					if [ "$attempt" -lt "$GITHUB_RETRIES" ]; then
+						_backoff_sleep "$attempt"
+						continue
+					fi
+					return 1
+					;;
+				403)
+					# 403 can be rate-limit, abuse-limit, or permission.
+					# If rate limit remaining is 0, back off and retry; otherwise fail fast.
+					if [ "$rl_remaining" = "0" ] && [ "$attempt" -lt "$GITHUB_RETRIES" ]; then
+						# If reset is available, sleep until reset (cap to something sane if you like)
+						if [ -n "$rl_reset" ] && [ "$rl_reset" -ge 1 ] 2>/dev/null; then
+							# rl_reset is unix epoch seconds
+							local now wait
+							now="$(date +%s)"
+							wait=$(( rl_reset - now + 1 ))
+							if [ "$wait" -gt 0 ] && [ "$wait" -lt 600 ]; then
+								[ "$GITHUB_DEBUG" = "1" ] && echo "  Rate-limited; sleeping $wait seconds until reset" >&2
+								sleep "$wait"
+								continue
+							fi
+						fi
+						_backoff_sleep "$attempt"
+						continue
+					fi
+					return 1
+					;;
+				*)
+					# Non-retriable (404, 401, 422, etc.)
+					return 1
+					;;
+			esac
+
+		else
+			# --- wget fallback ---
+			local out=""
+			if [ -n "$GITHUB_TOKEN" ]; then
+				out="$(wget -qO- \
+					--header="Accept: application/vnd.github+json" \
+					--header="X-GitHub-Api-Version: 2022-11-28" \
+					--header="Authorization: Bearer $GITHUB_TOKEN" \
+					"$url" 2>/dev/null)" || out=""
+			else
+				out="$(wget -qO- \
+					--header="Accept: application/vnd.github+json" \
+					--header="X-GitHub-Api-Version: 2022-11-28" \
+					"$url" 2>/dev/null)" || out=""
+			fi
+
+			if [ -n "$out" ]; then
+				echo "$out"
+				return 0
+			fi
+
+			if [ "$GITHUB_DEBUG" = "1" ]; then
+				echo "GitHub API GET failed (wget) attempt $attempt/$GITHUB_RETRIES: $url" >&2
+			fi
+
+			if [ "$attempt" -lt "$GITHUB_RETRIES" ]; then
+				_backoff_sleep "$attempt"
+				continue
+			fi
+
+			return 1
+		fi
+	done
 }
 
 # Resolve repo+ref (eg bmx-ng/bmk + master) to a 40-char commit SHA
@@ -1197,52 +1352,52 @@ resolve_github_sha() {
 }
 
 manifest_begin() {
-  local out="$1"
+	local out="$1"
 
-  cat > "$out" <<EOF
+	cat > "$out" <<EOF
 schema: 1
 product: BlitzMax NG
 package_version: ""
 EOF
 
-  echo "" >> "$out"
+	echo "" >> "$out"
 }
 
 manifest_add_build_header() {
-  local out="$1"
-  local created_utc="$2"
+	local out="$1"
+	local created_utc="$2"
 
-  cat >> "$out" <<EOF
+	cat >> "$out" <<EOF
 build:
-  created_utc: "$created_utc"
-  platform: "$PLATFORM"
-  arch: "$OPT_ARCH"
-  source_arch: "$SRC_ARCH"
-  host_os: "$OS_PLATFORM"
-  cross_compile: "$( [ -n "$CROSS_COMPILE" ] && echo true || echo false )"
-  win_compiler: "$WIN_VER"
+	created_utc: "$created_utc"
+	platform: "$PLATFORM"
+	arch: "$OPT_ARCH"
+	source_arch: "$SRC_ARCH"
+	host_os: "$OS_PLATFORM"
+	cross_compile: "$( [ -n "$CROSS_COMPILE" ] && echo true || echo false )"
+	win_compiler: "$WIN_VER"
 
 sources:
 EOF
 }
 
 manifest_add_invocation() {
-  local out="$1"
-  shift
+	local out="$1"
+	shift
 
-  echo "invocation:" >> "$out"
-  echo "  script: \"$SCRIPT_PATH\"" >> "$out"
-  echo "  command_line: \"$SCRIPT_ARGS_RAW\"" >> "$out"
-  echo "  argv:" >> "$out"
+	echo "invocation:" >> "$out"
+	echo "  script: \"$SCRIPT_PATH\"" >> "$out"
+	echo "  command_line: \"$SCRIPT_ARGS_RAW\"" >> "$out"
+	echo "  argv:" >> "$out"
 
-  for arg in "$@"; do
-    # basic YAML escaping for quotes/backslashes
-    local esc="${arg//\\/\\\\}"
-    esc="${esc//\"/\\\"}"
-    echo "    - \"$esc\"" >> "$out"
-  done
+	for arg in "$@"; do
+		# basic YAML escaping for quotes/backslashes
+		local esc="${arg//\\/\\\\}"
+		esc="${esc//\"/\\\"}"
+		echo "    - \"$esc\"" >> "$out"
+	done
 
-  echo "" >> "$out"
+	echo "" >> "$out"
 }
 
 manifest_add_source() {
@@ -1256,13 +1411,13 @@ manifest_add_source() {
 	local zip_sha="$8"
 
 	cat >> "$out" <<EOF
-  - name: "$name"
-    repo: "$repo"
-    ref: "$ref"
-    commit: "$sha"
-    zip_url: "$zip_url"
-    local_zip: "$local_zip"
-    zip_sha256: "$zip_sha"
+	- name: "$name"
+		repo: "$repo"
+		ref: "$ref"
+		commit: "$sha"
+		zip_url: "$zip_url"
+		local_zip: "$local_zip"
+		zip_sha256: "$zip_sha"
 EOF
 }
 
@@ -1280,10 +1435,10 @@ manifest_add_toolchain() {
 	fi
 
 	cat >> "$out" <<EOF
-  - name: "$name"
-    used_for: "$used_for"
-    filename: "$filename"
-    url: "$url"
+	- name: "$name"
+		used_for: "$used_for"
+		filename: "$filename"
+		url: "$url"
 EOF
 }
 
