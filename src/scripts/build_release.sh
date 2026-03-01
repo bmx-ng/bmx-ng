@@ -1326,6 +1326,7 @@ github_api_get() {
 						_backoff_sleep "$attempt"
 						continue
 					fi
+					echo "GitHub API request failed with status $http_code: $url" >&2
 					return 1
 					;;
 				403)
@@ -1347,10 +1348,12 @@ github_api_get() {
 						_backoff_sleep "$attempt"
 						continue
 					fi
+					echo "GitHub API rate limit exceeded or access forbidden: $url" >&2
 					return 1
 					;;
 				*)
 					# Non-retriable (404, 401, 422, etc.)
+					echo "GitHub API request failed with status $http_code: $url" >&2
 					return 1
 					;;
 			esac
@@ -1390,19 +1393,35 @@ github_api_get() {
 	done
 }
 
-# Resolve repo+ref (eg bmx-ng/bmk + master) to a 40-char commit SHA
 resolve_github_sha() {
-	local repo="$1"
-	local ref="$2"
+  local repo="$1"
+  local ref="$2"
+  local url="https://api.github.com/repos/${repo}/commits/${ref}"
 
-	local json
-	if ! json="$(github_api_get "https://api.github.com/repos/${repo}/commits/${ref}")"; then
-		echo ""
-		return 1
-	fi
+  local json
+  if ! json="$(github_api_get "$url")"; then
+    [ "$GITHUB_DEBUG" = "1" ] && echo "Error: GitHub API request failed for ${repo}@${ref} (${url})" >&2
+    echo ""
+    return 1
+  fi
 
-	# Grab the first "sha": "...." occurrence (the commit SHA of this object)
-	echo "$json" | sed -n 's/.*"sha":[[:space:]]*"\([0-9a-f]\{40\}\)".*/\1/p' | head -n 1
+  local sha=""
+  if command -v jq >/dev/null 2>&1; then
+    sha="$(printf '%s' "$json" | jq -r '.sha // empty' 2>/dev/null)"
+  else
+    sha="$(printf '%s' "$json" | sed -n 's/.*"sha":[[:space:]]*"\([0-9a-f]\{40\}\)".*/\1/p' | head -n 1)"
+  fi
+
+  if [ -z "$sha" ] && [ "$GITHUB_DEBUG" = "1" ]; then
+    local msg
+    msg="$(printf '%s' "$json" | _json_message)"
+    echo "Error: Could not extract SHA for ${repo}@${ref}. GitHub message: ${msg:-<none>}" >&2
+    echo "Raw JSON (first 400 bytes):" >&2
+    printf '%s' "$json" | head -c 400 >&2 || true
+    echo >&2
+  fi
+
+  echo "$sha"
 }
 
 manifest_begin() {
