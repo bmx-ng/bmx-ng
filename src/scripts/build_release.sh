@@ -815,9 +815,9 @@ build_apps() {
 
 	TARG_ARCH=""
 
-	# for windows native build, we need to ensure correct arch is set for initial bmk build
+	# for windows native (so no cross-compile) build, we need to ensure correct arch is set for initial bmk build
 	# otherwise it will use the default arch of the starting bmk, while the chosen compiler may be of a different arch
-	if [ ! -z "$CROSS_COMPILE" ];then
+	if [ -z "$CROSS_COMPILE" ];then
 		case "$PLATFORM" in
 			win32)
 				if [[ "$OPT_ARCH" == "x64" ]]; then
