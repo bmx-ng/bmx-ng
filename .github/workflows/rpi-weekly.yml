@@ -20,6 +20,8 @@ jobs:
             docker build --platform linux/arm/v7 -t blitzmax_rpi_cross_compile -f src/scripts/Dockerfile.rpi .
   
         - name: Run build script in Docker
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
             mkdir -p build
             cp src/scripts/build_release.sh build
