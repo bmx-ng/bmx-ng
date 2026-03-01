@@ -615,6 +615,12 @@ download() {
 			;;
 	esac
 
+	if [ -n "$GITHUB_TOKEN" ]; then
+		echo "Using GITHUB_TOKEN for authenticated API requests" >&2
+	else
+		echo "No GITHUB_TOKEN found; API requests will be unauthenticated and subject to stricter rate limits" >&2
+	fi
+
 	# base
 	download_repo_zip "bmx-ng" "bmx-ng/bmx-ng" "master" "zips/bmx-ng.zip"
 
