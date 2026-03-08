@@ -406,6 +406,35 @@ check_base() {
 	fi
 }
 
+zip_meta_file() {
+	echo "${1}.meta"
+}
+
+write_zip_cache() {
+	local meta_file="$1"
+	local name="$2"
+	local repo="$3"
+	local ref="$4"
+	local sha="$5"
+	local zip_url="$6"
+	local zip_sha="$7"
+
+	cat > "$meta_file" <<EOF
+name=$name
+repo=$repo
+ref=$ref
+commit=$sha
+zip_url=$zip_url
+zip_sha256=$zip_sha
+EOF
+}
+
+read_zip_cache_value() {
+	local key="$1"
+	local meta_file="$2"
+	sed -n "s/^${key}=//p" "$meta_file" | head -n 1
+}
+
 download_repo_zip() {
 	local name="$1"        # e.g. bmk
 	local repo="$2"        # e.g. bmx-ng/bmk
@@ -413,17 +442,54 @@ download_repo_zip() {
 	local local_zip="$4"   # e.g. zips/bmk.zip
 
 	local sha zip_url zip_sha
+	local meta_file cached_sha cached_repo cached_ref cached_zip_url cached_zip_sha
 	local attempt=0
+	local have_valid_cache=0
 
-	sha="$(resolve_github_sha "$repo" "$ref")"
-	if [ -z "$sha" ]; then
-		echo "Error: failed to resolve ${repo}@${ref} to a commit SHA"
-		exit 1
+	meta_file="$(zip_meta_file "$local_zip")"
+
+	# If local zip exists, see if we can use cached metadata
+	if [ -f "$local_zip" ]; then
+		echo "Using local ${local_zip}"
+		zip_sha="$(sha256_file "$local_zip")"
+
+		if [ -f "$meta_file" ]; then
+			cached_sha="$(read_zip_cache_value commit "$meta_file")"
+			cached_repo="$(read_zip_cache_value repo "$meta_file")"
+			cached_ref="$(read_zip_cache_value ref "$meta_file")"
+			cached_zip_url="$(read_zip_cache_value zip_url "$meta_file")"
+			cached_zip_sha="$(read_zip_cache_value zip_sha256 "$meta_file")"
+
+			if [ "$cached_repo" = "$repo" ] && \
+			   [ "$cached_ref" = "$ref" ] && \
+			   [ -n "$cached_sha" ] && \
+			   [ -n "$cached_zip_url" ] && \
+			   [ -n "$cached_zip_sha" ] && \
+			   [ "$cached_zip_sha" = "$zip_sha" ]; then
+				sha="$cached_sha"
+				zip_url="$cached_zip_url"
+				have_valid_cache=1
+				echo "    Using cached metadata from ${meta_file}"
+			else
+				echo "Warning: cache mismatch or incomplete metadata in ${meta_file}; refreshing metadata" >&2
+			fi
+		fi
 	fi
 
-	# Use codeload for direct ZIP download
-	zip_url="https://codeload.github.com/${repo}/zip/${sha}"
+	# If we don't have valid cache, resolve from GitHub
+	if [ "$have_valid_cache" -ne 1 ]; then
+		echo "Resolving ${repo}@${ref} from GitHub API..."
+		sha="$(resolve_github_sha "$repo" "$ref")"
+		if [ -z "$sha" ]; then
+			echo "Error: failed to resolve ${repo}@${ref} to a commit SHA"
+			exit 1
+		fi
 
+		# Use codeload for direct ZIP download
+		zip_url="https://codeload.github.com/${repo}/zip/${sha}"
+	fi
+
+	# Download only if missing
 	if [ ! -f "$local_zip" ]; then
 		echo "Downloading ${name}.zip (${repo}@${ref} -> ${sha})"
 
@@ -468,7 +534,7 @@ download_repo_zip() {
 				fi
 			fi
 
-			if [ "${is_zip}" -eq 1 ]; then
+			if [ "$is_zip" -eq 1 ]; then
 				break
 			fi
 
@@ -488,14 +554,14 @@ download_repo_zip() {
 			echo "Error: failed to download ${name}.zip from $zip_url (HTTP $http_code)"
 			exit 1
 		done
-	else
-		echo "Using local ${local_zip}"
-	fi
 
-	zip_sha="$(sha256_file "$local_zip")"
+		zip_sha="$(sha256_file "$local_zip")"
+	fi
 
 	if [ -z "$zip_sha" ]; then
 		echo "Warning: could not compute sha256 for $local_zip"
+	else
+		write_zip_cache "$meta_file" "$name" "$repo" "$ref" "$sha" "$zip_url" "$zip_sha"
 	fi
 
 	if [ -n "$WRITE_MANIFEST" ]; then
