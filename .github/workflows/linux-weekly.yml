@@ -27,7 +27,7 @@ jobs:
               -v "$GITHUB_WORKSPACE/build:/build" \
               -w /build \
               blitzmax_linux_cross_compile \
-              ./build_release.sh -b 0.138.3.53 -a x64 -r x64 -p -t -y build-manifest.yml
+              ./build_release.sh -b 0.162.3.61.202606070503 -a x64 -r x64 -p -t -u -y build-manifest.yml
   
         - name: Populate env variables
           run: |

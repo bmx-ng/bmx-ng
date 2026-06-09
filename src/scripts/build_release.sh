@@ -29,6 +29,7 @@ usage() {
 	echo "    -c           : Don't clean dirs."
 	echo "    -m           : Build all modules."
 	echo "    -s           : Build samples."
+	echo "    -u           : Run module unit tests."
 	echo "    -z           : Clean 'zips' dir."
 	echo "    -y <file>    : Write build manifest YAML to <file>"
 	exit 0
@@ -76,6 +77,7 @@ CLEAN_ZIPS=""
 BUILD_SAMPLES=""
 BUILD_BOOTSTRAP=""
 PACKAGE_VERSION=""
+RUN_UNIT_TESTS=""
 USE_TIMESTAMP=""
 MINGW_X86="i686-12.2.0-release-posix-dwarf-rt_v10-rev1.7z"
 MINGW_X86_URL="https://github.com/niXman/mingw-builds-binaries/releases/download/12.2.0-rt_v10-rev1/i686-12.2.0-release-posix-dwarf-rt_v10-rev1.7z"
@@ -106,6 +108,7 @@ WIN_VERS=("mingw" "llvm")
 
 MOD_LIST=("brl" "pub" "maxgui" "audio" "crypto" "image" "mky" "net" "random" "sdl" "steam" "text" "math" "archive" "collections")
 SAMPLE_LIST=("aaronkoolen/AStar/astar_demo.bmx" "birdie/games/tempest/tempest.bmx" "birdie/games/tiledrop/tiledrop.bmx" "birdie/games/zombieblast/game.bmx" "breakout/breakout.bmx" "digesteroids/digesteroids.bmx" "firepaint/firepaint.bmx" "flameduck/circlemania/cmania.bmx" "flameduck/oldskool2/oldskool2.bmx" "hitoro/fireworks.bmx" "hitoro/shadowimage.bmx" "simonh/fireworks/fireworks.bmx" "simonh/snow/snowfall.bmx" "spintext/spintext.bmx" "starfieldpong/starfieldpong.bmx" "tempest/tempest.bmx")
+UNIT_TEST_BLACKLIST=("maxgui" "audio" "image" "mky" "sdl" "steam" "math")
 
 get_arch() {
 	ARCH=`uname -m`
@@ -1184,6 +1187,119 @@ write_version_tag() {
 	echo "$PACKAGE_VERSION" > ${TAG_FILENAME}
 }
 
+run_unit_tests() {
+
+	echo "--------------------"
+	echo "-  UNIT TESTS      -"
+	echo "--------------------"
+
+	if [ -n "$CROSS_COMPILE" ];then
+		# unable to run unit tests when cross-compiling, as the built executables can't be run on the build machine
+		echo ""
+		echo "Cross-compilation detected; skipping unit tests"
+		echo ""
+		return
+	fi
+
+	G_OPTION=""
+	if [ -n "$ARCH" ]; then
+		G_OPTION="-g $ARCH"
+	fi
+
+	local build_failures=0
+	local test_failures=0
+	local skipped=0
+	local runnable=0
+	local executed=0
+	local bmk="temp/BlitzMax/bin/bmk"
+
+	local testfiles=()
+	while IFS= read -r testfile; do
+		testfiles+=("$testfile")
+	done < <(find temp/BlitzMax/mod -path "*/tests/test.bmx" -type f | sort)
+
+	local discovered=${#testfiles[@]}
+
+	for testfile in "${testfiles[@]}"; do
+		local skip_test=0
+
+		for blacklist in "${UNIT_TEST_BLACKLIST[@]}"; do
+			if [[ "$testfile" == *"/${blacklist}.mod/"* ]]; then
+				skip_test=1
+				break
+			fi
+		done
+
+		if [ "$skip_test" -eq 1 ]; then
+			((skipped++))
+		else
+			((runnable++))
+		fi
+	done
+
+	echo ""
+	echo "Discovered : ${discovered}"
+	echo "Runnable   : ${runnable}"
+	echo "Skipped    : ${skipped}"
+
+	for testfile in "${testfiles[@]}"; do
+		local skip_test=0
+
+		for blacklist in "${UNIT_TEST_BLACKLIST[@]}"; do
+			if [[ "$testfile" == *"/${blacklist}.mod/"* ]]; then
+				skip_test=1
+				break
+			fi
+		done
+
+		if [ "$skip_test" -eq 1 ]; then
+			continue
+		fi
+
+		((executed++))
+
+		local module=${testfile#temp/BlitzMax/mod/}
+		module=${module%/tests/*}
+		module=${module//.mod/}
+		module=${module//\//.}
+
+		echo ""
+		echo "[${executed}/${runnable}] Testing ${module}"
+		echo ""
+
+		if ! "$bmk" makeapp -a $G_OPTION -r "$testfile"; then
+			echo "Failed to build test: ${module}"
+			((build_failures++))
+			continue
+		fi
+
+		local exe="${testfile%.bmx}"
+
+		case "$PLATFORM" in
+			win32) exe="${exe}.exe" ;;
+		esac
+
+		if ! "$exe"; then
+			echo "Unit test failed: ${module}"
+			((test_failures++))
+		fi
+	done
+
+	echo ""
+	echo "Unit Tests Summary"
+	echo "------------------"
+	echo "Discovered      : ${discovered}"
+	echo "Executed        : ${executed}"
+	echo "Skipped         : ${skipped}"
+	echo "Build Failures  : ${build_failures}"
+	echo "Test Failures   : ${test_failures}"
+
+	if [ "$build_failures" -ne 0 ] || [ "$test_failures" -ne 0 ]; then
+		echo "Unit tests failed"
+		exit 1
+	fi
+}
+
 package() {
 	echo "--------------------"
 	echo "-     PACKAGE      -"
@@ -1608,7 +1724,7 @@ manifest_copy_to_release() {
 	echo "Wrote build manifest: $final"
 }
 
-while getopts ":a:b:w:r:l:pcfmsztoy:" options; do
+while getopts ":a:b:w:r:l:pcfmsztouy:" options; do
 	case "${options}" in
 		a)
 			OPT_ARCH=${OPTARG}
@@ -1650,6 +1766,9 @@ while getopts ":a:b:w:r:l:pcfmsztoy:" options; do
 			MANIFEST_FILE=${OPTARG}
 			WRITE_MANIFEST="y"
 			;;
+		u)
+			RUN_UNIT_TESTS="y"
+			;;
 		:)
 			echo "Error: -${OPTARG} requires an argument."
 			exit 1
@@ -1668,6 +1787,9 @@ prepare
 build_apps
 if [ -n "$BUILD_MODULES" ]; then
 	build_modules
+fi
+if [ -n "$RUN_UNIT_TESTS" ]; then
+	run_unit_tests
 fi
 if [ -n "$PACKAGE_VERSION" ]; then
 	get_version
