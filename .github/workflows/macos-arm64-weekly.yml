@@ -19,7 +19,7 @@ jobs:
             mkdir -p build
             cp src/scripts/build_release.sh build
             cd build
-            ./build_release.sh -b 0.152.3.58.202512070242 -p -t -r x64 -a arm64 -y build-manifest.yml
+            ./build_release.sh -b 0.162.3.61.202606070520 -p -t -u -r arm64 -a arm64 -y build-manifest.yml
             cd ..
   
         - name: Populate env variables
