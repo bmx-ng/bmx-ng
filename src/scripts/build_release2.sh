@@ -1073,7 +1073,7 @@ build_apps() {
 	echo ""
 	echo "Ready to build"
 	echo ""
-	echo "bcc version : $(temp/BlitzMax/bin/bcc -v)"
+	echo "bcc version : $(temp/BlitzMax/bin/bcc --version)"
 	echo "bmk version : $(temp/BlitzMax/bin/bmk -v)"
 	echo ""
 
