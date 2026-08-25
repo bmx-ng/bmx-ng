@@ -38,15 +38,15 @@ jobs:
         - name: Set custom tag
           id: custom_tag
           run: |
-            echo "tag=v${{ env.VERSION_TAG }}.win32.mingw" >> $GITHUB_OUTPUT
+            echo "tag=v${{ env.VERSION_TAG }}.win32.x64.mingw" >> $GITHUB_OUTPUT
 
         - name: Create Release and Upload Asset
           uses: softprops/action-gh-release@v2
           with:
             tag_name: ${{ steps.custom_tag.outputs.tag }}
-            name: "[weekly] BlitzMax Win32 (mingw/bcc2/bmk2) v${{ env.VERSION_TAG }}"
+            name: "[weekly] BlitzMax x64 Win32 (mingw/bcc2/bmk2) v${{ env.VERSION_TAG }}"
             body: |
-                BlitzMax, Windows (bcc2/bmk2) edition, with both x86 and x64 MinGW-w64 distributions.
+                BlitzMax, Windows (bcc2/bmk2) edition, with x64 MinGW-w64 distribution.
 
                 Includes SDL2 backend, mojo2, Crypto, Audio, Archive, Image, Math, Net, Random, Text, Collections and Steam.
                 
