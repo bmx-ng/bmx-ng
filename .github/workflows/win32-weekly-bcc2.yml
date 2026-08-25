@@ -27,7 +27,7 @@ jobs:
               -v "$GITHUB_WORKSPACE/build:/build" \
               -w /build \
               blitzmax_win32_cross_compile \
-              ./build_release2.sh -l win32 -a x64 -b 0.165.3.61.202608252033 -r x64 -p -t -y build-manifest.yml
+              ./build_release2.sh -l win32 -a x64 -b 0.165.3.61.202608251845 -r x64 -p -t -y build-manifest.yml
   
         - name: Populate env variables
           run: |
