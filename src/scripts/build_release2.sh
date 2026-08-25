@@ -70,6 +70,7 @@ SCRIPT_ARGS_RAW="$*"
 : "${BMXNG_REF:=master}"
 : "${BCC2_REF:=master}"
 : "${BMK2_REF:=master}"
+: "${MAXIDE_REF:=master}"
 : "${BLITZMAX_MOD_REF:=master}"
 : "${MODULE_REF:=master}"
 : "${BRL_REF:=$MODULE_REF}"
@@ -500,6 +501,13 @@ download_repo_zip() {
 
 		# Use codeload for direct ZIP download
 		zip_url="https://codeload.github.com/${repo}/zip/${sha}"
+
+		# A cache entry for another repository/ref (or one whose checksum no
+		# longer matches) must not be relabelled with the newly resolved commit.
+		# Remove it so the exact archive resolved above is downloaded below.
+		if [ -f "$local_zip" ]; then
+			rm -f "$local_zip"
+		fi
 	fi
 
 	# Download only if missing
@@ -706,7 +714,7 @@ download() {
 	# bcc2 and bmk2 replace the legacy compiler and build manager sources.
 	download_repo_zip "bcc2" "bmx-ng/bcc2" "$BCC2_REF" "zips/bcc2.zip"
 	download_repo_zip "bmk2" "bmx-ng/bmk2" "$BMK2_REF" "zips/bmk2.zip"
-	download_repo_zip "maxide" "bmx-ng/maxide" "master" "zips/maxide.zip"
+	download_repo_zip "maxide" "bmx-ng/maxide" "$MAXIDE_REF" "zips/maxide.zip"
 	download_repo_zip "blitzmax.mod" "bmx-ng/blitzmax.mod" "$BLITZMAX_MOD_REF" "zips/blitzmax.mod.zip"
 
 	# modules
