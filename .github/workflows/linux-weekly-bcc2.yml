@@ -1,0 +1,62 @@
+name: Linux Weekly (bcc2/bmk2)
+
+on: 
+  schedule:
+    - cron: '20 1 * * 0'
+  workflow_dispatch:
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+  
+        - name: Build Docker image
+          run: |
+            docker build --platform linux/amd64 -t blitzmax_linux_cross_compile -f src/scripts/Dockerfile.linux .
+  
+        - name: Run build script in Docker
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: |
+            mkdir -p build
+            cp src/scripts/build_release2.sh build
+            docker run \
+              -e GITHUB_TOKEN="$GITHUB_TOKEN" \
+              -v "$GITHUB_WORKSPACE/build:/build" \
+              -w /build \
+              blitzmax_linux_cross_compile \
+              ./build_release2.sh -b 0.165.3.61.202608251845 -a x64 -r x64 -p -t -u -y build-manifest.yml
+  
+        - name: Populate env variables
+          run: |
+            echo "VERSION_TAG=$(cat build/version-tag.txt)" >> $GITHUB_ENV
+            echo "PACKAGE_NAME=$(cat build/package-name.txt)" >> $GITHUB_ENV
+            echo "PACKAGE_MIME_TYPE=$(cat build/package-mime.txt)" >> $GITHUB_ENV
+
+        - name: Set custom tag
+          id: custom_tag
+          run: |
+            echo "tag=v${{ env.VERSION_TAG }}.linux.x64" >> $GITHUB_OUTPUT
+
+        - name: Create Release and Upload Asset
+          uses: softprops/action-gh-release@v2
+          with:
+            tag_name: ${{ steps.custom_tag.outputs.tag }}
+            name: "[weekly] BlitzMax Linux x64 (bcc2/bmk2) v${{ env.VERSION_TAG }}"
+            body: |
+                BlitzMax, Linux x64 (bcc2/bmk2) edition, aimed at x64 development, with x64 MaxIDE.
+
+                Includes SDL2 backend, mojo2, Crypto, Audio, Archive, Image, Math, Net, Random, Text, Steam, Collections and Gtk MaxGUI.
+                
+                ### Installation notes
+                
+                See the [Getting Started Guide](https://blitzmax.org/docs/en/setup/linux/) at the BlitzMax website.
+
+                *Note: This is a weekly build, and may contain bugs. Use at your own risk.*
+            prerelease: true
+            files: ./build/${{ env.PACKAGE_NAME }}
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
