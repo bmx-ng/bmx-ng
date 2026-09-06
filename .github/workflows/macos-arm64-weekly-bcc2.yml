@@ -41,7 +41,7 @@ jobs:
             body: |
                 BlitzMax, arm64 macOS (bcc2/bmk2) edition.
 
-                Includes SDL2 backend, mojo2, Crypto, Audio, Archive, Image, Math, Random, Net, Text, Steam, Collections.
+                Includes SDL2 backend, Crypto, Audio, Archive, Image, Math, Random, Net, Text, Steam, Collections, Pico.
                 
                 ## Installing
                 
