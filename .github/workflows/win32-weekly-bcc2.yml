@@ -48,7 +48,7 @@ jobs:
             body: |
                 BlitzMax, Windows (bcc2/bmk2) edition, with x64 MinGW-w64 distribution.
 
-                Includes SDL2 backend, mojo2, Crypto, Audio, Archive, Image, Math, Net, Random, Text, Collections and Steam.
+                Includes SDL2 backend, Crypto, Audio, Archive, Image, Math, Net, Random, Text, Collections, Steam and Pico.
                 
                 ### Installation notes
                 

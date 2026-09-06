@@ -48,7 +48,7 @@ jobs:
             body: |
                 BlitzMax, Linux x64 (bcc2/bmk2) edition, aimed at x64 development, with x64 MaxIDE.
 
-                Includes SDL2 backend, mojo2, Crypto, Audio, Archive, Image, Math, Net, Random, Text, Steam, Collections and Gtk MaxGUI.
+                Includes SDL2 backend, Crypto, Audio, Archive, Image, Math, Net, Random, Text, Steam, Collections, Pico and Gtk MaxGUI.
                 
                 ### Installation notes
                 
