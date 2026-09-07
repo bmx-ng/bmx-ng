@@ -758,6 +758,61 @@ download() {
 	fi
 }
 
+compile_locale_domain() {
+	local locale_tool="$1"
+	local sdk_root="$2"
+	local domain="$3"
+	local source_root="$4"
+	local lock_file="$5"
+	local english="$source_root/en/$domain.bmxloc.toml"
+	local locale_root
+	local locale
+	local translation
+	local destination
+
+	if [ ! -f "$english" ] || [ ! -f "$lock_file" ]; then
+		echo "Missing $domain locale source or registry lock"
+		return 1
+	fi
+
+	"$locale_tool" check "$english" || return 1
+	"$locale_tool" verify-lock "$english" "$lock_file" || return 1
+
+	for locale_root in "$source_root"/*
+	do
+		[ -d "$locale_root" ] || continue
+		locale="$(basename "$locale_root")"
+		[ "$locale" = "en" ] && continue
+		translation="$locale_root/$domain.bmxloc.toml"
+		[ -f "$translation" ] || continue
+		destination="$sdk_root/bin/locales/$locale/$domain.bmxcat"
+		mkdir -p "$(dirname "$destination")" || return 1
+		"$locale_tool" check "$english" "$translation" || return 1
+		"$locale_tool" compile "$english" "$translation" "$destination" || return 1
+		"$locale_tool" verify "$destination" || return 1
+	done
+}
+
+compile_locale_catalogues() {
+	local locale_tool="$1"
+	local sdk_root="$2"
+
+	rm -rf "$sdk_root/bin/locales"
+	mkdir -p "$sdk_root/bin/locales" || return 1
+	compile_locale_domain "$locale_tool" "$sdk_root" "language" \
+		"$sdk_root/mod/blitzmax.mod/language.mod/locales" \
+		"$sdk_root/mod/blitzmax.mod/language.mod/locales/language.ids.lock.toml" || return 1
+	compile_locale_domain "$locale_tool" "$sdk_root" "bcc" \
+		"$sdk_root/mod/blitzmax.mod/compiler.mod/locales" \
+		"$sdk_root/mod/blitzmax.mod/compiler.mod/locales/bcc.ids.lock.toml" || return 1
+	compile_locale_domain "$locale_tool" "$sdk_root" "bls" \
+		"$sdk_root/mod/blitzmax.mod/lsp.mod/locales" \
+		"$sdk_root/mod/blitzmax.mod/lsp.mod/locales/bls.ids.lock.toml" || return 1
+	compile_locale_domain "$locale_tool" "$sdk_root" "bmk" \
+		"$sdk_root/src/bmk/locales" \
+		"$sdk_root/src/bmk/locales/bmk.ids.lock.toml" || return 1
+}
+
 prepare() {
 	echo "--------------------"
 	echo "-     PREPARE      -"
@@ -1020,6 +1075,22 @@ build_apps() {
 		cp temp/BlitzMax/src/bmk/custom.bmk temp/BlitzMax/bin && \
 		cp temp/BlitzMax/src/bmk/make.bmk temp/BlitzMax/bin
 
+	# Catalogue generation must use an executable that runs on the build host.
+	# Keep it separate from the target bmxlocale built below for cross releases.
+	echo "Building host bmxlocale"
+	if ! temp/BlitzMax/bin/bmk makeapp -a -r -single -o temp/BlitzMax/bin/bmxlocale-host temp/BlitzMax/mod/blitzmax.mod/locale.mod/tools/bmxlocale.bmx; then
+		echo "Failed to build host bmxlocale"
+		exit 1
+	fi
+
+	echo "Compiling release locale catalogues"
+	if ! compile_locale_catalogues "temp/BlitzMax/bin/bmxlocale-host" "release/BlitzMax"; then
+		echo "Failed to compile release locale catalogues"
+		exit 1
+	fi
+	rm -rf temp/BlitzMax/bin/locales
+	cp -R release/BlitzMax/bin/locales temp/BlitzMax/bin
+
 	C_OPTION="-single"
 
 	if [ -n "$CROSS_COMPILE" ];then
@@ -1076,6 +1147,14 @@ build_apps() {
 	echo "bcc version : $(temp/BlitzMax/bin/bcc --version)"
 	echo "bmk version : $(temp/BlitzMax/bin/bmk -v)"
 	echo ""
+
+	# This is the target-platform executable included in the SDK. It is not used
+	# to generate catalogues when the release itself is cross-compiled.
+	echo "Building release bmxlocale"
+	if ! temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION $C_OPTION -o release/BlitzMax/bin/bmxlocale$C_EXT temp/BlitzMax/mod/blitzmax.mod/locale.mod/tools/bmxlocale.bmx; then
+		echo "Failed to build release bmxlocale"
+		exit 1
+	fi
 
 	case "$PLATFORM" in
 		macos)
