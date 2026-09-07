@@ -11,6 +11,9 @@ source bmk.console.release.macos.ARCH.build
 cd ../../../..
 mv dist/bootstrap/src/bmk/bmk bin
 
+bin/bmk makeapp -a -r mod/blitzmax.mod/locale.mod/tools/bmxlocale.bmx
+mv mod/blitzmax.mod/locale.mod/tools/bmxlocale bin
+
 bin/bmk makeapp -a -r src/bcc/lsp/bls.bmx
 mv src/bcc/lsp/bls bin
 
