@@ -1148,16 +1148,11 @@ build_apps() {
 	echo "bmk version : $(temp/BlitzMax/bin/bmk -v)"
 	echo ""
 
-	# This is the target-platform executable included in the SDK. It is not used
-	# to generate catalogues when the release itself is cross-compiled.
-	echo "Building release bmxlocale"
-	if ! temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION $C_OPTION -o release/BlitzMax/bin/bmxlocale$C_EXT temp/BlitzMax/mod/blitzmax.mod/locale.mod/tools/bmxlocale.bmx; then
-		echo "Failed to build release bmxlocale"
-		exit 1
-	fi
-
 	case "$PLATFORM" in
 		macos)
+			# macOS release archives contain source and bootstrap assets only.
+			# build_dist.sh creates the executable on the destination machine.
+			rm -f release/BlitzMax/bin/bmxlocale
 			echo "Creating bootstrap"
 
 			if ! temp/BlitzMax/bin/bmk makebootstrap -a -r; then
@@ -1175,6 +1170,14 @@ build_apps() {
 			cp temp/BlitzMax/src/bmk/make.bmk release/BlitzMax/bin
 			;;
 		*)
+			# This is the target-platform executable included in the SDK. It is
+			# not used to generate catalogues when cross-compiling a release.
+			echo "Building release bmxlocale"
+			if ! temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION $C_OPTION -o release/BlitzMax/bin/bmxlocale$C_EXT temp/BlitzMax/mod/blitzmax.mod/locale.mod/tools/bmxlocale.bmx; then
+				echo "Failed to build release bmxlocale"
+				exit 1
+			fi
+
 			# re-build latest bcc with latest release
 			echo "Building latest bcc2"
 			if ! temp/BlitzMax/bin/bmk makeapp -a -r $G_OPTION $C_OPTION temp/BlitzMax/src/bcc/compiler/bcc.bmx; then
