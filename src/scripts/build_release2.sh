@@ -117,7 +117,7 @@ LINUX_ARCH=("x86" "x64" "arm" "arm64" "riscv64")
 RPI_ARCH=("arm" "arm64")
 WIN_VERS=("mingw" "llvm")
 
-MOD_LIST=("brl" "pub" "maxgui" "audio" "crypto" "image" "net" "random" "sdl" "steam" "text" "math" "archive" "collections" "pico")
+MOD_LIST=("brl" "pub" "maxgui" "audio" "crypto" "image" "net" "random" "sdl" "steam" "text" "math" "archive" "collections" "embedded" "pico")
 SAMPLE_LIST=("aaronkoolen/AStar/astar_demo.bmx" "birdie/games/tempest/tempest.bmx" "birdie/games/tiledrop/tiledrop.bmx" "birdie/games/zombieblast/game.bmx" "breakout/breakout.bmx" "digesteroids/digesteroids.bmx" "firepaint/firepaint.bmx" "flameduck/circlemania/cmania.bmx" "flameduck/oldskool2/oldskool2.bmx" "hitoro/fireworks.bmx" "hitoro/shadowimage.bmx" "simonh/fireworks/fireworks.bmx" "simonh/snow/snowfall.bmx" "spintext/spintext.bmx" "starfieldpong/starfieldpong.bmx" "tempest/tempest.bmx")
 UNIT_TEST_BLACKLIST=("maxgui" "audio" "image" "sdl" "steam" "math")
 
