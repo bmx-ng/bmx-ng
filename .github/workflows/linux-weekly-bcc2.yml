@@ -14,7 +14,7 @@ jobs:
   
         - name: Build Docker image
           run: |
-            docker build --platform linux/amd64 -t blitzmax_linux_cross_compile -f src/scripts/Dockerfile.linux .
+            docker build --platform linux/amd64 -t blitzmax_linux_cross_compile -f src/scripts/Dockerfile2.linux .
   
         - name: Run build script in Docker
           env:
