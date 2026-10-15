@@ -813,6 +813,20 @@ compile_locale_catalogues() {
 		"$sdk_root/src/bmk/locales/bmk.ids.lock.toml" || return 1
 }
 
+install_bmk_resources() {
+	local sdk_root="$1"
+	local source="$sdk_root/src/bmk/resources"
+	local destination="$sdk_root/resources"
+
+	if [ ! -d "$source" ]; then
+		echo "Missing bmk resources: $source"
+		return 1
+	fi
+
+	rm -rf "$destination"
+	cp -R "$source" "$destination"
+}
+
 prepare() {
 	echo "--------------------"
 	echo "-     PREPARE      -"
@@ -839,6 +853,13 @@ prepare() {
 	echo "Extracting bmk2"
 	unzip_and_rename "zips/bmk2.zip" "release/BlitzMax/src" "bmk2" "bmk"
 	unzip_and_rename "zips/bmk2.zip" "temp/BlitzMax/src" "bmk2" "bmk"
+
+	# bmk resolves platform templates from the installed SDK root at build
+	# time. Keep the build tree and final package identical so Android and iOS
+	# project generation work both during release validation and after install.
+	echo "Installing bmk resources"
+	install_bmk_resources "release/BlitzMax" || exit 1
+	install_bmk_resources "temp/BlitzMax" || exit 1
 
 	# Compiler, language and LSP modules used by bcc2 and bls.
 	echo "Extracting blitzmax.mod"
