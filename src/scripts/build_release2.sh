@@ -117,7 +117,7 @@ LINUX_ARCH=("x86" "x64" "arm" "arm64" "riscv64")
 RPI_ARCH=("arm" "arm64")
 WIN_VERS=("mingw" "llvm")
 
-MOD_LIST=("brl" "pub" "maxgui" "audio" "crypto" "image" "net" "random" "sdl" "steam" "text" "math" "archive" "collections" "embedded" "pico" "esp32" "sdl3" "max2d")
+MOD_LIST=("brl" "pub" "maxgui" "audio" "crypto" "image" "net" "random" "sdl" "steam" "text" "math" "archive" "collections" "embedded" "pico" "esp32" "sdl3" "max2d" "apple" "gamenet")
 SAMPLE_LIST=("aaronkoolen/AStar/astar_demo.bmx" "birdie/games/tempest/tempest.bmx" "birdie/games/tiledrop/tiledrop.bmx" "birdie/games/zombieblast/game.bmx" "breakout/breakout.bmx" "digesteroids/digesteroids.bmx" "firepaint/firepaint.bmx" "flameduck/circlemania/cmania.bmx" "flameduck/oldskool2/oldskool2.bmx" "hitoro/fireworks.bmx" "hitoro/shadowimage.bmx" "simonh/fireworks/fireworks.bmx" "simonh/snow/snowfall.bmx" "spintext/spintext.bmx" "starfieldpong/starfieldpong.bmx" "tempest/tempest.bmx")
 UNIT_TEST_BLACKLIST=("maxgui" "audio" "image" "sdl" "steam" "math")
 
@@ -1354,6 +1354,9 @@ run_unit_tests() {
 	local runnable=0
 	local executed=0
 	local bmk="temp/BlitzMax/bin/bmk"
+	local failure_status=0
+	local failure_detail=""
+	local failure_details=()
 
 	local testfiles=()
 	while IFS= read -r testfile; do
@@ -1409,9 +1412,13 @@ run_unit_tests() {
 		echo "[${executed}/${runnable}] Testing ${module}"
 		echo ""
 
-		if ! "$bmk" makeapp -a $G_OPTION -r "$testfile"; then
+		if "$bmk" makeapp -a $G_OPTION -r "$testfile"; then
+			:
+		else
+			failure_status=$?
 			echo "Failed to build test: ${module}"
 			((build_failures++))
+			failure_details+=("BUILD: ${module} (exit status ${failure_status})")
 			continue
 		fi
 
@@ -1421,9 +1428,13 @@ run_unit_tests() {
 			win32) exe="${exe}.exe" ;;
 		esac
 
-		if ! "$exe"; then
+		if "$exe"; then
+			:
+		else
+			failure_status=$?
 			echo "Unit test failed: ${module}"
 			((test_failures++))
+			failure_details+=("TEST:  ${module} (exit status ${failure_status})")
 		fi
 	done
 
@@ -1435,6 +1446,15 @@ run_unit_tests() {
 	echo "Skipped         : ${skipped}"
 	echo "Build Failures  : ${build_failures}"
 	echo "Test Failures   : ${test_failures}"
+
+	if [ "${#failure_details[@]}" -ne 0 ]; then
+		echo ""
+		echo "Failure Details"
+		echo "---------------"
+		for failure_detail in "${failure_details[@]}"; do
+			echo "- ${failure_detail}"
+		done
+	fi
 
 	if [ "$build_failures" -ne 0 ] || [ "$test_failures" -ne 0 ]; then
 		echo "Unit tests failed"
